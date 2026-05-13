@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultFlow — Intelligent Wealth Allocation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080808;color:#F5F0E8;font-family:'Montserrat',sans-serif;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #C9A84C11;background:#080808ee;backdrop-filter:blur(20px)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px;color:#F5F0E8}
+.logo span{color:#C9A84C}
+.nav-links{display:flex;gap:32px}
+.nav-links a{color:#8A8070;font-size:10px;letter-spacing:3px;text-decoration:none;transition:color 0.3s}
+.nav-links a:hover{color:#C9A84C}
+.nav-btn{background:transparent;border:1px solid #C9A84C44;color:#C9A84C;padding:8px 20px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
+.nav-btn:hover{background:#C9A84C11;border-color:#C9A84C}
+.hero{min-height:100vh;display:flex;align-items:center;padding:0 40px;position:relative;background:radial-gradient(ellipse at 50% 30%, #C9A84C08 0%, transparent 60%)}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(#C9A84C08 1px,transparent 1px),linear-gradient(90deg,#C9A84C08 1px,transparent 1px);background-size:80px 80px;pointer-events:none}
+.hero-content{max-width:900px;animation:fadeUp 1.2s ease both}
+.hero-tag{font-size:10px;letter-spacing:6px;color:#8B6914;margin-bottom:28px}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,7vw,88px);font-weight:300;line-height:1.05;letter-spacing:-2px;margin-bottom:28px}
+h1 em{color:#C9A84C;font-style:italic}
+.hero-sub{font-size:14px;color:#8A8070;max-width:500px;line-height:1.9;margin-bottom:44px;font-weight:300}
+.cta-row{display:flex;gap:0;max-width:420px}
+.cta-input{flex:1;background:#141414;border:1px solid #C9A84C33;border-right:none;color:#F5F0E8;padding:14px 18px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none}
+.cta-btn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:14px 24px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;white-space:nowrap}
+.scroll-line{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-line span{font-size:8px;letter-spacing:4px;color:#8B6914}
+.scroll-line div{width:1px;height:40px;background:linear-gradient(#C9A84C,transparent)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #C9A84C15;border-bottom:1px solid #C9A84C15}
+.stat{padding:40px 28px;border-left:1px solid #C9A84C11}
+.stat-label{font-size:9px;letter-spacing:3px;color:#8B6914;margin-bottom:12px;font-family:'Cormorant Garamond',serif}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:#F5F0E8}
+.stat-value span{color:#C9A84C;font-size:20px}
+.dashboard-section{padding:100px 40px;text-align:center}
+.section-tag{font-size:10px;letter-spacing:5px;color:#8B6914;margin-bottom:16px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,56px);font-weight:300;letter-spacing:-1px;margin-bottom:60px}
+.section-title em{color:#C9A84C;font-style:italic}
+.dashboard{background:#0E0E0E;border:1px solid #C9A84C22;border-radius:4px;max-width:900px;margin:0 auto;overflow:hidden;box-shadow:0 40px 120px #00000080}
+.dash-bar{background:#141414;padding:12px 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #C9A84C11}
+.dot{width:10px;height:10px;border-radius:50%}
+.dash-title{margin-left:auto;font-size:9px;color:#8A8070;letter-spacing:3px}
+.dash-body{padding:28px}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
+.dash-stat{background:#1A1A1A;padding:16px;border-radius:3px;border:1px solid #C9A84C11;text-align:left}
+.dash-stat-label{font-size:8px;letter-spacing:3px;color:#8A8070;margin-bottom:6px}
+.dash-stat-value{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300}
+.alloc-title{font-size:9px;letter-spacing:3px;color:#8B6914;margin-bottom:16px;text-align:left}
+.alloc-row{margin-bottom:14px}
+.alloc-meta{display:flex;justify-content:space-between;margin-bottom:5px}
+.alloc-name{font-size:10px;color:#8A8070;letter-spacing:1px}
+.alloc-pct{font-size:10px;color:#C9A84C;font-family:'Cormorant Garamond',serif}
+.alloc-bar{background:#1A1A1A;height:3px;border-radius:1px}
+.alloc-fill{height:100%;border-radius:1px;transition:width 1.5s ease}
+.features{padding:80px 40px;max-width:1100px;margin:0 auto;border-top:1px solid #C9A84C15}
+.features-grid{display:grid;grid-template-columns:1fr 2fr;gap:80px}
+.features-sticky{position:sticky;top:100px;height:fit-content}
+.feature-row{padding:36px 0;border-bottom:1px solid #C9A84C15;display:grid;grid-template-columns:50px 1fr 2fr;gap:24px}
+.feature-num{font-size:10px;letter-spacing:3px;color:#8B6914;font-family:'Cormorant Garamond',serif;padding-top:3px}
+.feature-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:#F5F0E8;letter-spacing:0.5px;line-height:1.4}
+.feature-desc{font-size:12px;color:#8A8070;line-height:1.8;letter-spacing:0.3px}
+.pricing{padding:100px 40px;background:#0E0E0E;border-top:1px solid #C9A84C15;border-bottom:1px solid #C9A84C15}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1100px;margin:0 auto}
+.price-card{background:#141414;border:1px solid #2A2A2A;border-radius:2px;padding:44px 32px;transition:all 0.3s}
+.price-card:hover{border-color:#8B6914;transform:translateY(-6px)}
+.price-card.gold{background:linear-gradient(145deg,#1A1500,#0E0E0E);border-color:#C9A84C}
+.price-tag-label{font-size:10px;letter-spacing:3px;color:#8A8070;margin-bottom:8px}
+.price-amount{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;letter-spacing:-2px;margin-bottom:4px}
+.price-period{font-size:10px;color:#8A8070;letter-spacing:2px;margin-bottom:28px}
+.price-divider{height:1px;background:linear-gradient(90deg,transparent,#C9A84C44,transparent);margin-bottom:28px}
+.price-feature{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.price-dot{width:4px;height:4px;border-radius:50%;background:#8B6914;margin-top:6px;flex-shrink:0}
+.price-feature span{font-size:11px;color:#8A8070;line-height:1.6}
+.price-btn{width:100%;margin-top:28px;padding:13px;border:1px solid #333;background:transparent;color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
+.price-card.gold .price-btn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;font-weight:600}
+.price-card.gold .price-tag-label{color:#8B6914}
+.price-card.gold .price-amount{color:#C9A84C}
+.story{padding:100px 40px;max-width:800px;margin:0 auto}
+blockquote{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;line-height:1.7;color:#F5F0E8;border-left:2px solid #C9A84C;padding-left:32px;margin-bottom:40px;letter-spacing:0.3px}
+.author{display:flex;align-items:center;gap:16px}
+.author-avatar{width:48px;height:48px;border:1px solid #C9A84C44;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#141414;font-family:'Cormorant Garamond',serif;font-size:16px;color:#C9A84C}
+.author-name{font-size:13px;letter-spacing:1px;color:#F5F0E8}
+.author-title{font-size:9px;letter-spacing:2px;color:#8A8070;margin-top:3px}
+.final-cta{padding:100px 40px;text-align:center;background:#0E0E0E;border-top:1px solid #C9A84C15;position:relative}
+.glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,#C9A84C06 0%,transparent 70%);pointer-events:none}
+.final-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,6vw,64px);font-weight:300;letter-spacing:-2px;margin-bottom:16px}
+.final-title em{color:#C9A84C;font-style:italic}
+.final-sub{font-size:13px;color:#8A8070;max-width:440px;margin:0 auto 44px;line-height:1.8;font-weight:300}
+footer{padding:40px;border-top:1px solid #C9A84C11;display:flex;justify-content:space-between;align-items:center}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;color:#8A8070}
+.footer-logo span{color:#8B6914}
+.footer-links{display:flex;gap:28px}
+.footer-links a{font-size:9px;color:#8A8070;text-decoration:none;letter-spacing:2px}
+.footer-copy{font-size:9px;color:#8A8070;letter-spacing:1px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){
+  nav{padding:16px 20px}
+  .nav-links{display:none}
+  .hero{padding:0 20px}
+  h1{font-size:42px}
+  .stats{grid-template-columns:1fr 1fr}
+  .dashboard-section{padding:60px 20px}
+  .dash-stats{grid-template-columns:1fr}
+  .features{padding:60px 20px}
+  .features-grid{grid-template-columns:1fr;gap:40px}
+  .features-sticky{position:relative;top:0}
+  .feature-row{grid-template-columns:40px 1fr;gap:16px}
+  .feature-desc{display:none}
+  .pricing{padding:60px 20px}
+  .pricing-grid{grid-template-columns:1fr}
+  .story{padding:60px 20px}
+  .final-cta{padding:60px 20px}
+  .cta-row{flex-direction:column}
+  .cta-input{border-right:1px solid #C9A84C33;border-bottom:none}
+  footer{flex-direction:column;gap:20px;text-align:center}
+  .footer-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VAULT<span>FLOW</span></div>
+  <div class="nav-links">
+    <a href="#">Platform</a>
+    <a href="#">Features</a>
+    <a href="#">Pricing</a>
+    <a href="#">About</a>
+  </div>
+  <button class="nav-btn">REQUEST ACCESS</button>
+</nav>
+
+<section class="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">INTELLIGENT WEALTH ALLOCATION</div>
+    <h1>Your money.<br><em>Perfectly</em> allocated.<br>Automatically.</h1>
+    <p class="hero-sub">VaultFlow connects to your bank, detects your paycheck, and instantly routes every dollar — debt, savings, investments, real estate — without you lifting a finger.</p>
+    <div class="cta-row">
+      <input class="cta-input" placeholder="your@email.com" type="email">
+      <button class="cta-btn">JOIN WAITLIST</button>
+    </div>
+  </div>
+  <div class="scroll-line">
+    <span>SCROLL</span>
+    <div></div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><div class="stat-label">AVERAGE MONTHLY INCOME MANAGED</div><div class="stat-value"><span>$</span>10,628</div></div>
+  <div class="stat"><div class="stat-label">ALLOCATION ACCURACY</div><div class="stat-value">99<span>%</span></div></div>
+  <div class="stat"><div class="stat-label">AVERAGE NET WORTH INCREASE</div><div class="stat-value">340<span>%</span></div></div>
+  <div class="stat"><div class="stat-label">HOURS SAVED PER YEAR</div><div class="stat-value">240<span>hrs</span></div></div>
+</section>
+
+<section class="dashboard-section">
+  <div class="section-tag">THE PLATFORM</div>
+  <h2 class="section-title">Built for those who <em>earn seriously.</em></h2>
+  <div class="dashboard">
+    <div class="dash-bar">
+      <div class="dot" style="background:#FF5F57;opacity:0.6"></div>
+      <div class="dot" style="background:#FFBD2E;opacity:0.6"></div>
+      <div class="dot" style="background:#28C840;opacity:0.6"></div>
+      <div class="dash-title">VAULTFLOW — DASHBOARD</div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-stats">
+        <div class="dash-stat"><div class="dash-stat-label">MONTHLY INCOME</div><div class="dash-stat-value" style="color:#C9A84C">$10,628</div></div>
+        <div class="dash-stat"><div class="dash-stat-label">ALLOCATED</div><div class="dash-stat-value">$8,940</div></div>
+        <div class="dash-stat"><div class="dash-stat-label">FREE CASH</div><div class="dash-stat-value" style="color:#4CAF50">$1,688</div></div>
+      </div>
+      <div class="alloc-title">ALLOCATION BREAKDOWN</div>
+      <div class="alloc-row"><div class="alloc-meta"><span class="alloc-name">Emergency Fund</span><span class="alloc-pct">20%</span></div><div class="alloc-bar"><div class="alloc-fill" style="width:20%;background:#C9A84C"></div></div></div>
+      <div class="alloc-row"><div class="alloc-meta"><span class="alloc-name">Debt Payoff</span><span class="alloc-pct">15%</span></div><div class="alloc-bar"><div class="alloc-fill" style="width:15%;background:#8B6914"></div></div></div>
+      <div class="alloc-row"><div class="alloc-meta"><span class="alloc-name">Real Estate</span><span class="alloc-pct">25%</span></div><div class="alloc-bar"><div class="alloc-fill" style="width:25%;background:#6B4F10"></div></div></div>
+      <div class="alloc-row"><div class="alloc-meta"><span class="alloc-name">Algo Trading</span><span class="alloc-pct">30%</span></div><div class="alloc-bar"><div class="alloc-fill" style="width:30%;background:#C9A84C99"></div></div></div>
+      <div class="alloc-row"><div class="alloc-meta"><span class="alloc-name">Liquid Savings</span><span class="alloc-pct">10%</span></div><div class="alloc-bar"><div class="alloc-fill" style="width:10%;background:#444"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-grid">
+    <div class="features-sticky">
+      <div class="section-tag">FEATURES</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;letter-spacing:-1px;line-height:1.2">Every feature<br>with purpose.</h2>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C44,transparent);margin-top:28px"></div>
+    </div>
+    <div>
+      <div class="feature-row"><div class="feature-num">01</div><div class="feature-title">Bank Detection</div><div class="feature-desc">Connects to 12,000+ financial institutions. The moment your paycheck deposits, VaultFlow detects it instantly.</div></div>
+      <div class="feature-row"><div class="feature-num">02</div><div class="feature-title">Intelligent Allocation</div><div class="feature-desc">Analyzes income, fixed costs, debt rates, and goals. Calculates the mathematically optimal distribution automatically.</div></div>
+      <div class="feature-row"><div class="feature-num">03</div><div class="feature-title">Automated Transfers</div><div class="feature-desc">Funds move automatically to savings, brokerage, debt payments, and real estate reserve. No manual transfers.</div></div>
+      <div class="feature-row"><div class="feature-num">04</div><div class="feature-title">Stock Algorithm</div><div class="feature-desc">Connects to Alpaca Markets. Your investing allocation moves directly into your trading algo scanning 500 stocks.</div></div>
+      <div class="feature-row"><div class="feature-num">05</div><div class="feature-title">Real Estate Analyzer</div><div class="feature-desc">Analyze any multifamily property in seconds. Cap rate, cash-on-cash return, debt service — every institutional metric.</div></div>
+      <div class="feature-row"><div class="feature-num">06</div><div class="feature-title">Wealth Projection</div><div class="feature-desc">See your exact net worth trajectory year by year. Know exactly where you stand against your $1M goal today.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <div style="text-align:center;margin-bottom:60px">
+    <div class="section-tag">MEMBERSHIP</div>
+    <h2 class="section-title">Simple, <em>transparent</em> pricing.</h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tag-label">ESSENTIAL</div>
+      <div class="price-amount">Free</div>
+      <div class="price-period" style="margin-bottom:28px"> </div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Income & expense calculator</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Debt payoff optimizer</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Manual allocation breakdown</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Wealth projection tool</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Real estate deal analyzer</span></div>
+      <button class="price-btn">GET STARTED</button>
+    </div>
+    <div class="price-card gold">
+      <div class="price-tag-label">★ MOST POPULAR</div>
+      <div class="price-tag-label">PRIME</div>
+      <div class="price-amount">$9.99</div>
+      <div class="price-period">PER MONTH</div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="price-dot" style="background:#C9A84C"></div><span>Everything in Essential</span></div>
+      <div class="price-feature"><div class="price-dot" style="background:#C9A84C"></div><span>Bank account connection</span></div>
+      <div class="price-feature"><div class="price-dot" style="background:#C9A84C"></div><span>Payday auto-detection</span></div>
+      <div class="price-feature"><div class="price-dot" style="background:#C9A84C"></div><span>Push & email alerts</span></div>
+      <div class="price-feature"><div class="price-dot" style="background:#C9A84C"></div><span>Alpaca trading integration</span></div>
+      <button class="price-btn">BEGIN NOW</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tag-label">VAULT</div>
+      <div class="price-amount">$24.99</div>
+      <div class="price-period">PER MONTH</div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Everything in Prime</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Auto bank transfers</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Full S&P 500 algo signals</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Real estate deal alerts</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Tax optimization insights</span></div>
+      <div class="price-feature"><div class="price-dot"></div><span>Priority support</span></div>
+      <button class="price-btn">BEGIN NOW</button>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="section-tag">THE STORY</div>
+  <blockquote>"I was making good money on the water — $362 a day — and still had no idea where it was going. Built this for myself first. Now it runs everything automatically while I'm at sea."</blockquote>
+  <div class="author">
+    <div class="author-avatar">V</div>
+    <div>
+      <div class="author-name">Founder, VaultFlow</div>
+      <div class="author-title">MERCHANT MARINER · VETERAN · INVESTOR</div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="glow"></div>
+  <div class="section-tag">EARLY ACCESS</div>
+  <h2 class="final-title">Join the <em>vault.</em></h2>
+  <p class="final-sub">Limited early access. First 500 members receive Prime membership free for 6 months.</p>
+  <div class="cta-row" style="justify-content:center;max-width:440px;margin:0 auto">
+    <input class="cta-input" placeholder="Enter your email" type="email">
+    <button class="cta-btn">REQUEST ACCESS</button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">VAULT<span>FLOW</span></div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Security</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
+</footer>
+
