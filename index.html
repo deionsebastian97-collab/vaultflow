@@ -1,190 +1,814 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>VaultFlow</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{background:#080808;color:#F5F0E8;font-family:'Montserrat',sans-serif;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;background:#080808ee;backdrop-filter:blur(20px);border-bottom:1px solid #C9A84C11}.logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px}.logo span{color:#C9A84C}.nav-right{display:flex;gap:10px;align-items:center}.nav-login{background:transparent;border:1px solid #C9A84C22;color:#8A8070;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;text-decoration:none;display:flex;align-items:center;transition:all 0.3s}.nav-login:hover{border-color:#C9A84C44;color:#C9A84C}.nav-btn{background:transparent;border:1px solid #C9A84C44;color:#C9A84C;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}.nav-btn:hover{background:#C9A84C11}.hero{min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;background:radial-gradient(ellipse at 50% 30%,#C9A84C08 0%,transparent 60%);position:relative}.grid{position:absolute;inset:0;background-image:linear-gradient(#C9A84C08 1px,transparent 1px),linear-gradient(90deg,#C9A84C08 1px,transparent 1px);background-size:80px 80px}h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,7vw,88px);font-weight:300;line-height:1.05;letter-spacing:-2px;margin-bottom:24px}h1 em{color:#C9A84C;font-style:italic}.sub{font-size:14px;color:#8A8070;max-width:480px;line-height:1.9;margin-bottom:40px;font-weight:300}.tag{font-size:10px;letter-spacing:6px;color:#8B6914;margin-bottom:24px}.form-wrap{max-width:420px}.form-row{display:flex}.inp{flex:1;background:#141414;border:1px solid #C9A84C33;border-right:none;color:#F5F0E8;padding:14px 18px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none}.inp::placeholder{color:#8A8070}.btn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:14px 22px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;white-space:nowrap}.msg{margin-top:12px;font-size:11px;letter-spacing:2px;display:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #C9A84C15;border-bottom:1px solid #C9A84C15}.stat{padding:40px 20px;border-left:1px solid #C9A84C11}.slabel{font-size:9px;letter-spacing:3px;color:#8B6914;margin-bottom:10px}.sval{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300}.sval span{color:#C9A84C;font-size:18px}.dash-sec{padding:100px 24px;text-align:center}.stag{font-size:10px;letter-spacing:5px;color:#8B6914;margin-bottom:14px}.stitle{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,52px);font-weight:300;letter-spacing:-1px;margin-bottom:56px}.stitle em{color:#C9A84C;font-style:italic}.dash{background:#0E0E0E;border:1px solid #C9A84C22;border-radius:4px;max-width:860px;margin:0 auto;overflow:hidden;box-shadow:0 40px 120px #00000080}.dbar{background:#141414;padding:12px 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #C9A84C11}.dot{width:10px;height:10px;border-radius:50%}.dtitle{margin-left:auto;font-size:9px;color:#8A8070;letter-spacing:3px}.dbody{padding:24px}.dgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px}.dcard{background:#1A1A1A;padding:14px;border:1px solid #C9A84C11}.dcl{font-size:8px;letter-spacing:3px;color:#8A8070;margin-bottom:5px}.dcv{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300}.al{font-size:9px;letter-spacing:3px;color:#8B6914;margin-bottom:14px;text-align:left}.ar{margin-bottom:12px}.am{display:flex;justify-content:space-between;margin-bottom:4px}.an{font-size:10px;color:#8A8070}.ap{font-size:10px;color:#C9A84C}.ab{background:#1A1A1A;height:3px;border-radius:1px}.af{height:100%;border-radius:1px}.feat{padding:80px 24px;border-top:1px solid #C9A84C15;max-width:1100px;margin:0 auto}.fgrid{display:grid;grid-template-columns:1fr 2fr;gap:80px}.fstick{position:sticky;top:100px;height:fit-content}.frow{padding:32px 0;border-bottom:1px solid #C9A84C15;display:grid;grid-template-columns:48px 1fr 2fr;gap:20px}.fnum{font-size:10px;letter-spacing:3px;color:#8B6914;padding-top:2px}.ftit{font-family:'Cormorant Garamond',serif;font-size:17px;color:#F5F0E8;line-height:1.4}.fdesc{font-size:12px;color:#8A8070;line-height:1.8}.price-sec{padding:100px 24px;background:#0E0E0E;border-top:1px solid #C9A84C15}.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1060px;margin:0 auto}.pc{background:#141414;border:1px solid #2A2A2A;border-radius:2px;padding:40px 28px;transition:all 0.3s}.pc:hover{border-color:#8B6914;transform:translateY(-5px)}.pc.g{background:linear-gradient(145deg,#1A1500,#0E0E0E);border-color:#C9A84C}.ptl{font-size:10px;letter-spacing:3px;color:#8A8070;margin-bottom:8px}.pamt{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;letter-spacing:-2px;margin-bottom:4px}.pper{font-size:10px;color:#8A8070;letter-spacing:2px;margin-bottom:24px}.pdiv{height:1px;background:linear-gradient(90deg,transparent,#C9A84C44,transparent);margin-bottom:24px}.pf{display:flex;gap:10px;margin-bottom:12px}.pd{width:4px;height:4px;border-radius:50%;background:#8B6914;margin-top:6px;flex-shrink:0}.pf span{font-size:11px;color:#8A8070;line-height:1.6}.pbtn{width:100%;margin-top:24px;padding:12px;border:1px solid #333;background:transparent;color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}.pbtn:hover{border-color:#C9A84C;color:#C9A84C}.pc.g .pbtn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;font-weight:600}.pc.g .pamt{color:#C9A84C}.story{padding:100px 24px;max-width:780px;margin:0 auto}blockquote{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;line-height:1.7;color:#F5F0E8;border-left:2px solid #C9A84C;padding-left:28px;margin-bottom:36px}.auth{display:flex;align-items:center;gap:14px}.ava{width:46px;height:46px;border:1px solid #C9A84C44;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#141414;font-family:'Cormorant Garamond',serif;font-size:15px;color:#C9A84C;flex-shrink:0}.aname{font-size:12px;letter-spacing:1px}.atitle{font-size:9px;letter-spacing:2px;color:#8A8070;margin-top:3px}.fcta{padding:100px 24px;text-align:center;background:#0E0E0E;border-top:1px solid #C9A84C15;position:relative}.glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,#C9A84C06 0%,transparent 70%);pointer-events:none}.ftitle{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,6vw,60px);font-weight:300;letter-spacing:-2px;margin-bottom:14px}.ftitle em{color:#C9A84C;font-style:italic}.fsub{font-size:13px;color:#8A8070;max-width:420px;margin:0 auto 40px;line-height:1.8;font-weight:300}footer{padding:36px 24px;border-top:1px solid #C9A84C11;display:flex;justify-content:space-between;align-items:center}.flogo{font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:4px;color:#8A8070}.flogo span{color:#8B6914}.flinks{display:flex;gap:24px}.flinks a{font-size:9px;color:#8A8070;text-decoration:none;letter-spacing:2px;transition:color 0.3s}.flinks a:hover{color:#C9A84C}.fcopy{font-size:9px;color:#8A8070;letter-spacing:1px}@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}@media(max-width:768px){nav{padding:16px 20px}.hero{padding:100px 20px 60px}h1{font-size:40px}.stats{grid-template-columns:1fr 1fr}.dash-sec{padding:60px 20px}.dgrid{grid-template-columns:1fr}.feat{padding:60px 20px}.fgrid{grid-template-columns:1fr;gap:32px}.fstick{position:relative;top:0}.frow{grid-template-columns:40px 1fr;gap:12px}.fdesc{display:none}.price-sec{padding:60px 20px}.pgrid{grid-template-columns:1fr}.story{padding:60px 20px}.fcta{padding:60px 20px}.form-row{flex-direction:column}.inp{border-right:1px solid #C9A84C33;border-bottom:none}footer{flex-direction:column;gap:16px;text-align:center;padding:28px 20px}.flinks{display:none}}</style></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>VaultFlow — Intelligent Wealth Allocation</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://js.stripe.com/v3/"></script><style>
 
-<nav>
-  <div class="logo">VAULT<span>FLOW</span></div>
-  <div class="nav-right">
-    <a href="login.html" class="nav-login">LOGIN</a>
-    <button class="nav-btn" onclick="document.getElementById('e1').focus()">JOIN</button>
+:root{–gold:#C9A84C;–gold-dim:#8B6914;–gold-light:#E8C96A;–black:#080808;–black2:#0E0E0E;–black3:#141414;–black4:#1A1A1A;–white:#F5F0E8;–white-dim:#8A8070;}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(–black);color:var(–white);font-family:‘Montserrat’,sans-serif;overflow-x:hidden;min-height:100vh}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:#080808ee;backdrop-filter:blur(20px);border-bottom:1px solid #C9A84C11;transition:all 0.3s}
+.logo{font-family:‘Cormorant Garamond’,serif;font-size:20px;letter-spacing:6px;cursor:pointer;color:var(–white)}.logo span{color:var(–gold)}
+.nav-right{display:flex;gap:8px;align-items:center}
+.nav-link{background:transparent;border:1px solid #C9A84C22;color:var(–white-dim);padding:7px 14px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center}
+.nav-link:hover{border-color:#C9A84C44;color:var(–gold)}
+.nav-cta{background:linear-gradient(135deg,var(–gold-dim),var(–gold));border:none;color:var(–black);padding:7px 14px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;font-weight:700}
+
+/* SHARED */
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(#C9A84C06 1px,transparent 1px),linear-gradient(90deg,#C9A84C06 1px,transparent 1px);background-size:80px 80px;pointer-events:none}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,#C9A84C33,transparent)}
+.tag{font-size:9px;letter-spacing:5px;color:var(–gold-dim);margin-bottom:12px}
+.section-title{font-family:‘Cormorant Garamond’,serif;font-size:clamp(32px,5vw,52px);font-weight:300;letter-spacing:-1px;margin-bottom:16px}
+.section-title em{color:var(–gold);font-style:italic}
+.inp{width:100%;background:var(–black3);border:1px solid #C9A84C22;color:var(–white);padding:12px 14px;font-size:12px;font-family:‘Montserrat’,sans-serif;outline:none;transition:border 0.3s;margin-bottom:4px}
+.inp:focus{border-color:#C9A84C44}
+.inp::placeholder{color:var(–white-dim)}
+.inp-label{font-size:8px;letter-spacing:2px;color:var(–gold-dim);margin-bottom:5px;margin-top:12px}
+.btn-gold{background:linear-gradient(135deg,var(–gold-dim),var(–gold));border:none;color:var(–black);padding:13px 24px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;font-weight:700;transition:opacity 0.3s;width:100%}
+.btn-gold:hover{opacity:0.85}
+.btn-outline{background:transparent;border:1px solid #C9A84C33;color:var(–gold-dim);padding:11px 20px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;width:100%;transition:all 0.3s}
+.btn-outline:hover{border-color:var(–gold);color:var(–gold)}
+.card{background:var(–black2);border:1px solid #C9A84C11;border-radius:3px;padding:16px;margin-bottom:12px}
+.msg-box{font-size:10px;letter-spacing:1px;text-align:center;margin-top:8px;min-height:16px}
+
+/* ==================== HOME PAGE ==================== */
+#page-home .hero{min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;background:radial-gradient(ellipse at 50% 30%,#C9A84C08 0%,transparent 60%);position:relative}
+#page-home h1{font-family:‘Cormorant Garamond’,serif;font-size:clamp(44px,8vw,92px);font-weight:300;line-height:1.02;letter-spacing:-2px;margin-bottom:24px}
+#page-home h1 em{color:var(–gold);font-style:italic}
+.hero-sub{font-size:13px;color:var(–white-dim);max-width:460px;line-height:1.9;margin-bottom:36px;font-weight:300}
+.hero-tag{font-size:9px;letter-spacing:7px;color:var(–gold-dim);margin-bottom:28px}
+.waitlist-row{display:flex;max-width:420px}
+.waitlist-inp{flex:1;background:var(–black3);border:1px solid #C9A84C33;border-right:none;color:var(–white);padding:14px 16px;font-size:12px;font-family:‘Montserrat’,sans-serif;outline:none}
+.waitlist-inp::placeholder{color:var(–white-dim)}
+.waitlist-btn{background:linear-gradient(135deg,var(–gold-dim),var(–gold));border:none;color:var(–black);padding:14px 20px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;font-weight:700;white-space:nowrap}
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
+.scroll-hint span{font-size:8px;letter-spacing:4px;color:var(–gold-dim)}
+.scroll-hint div{width:1px;height:36px;background:linear-gradient(var(–gold),transparent)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #C9A84C15;border-bottom:1px solid #C9A84C15}
+.stat-item{padding:36px 20px;border-left:1px solid #C9A84C11}
+.stat-lbl{font-size:8px;letter-spacing:3px;color:var(–gold-dim);margin-bottom:10px}
+.stat-val{font-family:‘Cormorant Garamond’,serif;font-size:36px;font-weight:300}
+.stat-val span{color:var(–gold);font-size:18px}
+.dash-preview{background:var(–black2);border:1px solid #C9A84C22;border-radius:4px;max-width:820px;margin:0 auto;overflow:hidden;box-shadow:0 40px 100px #00000080}
+.dash-bar{background:var(–black3);padding:11px 18px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #C9A84C11}
+.dash-dot{width:9px;height:9px;border-radius:50%}
+.dash-ttl{margin-left:auto;font-size:8px;color:var(–white-dim);letter-spacing:3px}
+.dash-body{padding:20px}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+.dash-stat{background:var(–black4);padding:12px;border:1px solid #C9A84C11}
+.ds-lbl{font-size:7px;letter-spacing:3px;color:var(–white-dim);margin-bottom:4px}
+.ds-val{font-family:‘Cormorant Garamond’,serif;font-size:18px;font-weight:300}
+.alloc-lbl{font-size:8px;letter-spacing:3px;color:var(–gold-dim);margin-bottom:12px}
+.alloc-item{margin-bottom:10px}
+.alloc-meta{display:flex;justify-content:space-between;margin-bottom:3px;font-size:9px}
+.alloc-name{color:var(–white-dim)}
+.alloc-pct{color:var(–gold)}
+.alloc-track{background:var(–black4);height:2px;border-radius:1px}
+.alloc-fill{height:100%;border-radius:1px}
+.feat-grid{display:grid;grid-template-columns:1fr 2fr;gap:60px;max-width:1060px;margin:0 auto;padding:80px 24px}
+.feat-sticky{position:sticky;top:100px;height:fit-content}
+.feat-row{padding:28px 0;border-bottom:1px solid #C9A84C11;display:grid;grid-template-columns:44px 1fr 2fr;gap:16px}
+.feat-num{font-size:9px;letter-spacing:3px;color:var(–gold-dim);padding-top:2px}
+.feat-title{font-family:‘Cormorant Garamond’,serif;font-size:16px;color:var(–white);line-height:1.4}
+.feat-desc{font-size:11px;color:var(–white-dim);line-height:1.8}
+.price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:1000px;margin:0 auto}
+.price-card{background:var(–black3);border:1px solid #2A2A2A;border-radius:2px;padding:36px 24px;transition:all 0.3s}
+.price-card:hover{border-color:var(–gold-dim);transform:translateY(-4px)}
+.price-card.featured{background:linear-gradient(145deg,#1A1500,var(–black2));border-color:var(–gold)}
+.price-tier{font-size:9px;letter-spacing:3px;color:var(–white-dim);margin-bottom:6px}
+.price-amt{font-family:‘Cormorant Garamond’,serif;font-size:44px;font-weight:300;letter-spacing:-2px;margin-bottom:2px}
+.price-period{font-size:9px;color:var(–gold-dim);letter-spacing:2px;margin-bottom:20px}
+.price-divider{height:1px;background:linear-gradient(90deg,transparent,#C9A84C33,transparent);margin-bottom:20px}
+.price-feat{display:flex;gap:8px;margin-bottom:10px}
+.price-dot{width:3px;height:3px;border-radius:50%;background:var(–gold-dim);margin-top:5px;flex-shrink:0}
+.price-feat span{font-size:10px;color:var(–white-dim);line-height:1.6}
+.price-btn{width:100%;margin-top:20px;padding:11px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;transition:all 0.3s;background:transparent;border:1px solid #333;color:var(–white-dim)}
+.price-btn:hover{border-color:var(–gold-dim);color:var(–gold)}
+.price-card.featured .price-btn{background:linear-gradient(135deg,var(–gold-dim),var(–gold));border:none;color:var(–black);font-weight:700}
+.price-card.featured .price-amt{color:var(–gold)}
+.story-section{padding:80px 24px;max-width:740px;margin:0 auto}
+blockquote{font-family:‘Cormorant Garamond’,serif;font-size:22px;font-weight:300;line-height:1.8;color:var(–white);border-left:2px solid var(–gold);padding-left:24px;margin-bottom:28px}
+.author{display:flex;align-items:center;gap:14px}
+.author-ava{width:44px;height:44px;border:1px solid #C9A84C33;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(–black3);font-family:‘Cormorant Garamond’,serif;font-size:14px;color:var(–gold);flex-shrink:0}
+.author-name{font-size:12px;letter-spacing:1px}
+.author-title{font-size:8px;letter-spacing:2px;color:var(–white-dim);margin-top:3px}
+.cta-section{padding:80px 24px;text-align:center;background:var(–black2);border-top:1px solid #C9A84C15;position:relative}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;background:radial-gradient(circle,#C9A84C06 0%,transparent 70%);pointer-events:none}
+.cta-title{font-family:‘Cormorant Garamond’,serif;font-size:clamp(36px,6vw,58px);font-weight:300;letter-spacing:-2px;margin-bottom:12px}
+.cta-title em{color:var(–gold);font-style:italic}
+.cta-sub{font-size:12px;color:var(–white-dim);max-width:400px;margin:0 auto 32px;line-height:1.8;font-weight:300}
+footer{padding:32px 24px;border-top:1px solid #C9A84C11;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:‘Cormorant Garamond’,serif;font-size:14px;letter-spacing:4px;color:var(–white-dim)}
+.footer-logo span{color:var(–gold-dim)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a{font-size:8px;color:var(–white-dim);text-decoration:none;letter-spacing:2px;cursor:pointer;transition:color 0.3s}
+.footer-links a:hover{color:var(–gold)}
+.footer-copy{font-size:8px;color:var(–white-dim);letter-spacing:1px}
+
+/* ==================== LOGIN PAGE ==================== */
+#page-login{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 30%,#C9A84C06 0%,transparent 60%)}
+#page-login.active{display:flex}
+.login-card{width:100%;max-width:380px;background:var(–black2);border:1px solid #C9A84C22;padding:40px 32px}
+.login-logo{font-family:‘Cormorant Garamond’,serif;font-size:22px;letter-spacing:6px;text-align:center;margin-bottom:6px}
+.login-logo span{color:var(–gold)}
+.login-tag{font-size:8px;letter-spacing:4px;color:var(–gold-dim);text-align:center;margin-bottom:32px}
+.login-tabs{display:flex;margin-bottom:28px;border-bottom:1px solid #C9A84C11}
+.ltab{flex:1;padding:10px;background:none;border:none;border-bottom:2px solid transparent;color:var(–white-dim);font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;transition:all 0.3s}
+.ltab.active{color:var(–gold);border-bottom-color:var(–gold)}
+.back-link{display:block;text-align:center;margin-top:20px;font-size:8px;letter-spacing:2px;color:var(–white-dim);cursor:pointer;transition:color 0.3s}
+.back-link:hover{color:var(–gold)}
+
+/* ==================== DASHBOARD ==================== */
+#page-dashboard{display:none}
+#page-dashboard.active{display:block}
+.dash-nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;background:#080808ee;backdrop-filter:blur(20px);border-bottom:1px solid #C9A84C11}
+.dash-main{padding:68px 16px 20px}
+.dash-tabs{display:flex;border-bottom:1px solid #C9A84C11;margin-bottom:18px;overflow-x:auto}
+.dtab{flex:1;min-width:64px;padding:9px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(–white-dim);font-size:8px;letter-spacing:2px;cursor:pointer;font-family:‘Montserrat’,sans-serif;text-align:center;transition:all 0.3s;white-space:nowrap}
+.dtab.active{color:var(–gold);border-bottom-color:var(–gold)}
+.d-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.d-stat{background:var(–black3);border:1px solid #C9A84C11;border-radius:3px;padding:11px}
+.d-stat-lbl{font-size:7px;letter-spacing:3px;color:var(–gold-dim);margin-bottom:3px}
+.d-stat-val{font-family:‘Cormorant Garamond’,serif;font-size:19px;font-weight:300}
+.d-alloc-row{margin-bottom:11px}
+.d-alloc-meta{display:flex;justify-content:space-between;margin-bottom:3px}
+.d-alloc-name{font-size:9px;color:var(–white-dim)}
+.d-alloc-pct{font-size:9px;color:var(–gold)}
+.d-alloc-bar{background:var(–black4);height:3px;border-radius:1px}
+.d-alloc-fill{height:100%;border-radius:1px;transition:width 1s ease}
+.upgrade-banner{background:linear-gradient(135deg,#1A1500,var(–black2));border:1px solid #C9A84C33;border-radius:3px;padding:18px;margin-bottom:12px;text-align:center}
+.upgrade-banner-title{font-family:‘Cormorant Garamond’,serif;font-size:20px;font-weight:300;color:var(–gold);margin-bottom:6px}
+.upgrade-banner-sub{font-size:10px;color:var(–white-dim);line-height:1.7;margin-bottom:14px}
+.checklist-item{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #C9A84C11;font-size:10px}
+.ci-num{color:var(–gold);font-size:8px;letter-spacing:2px;min-width:22px;margin-top:1px}
+.ci-text{color:var(–white-dim);line-height:1.5}
+.result-box{background:var(–black3);border:1px solid #C9A84C11;border-radius:3px;padding:12px;margin-top:10px;display:none;font-size:11px;color:var(–white-dim);line-height:1.9}
+.result-val{color:var(–gold);font-family:‘Cormorant Garamond’,serif;font-size:17px}
+
+/* ==================== UPGRADE PAGE ==================== */
+#page-upgrade{display:none}
+#page-upgrade.active{display:block;padding-bottom:60px}
+.upgrade-main{max-width:460px;margin:0 auto;padding:80px 20px 20px}
+.plan-select-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.plan-select{background:var(–black3);border:1px solid #2A2A2A;border-radius:3px;padding:16px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative}
+.plan-select:hover{border-color:var(–gold-dim)}
+.plan-select.active{border-color:var(–gold);background:linear-gradient(145deg,#1A1500,var(–black2))}
+.plan-select-badge{position:absolute;top:8px;right:8px;background:var(–gold);color:var(–black);font-size:7px;letter-spacing:1px;padding:2px 6px;font-weight:700;display:none}
+.plan-select.active .plan-select-badge{display:block}
+.plan-select-name{font-size:9px;letter-spacing:3px;color:var(–white-dim);margin-bottom:3px}
+.plan-select-price{font-family:‘Cormorant Garamond’,serif;font-size:26px;font-weight:300;color:var(–gold);margin-bottom:1px}
+.plan-select-period{font-size:8px;color:var(–gold-dim);letter-spacing:2px}
+.order-summary{background:var(–black3);border:1px solid #C9A84C11;border-radius:3px;padding:14px;margin-bottom:18px}
+.os-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}
+.os-lbl{color:var(–white-dim)}
+.os-val{font-family:‘Cormorant Garamond’,serif;font-size:13px}
+.os-total{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #C9A84C22;margin-top:4px}
+.os-total-lbl{font-size:9px;letter-spacing:2px;color:var(–gold)}
+.os-total-val{font-family:‘Cormorant Garamond’,serif;font-size:20px;color:var(–gold);font-weight:300}
+.secure-badge{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;font-size:8px;color:var(–white-dim);letter-spacing:2px}
+
+/* ==================== LEGAL PAGE ==================== */
+#page-legal{display:none;padding-bottom:60px}
+#page-legal.active{display:block}
+.legal-main{max-width:680px;margin:0 auto;padding:80px 24px 40px}
+.legal-tabs{display:flex;margin-bottom:40px;border-bottom:1px solid #C9A84C11}
+.legal-tab{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:var(–white-dim);font-size:9px;letter-spacing:3px;cursor:pointer;font-family:‘Montserrat’,sans-serif;transition:all 0.3s}
+.legal-tab.active{color:var(–gold);border-bottom-color:var(–gold)}
+.legal-h1{font-family:‘Cormorant Garamond’,serif;font-size:38px;font-weight:300;letter-spacing:-1px;margin-bottom:6px}
+.legal-h1 em{color:var(–gold);font-style:italic}
+.legal-date{font-size:8px;letter-spacing:3px;color:var(–gold-dim);margin-bottom:36px}
+.legal-section{margin-bottom:32px}
+.legal-section-title{font-family:‘Cormorant Garamond’,serif;font-size:18px;color:var(–gold);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #C9A84C22}
+.legal-text{font-size:11px;color:var(–white-dim);line-height:2;margin-bottom:10px}
+
+/* MOBILE */
+@media(max-width:768px){
+nav{padding:14px 16px}
+#page-home .hero{padding:100px 16px 60px}
+#page-home h1{font-size:42px}
+.stats-row{grid-template-columns:1fr 1fr}
+.feat-grid{grid-template-columns:1fr;gap:24px;padding:60px 16px}
+.feat-sticky{position:relative;top:0}
+.feat-row{grid-template-columns:40px 1fr;gap:10px}
+.feat-desc{display:none}
+.price-grid{grid-template-columns:1fr}
+.story-section{padding:60px 16px}
+.cta-section{padding:60px 16px}
+.waitlist-row{flex-direction:column}
+.waitlist-inp{border-right:1px solid #C9A84C33;border-bottom:none}
+footer{flex-direction:column;text-align:center;padding:24px 16px}
+.footer-links{justify-content:center}
+}
+</style></head><body>
+
+<!-- ==================== FIXED NAV ==================== -->
+
+<nav id="mainNav">
+  <div class="logo" onclick="goto('home')">VAULT<span>FLOW</span></div>
+  <div class="nav-right" id="navButtons">
+    <button class="nav-link" onclick="goto('login')">LOGIN</button>
+    <button class="nav-cta" onclick="goto('login')">JOIN FREE</button>
+  </div>
+  <div class="nav-right" id="navDash" style="display:none">
+    <button class="nav-link" onclick="goto('upgrade')">UPGRADE</button>
+    <button class="nav-link" onclick="doLogout()">SIGN OUT</button>
   </div>
 </nav>
 
-<section class="hero" id="home">
-  <div class="grid"></div>
-  <div style="position:relative;z-index:1">
-    <div class="tag">INTELLIGENT WEALTH ALLOCATION</div>
-    <h1>Your money.<br><em>Perfectly</em> allocated.<br>Automatically.</h1>
-    <p class="sub">VaultFlow connects to your bank, detects your paycheck, and instantly routes every dollar to debt, savings, investments, and real estate without you lifting a finger.</p>
-    <div class="form-wrap">
-      <div class="form-row">
-        <input id="e1" class="inp" type="email" placeholder="your@email.com">
-        <button class="btn" onclick="submitForm('e1','m1')">JOIN WAITLIST</button>
+<!-- ==================== HOME PAGE ==================== -->
+
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div style="position:relative;z-index:1;animation:fadeUp 1s ease both">
+      <div class="hero-tag">INTELLIGENT WEALTH ALLOCATION</div>
+      <h1>Your money.<br><em>Perfectly</em><br>allocated.</h1>
+      <p class="hero-sub">VaultFlow connects to your bank, detects your paycheck, and instantly routes every dollar — debt, savings, investments, real estate — without you lifting a finger.</p>
+      <div class="waitlist-row">
+        <input class="waitlist-inp" type="email" id="heroEmail" placeholder="your@email.com">
+        <button class="waitlist-btn" onclick="submitWaitlist('heroEmail','heroMsg')">JOIN WAITLIST</button>
       </div>
-      <div id="m1" class="msg"></div>
+      <div id="heroMsg" class="msg-box"></div>
     </div>
-  </div>
-</section>
+    <div class="scroll-hint"><span>SCROLL</span><div></div></div>
+  </section>
 
-<section class="stats">
-  <div class="stat"><div class="slabel">MONTHLY INCOME MANAGED</div><div class="sval"><span>$</span>10,628</div></div>
-  <div class="stat"><div class="slabel">ALLOCATION ACCURACY</div><div class="sval">99<span>%</span></div></div>
-  <div class="stat"><div class="slabel">NET WORTH INCREASE</div><div class="sval">340<span>%</span></div></div>
-  <div class="stat"><div class="slabel">HOURS SAVED PER YEAR</div><div class="sval">240<span>hrs</span></div></div>
-</section>
+  <section class="stats-row">
+    <div class="stat-item"><div class="stat-lbl">MONTHLY INCOME MANAGED</div><div class="stat-val"><span>$</span>10,628</div></div>
+    <div class="stat-item"><div class="stat-lbl">ALLOCATION ACCURACY</div><div class="stat-val">99<span>%</span></div></div>
+    <div class="stat-item"><div class="stat-lbl">NET WORTH INCREASE</div><div class="stat-val">340<span>%</span></div></div>
+    <div class="stat-item"><div class="stat-lbl">HOURS SAVED YEARLY</div><div class="stat-val">240<span>hrs</span></div></div>
+  </section>
 
-<section class="dash-sec" id="platform">
-  <div class="stag">THE PLATFORM</div>
-  <h2 class="stitle">Built for those who <em>earn seriously.</em></h2>
-  <div class="dash">
-    <div class="dbar">
-      <div class="dot" style="background:#FF5F57;opacity:0.6"></div>
-      <div class="dot" style="background:#FFBD2E;opacity:0.6"></div>
-      <div class="dot" style="background:#28C840;opacity:0.6"></div>
-      <div class="dtitle">VAULTFLOW DASHBOARD</div>
-    </div>
-    <div class="dbody">
-      <div class="dgrid">
-        <div class="dcard"><div class="dcl">MONTHLY INCOME</div><div class="dcv" style="color:#C9A84C">$10,628</div></div>
-        <div class="dcard"><div class="dcl">ALLOCATED</div><div class="dcv">$8,940</div></div>
-        <div class="dcard"><div class="dcl">FREE CASH</div><div class="dcv" style="color:#4CAF50">$1,688</div></div>
+  <section style="padding:80px 24px;text-align:center">
+    <div class="tag">THE PLATFORM</div>
+    <h2 class="section-title">Built for those who <em>earn seriously.</em></h2>
+    <div class="dash-preview">
+      <div class="dash-bar">
+        <div class="dash-dot" style="background:#FF5F57;opacity:0.6"></div>
+        <div class="dash-dot" style="background:#FFBD2E;opacity:0.6"></div>
+        <div class="dash-dot" style="background:#28C840;opacity:0.6"></div>
+        <div class="dash-ttl">VAULTFLOW — DASHBOARD</div>
       </div>
-      <div class="al">ALLOCATION BREAKDOWN</div>
-      <div class="ar"><div class="am"><span class="an">Emergency Fund</span><span class="ap">20%</span></div><div class="ab"><div class="af" style="width:20%;background:#C9A84C"></div></div></div>
-      <div class="ar"><div class="am"><span class="an">Debt Payoff</span><span class="ap">15%</span></div><div class="ab"><div class="af" style="width:15%;background:#8B6914"></div></div></div>
-      <div class="ar"><div class="am"><span class="an">Real Estate</span><span class="ap">25%</span></div><div class="ab"><div class="af" style="width:25%;background:#6B4F10"></div></div></div>
-      <div class="ar"><div class="am"><span class="an">Algo Trading</span><span class="ap">30%</span></div><div class="ab"><div class="af" style="width:30%;background:#C9A84C99"></div></div></div>
-      <div class="ar"><div class="am"><span class="an">Liquid Savings</span><span class="ap">10%</span></div><div class="ab"><div class="af" style="width:10%;background:#444"></div></div></div>
+      <div class="dash-body">
+        <div class="dash-stats">
+          <div class="dash-stat"><div class="ds-lbl">MONTHLY INCOME</div><div class="ds-val" style="color:var(--gold)">$10,628</div></div>
+          <div class="dash-stat"><div class="ds-lbl">ALLOCATED</div><div class="ds-val">$8,940</div></div>
+          <div class="dash-stat"><div class="ds-lbl">FREE CASH</div><div class="ds-val" style="color:#4CAF50">$1,688</div></div>
+        </div>
+        <div class="alloc-lbl">ALLOCATION BREAKDOWN</div>
+        <div class="alloc-item"><div class="alloc-meta"><span class="alloc-name">Emergency Fund</span><span class="alloc-pct">20%</span></div><div class="alloc-track"><div class="alloc-fill" style="width:20%;background:var(--gold)"></div></div></div>
+        <div class="alloc-item"><div class="alloc-meta"><span class="alloc-name">Debt Payoff</span><span class="alloc-pct">15%</span></div><div class="alloc-track"><div class="alloc-fill" style="width:15%;background:var(--gold-dim)"></div></div></div>
+        <div class="alloc-item"><div class="alloc-meta"><span class="alloc-name">Real Estate</span><span class="alloc-pct">25%</span></div><div class="alloc-track"><div class="alloc-fill" style="width:25%;background:#ff6b35"></div></div></div>
+        <div class="alloc-item"><div class="alloc-meta"><span class="alloc-name">Stock Algo</span><span class="alloc-pct">30%</span></div><div class="alloc-track"><div class="alloc-fill" style="width:30%;background:#0088ff"></div></div></div>
+        <div class="alloc-item"><div class="alloc-meta"><span class="alloc-name">Liquid Savings</span><span class="alloc-pct">10%</span></div><div class="alloc-track"><div class="alloc-fill" style="width:10%;background:#444"></div></div></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="feat" id="features">
-  <div class="fgrid">
-    <div class="fstick">
-      <div class="stag">FEATURES</div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;letter-spacing:-1px;line-height:1.2">Every feature<br>with purpose.</h2>
+  <div class="gold-line"></div>
+
+  <div class="feat-grid">
+    <div class="feat-sticky">
+      <div class="tag">FEATURES</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;letter-spacing:-1px;line-height:1.2">Every feature<br>with purpose.</h2>
+      <div class="gold-line" style="margin-top:24px"></div>
     </div>
     <div>
-      <div class="frow"><div class="fnum">01</div><div class="ftit">Bank Detection</div><div class="fdesc">Connects to 12,000 financial institutions. Detects your paycheck the moment it deposits.</div></div>
-      <div class="frow"><div class="fnum">02</div><div class="ftit">Intelligent Allocation</div><div class="fdesc">Calculates optimal distribution using avalanche debt method and Kelly criterion.</div></div>
-      <div class="frow"><div class="fnum">03</div><div class="ftit">Automated Transfers</div><div class="fdesc">Funds move automatically to savings, brokerage, debt, and real estate reserve.</div></div>
-      <div class="frow"><div class="fnum">04</div><div class="ftit">Stock Algorithm</div><div class="fdesc">Connects to Alpaca. Your allocation moves directly into your trading algo.</div></div>
-      <div class="frow"><div class="fnum">05</div><div class="ftit">Real Estate Analyzer</div><div class="fdesc">Analyze any multifamily property. Cap rate, cash-on-cash, debt service in seconds.</div></div>
-      <div class="frow"><div class="fnum">06</div><div class="ftit">Wealth Projection</div><div class="fdesc">Track your net worth trajectory year by year toward your $1M goal.</div></div>
+      <div class="feat-row"><div class="feat-num">01</div><div class="feat-title">Bank Detection</div><div class="feat-desc">Connects to 12,000+ banks via Plaid. Detects your paycheck the moment it deposits — before your bank notifies you.</div></div>
+      <div class="feat-row"><div class="feat-num">02</div><div class="feat-title">Intelligent Allocation</div><div class="feat-desc">Uses avalanche debt method, Kelly criterion for investing, and goal-based targeting to calculate the optimal split.</div></div>
+      <div class="feat-row"><div class="feat-num">03</div><div class="feat-title">Automated Transfers</div><div class="feat-desc">Funds move automatically to savings, brokerage, debt, and real estate reserve. No manual transfers ever again.</div></div>
+      <div class="feat-row"><div class="feat-num">04</div><div class="feat-title">Stock Algorithm</div><div class="feat-desc">Connects to Alpaca Markets. Your investing allocation goes directly into your algo scanning 500 stocks with institutional signals.</div></div>
+      <div class="feat-row"><div class="feat-num">05</div><div class="feat-title">Real Estate Analyzer</div><div class="feat-desc">Cap rate, cash-on-cash return, debt service coverage — every metric institutional investors use, in your pocket.</div></div>
+      <div class="feat-row"><div class="feat-num">06</div><div class="feat-title">Wealth Projection</div><div class="feat-desc">See your exact net worth year by year. Watch your timeline to $1M shift in real time as you adjust your inputs.</div></div>
     </div>
   </div>
-</section>
 
-<section class="price-sec" id="pricing">
-  <div style="text-align:center;margin-bottom:56px">
-    <div class="stag">MEMBERSHIP</div>
-    <h2 class="stitle">Simple, <em>transparent</em> pricing.</h2>
-  </div>
-  <div class="pgrid">
-    <div class="pc">
-      <div class="ptl">ESSENTIAL</div>
-      <div class="pamt" style="color:#F5F0E8">Free</div>
-      <div class="pper">&nbsp;</div>
-      <div class="pdiv"></div>
-      <div class="pf"><div class="pd"></div><span>Income and expense calculator</span></div>
-      <div class="pf"><div class="pd"></div><span>Debt payoff optimizer</span></div>
-      <div class="pf"><div class="pd"></div><span>Allocation breakdown</span></div>
-      <div class="pf"><div class="pd"></div><span>Wealth projection tool</span></div>
-      <div class="pf"><div class="pd"></div><span>Real estate analyzer</span></div>
-      <button class="pbtn" onclick="window.location.href='login.html'">GET STARTED</button>
+  <section style="padding:80px 24px;background:var(--black2);border-top:1px solid #C9A84C15">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="tag">MEMBERSHIP</div>
+      <h2 class="section-title">Simple, <em>transparent</em> pricing.</h2>
     </div>
-    <div class="pc g">
-      <div class="ptl" style="color:#C9A84C">MOST POPULAR</div>
-      <div class="ptl">PRIME</div>
-      <div class="pamt">$9.99</div>
-      <div class="pper">PER MONTH</div>
-      <div class="pdiv"></div>
-      <div class="pf"><div class="pd" style="background:#C9A84C"></div><span>Everything in Essential</span></div>
-      <div class="pf"><div class="pd" style="background:#C9A84C"></div><span>Bank account connection</span></div>
-      <div class="pf"><div class="pd" style="background:#C9A84C"></div><span>Payday auto-detection</span></div>
-      <div class="pf"><div class="pd" style="background:#C9A84C"></div><span>Push and email alerts</span></div>
-      <div class="pf"><div class="pd" style="background:#C9A84C"></div><span>Alpaca trading integration</span></div>
-      <button class="pbtn" onclick="window.location.href='login.html'">BEGIN NOW</button>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-tier">ESSENTIAL</div>
+        <div class="price-amt" style="color:var(--white)">Free</div>
+        <div class="price-period">&nbsp;</div>
+        <div class="price-divider"></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Income and expense calculator</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Debt payoff optimizer</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Allocation breakdown</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Wealth projection tool</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Real estate analyzer</span></div>
+        <button class="price-btn" onclick="goto('login')">GET STARTED</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tier" style="color:var(--gold)">★ MOST POPULAR — PRIME</div>
+        <div class="price-amt">$9.99</div>
+        <div class="price-period">PER MONTH</div>
+        <div class="price-divider"></div>
+        <div class="price-feat"><div class="price-dot" style="background:var(--gold)"></div><span>Everything in Essential</span></div>
+        <div class="price-feat"><div class="price-dot" style="background:var(--gold)"></div><span>Bank account connection</span></div>
+        <div class="price-feat"><div class="price-dot" style="background:var(--gold)"></div><span>Payday auto-detection</span></div>
+        <div class="price-feat"><div class="price-dot" style="background:var(--gold)"></div><span>Email and push alerts</span></div>
+        <div class="price-feat"><div class="price-dot" style="background:var(--gold)"></div><span>Alpaca trading integration</span></div>
+        <button class="price-btn" onclick="goto('upgrade')">BEGIN NOW</button>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">VAULT</div>
+        <div class="price-amt" style="color:var(--white)">$24.99</div>
+        <div class="price-period">PER MONTH</div>
+        <div class="price-divider"></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Everything in Prime</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Auto bank transfers</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Full S&P 500 algo signals</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Real estate deal alerts</span></div>
+        <div class="price-feat"><div class="price-dot"></div><span>Tax optimization insights</span></div>
+        <button class="price-btn" onclick="goto('upgrade')">BEGIN NOW</button>
+      </div>
     </div>
-    <div class="pc">
-      <div class="ptl">VAULT</div>
-      <div class="pamt" style="color:#F5F0E8">$24.99</div>
-      <div class="pper">PER MONTH</div>
-      <div class="pdiv"></div>
-      <div class="pf"><div class="pd"></div><span>Everything in Prime</span></div>
-      <div class="pf"><div class="pd"></div><span>Auto bank transfers</span></div>
-      <div class="pf"><div class="pd"></div><span>Full S&P 500 algo signals</span></div>
-      <div class="pf"><div class="pd"></div><span>Real estate deal alerts</span></div>
-      <div class="pf"><div class="pd"></div><span>Tax optimization insights</span></div>
-      <button class="pbtn" onclick="window.location.href='login.html'">BEGIN NOW</button>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="story" id="story">
-  <div class="stag">THE STORY</div>
-  <blockquote>"I was making good money on the water — $362 a day — and still had no idea where it was going. Built this for myself. Now it runs automatically while I am at sea."</blockquote>
-  <div class="auth">
-    <div class="ava">V</div>
-    <div>
-      <div class="aname">Founder, VaultFlow</div>
-      <div class="atitle">MERCHANT MARINER · VETERAN · INVESTOR</div>
+  <section class="story-section">
+    <div class="tag">THE STORY</div>
+    <blockquote>"I was making good money on the water — $362 a day — and still had no idea where it was going. Built this for myself. Now it runs automatically while I am at sea."</blockquote>
+    <div class="author">
+      <div class="author-ava">V</div>
+      <div>
+        <div class="author-name">Founder, VaultFlow</div>
+        <div class="author-title">MERCHANT MARINER · VETERAN · INVESTOR</div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="fcta" id="cta">
-  <div class="glow"></div>
-  <div class="stag">EARLY ACCESS</div>
-  <h2 class="ftitle">Join the <em>vault.</em></h2>
-  <p class="fsub">Limited early access. First 500 members receive Prime free for 6 months.</p>
-  <div class="form-wrap" style="max-width:420px;margin:0 auto">
-    <div class="form-row">
-      <input id="e2" class="inp" type="email" placeholder="Enter your email">
-      <button class="btn" onclick="submitForm('e2','m2')">REQUEST ACCESS</button>
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <div class="tag">EARLY ACCESS</div>
+    <h2 class="cta-title">Join the <em>vault.</em></h2>
+    <p class="cta-sub">Limited early access. First 500 members receive Prime free for 6 months.</p>
+    <div class="waitlist-row" style="max-width:400px;margin:0 auto">
+      <input class="waitlist-inp" type="email" id="ctaEmail" placeholder="Enter your email">
+      <button class="waitlist-btn" onclick="submitWaitlist('ctaEmail','ctaMsg')">REQUEST ACCESS</button>
     </div>
-    <div id="m2" class="msg"></div>
-  </div>
-</section>
+    <div id="ctaMsg" class="msg-box"></div>
+  </section>
 
-<footer>
-  <div class="flogo">VAULT<span>FLOW</span></div>
-  <div class="flinks">
-    <a href="#home">Home</a>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#story">About</a>
-    <a href="login.html">Login</a>
+  <footer>
+    <div class="footer-logo">VAULT<span>FLOW</span></div>
+    <div class="footer-links">
+      <a onclick="goto('home')">Home</a>
+      <a onclick="goto('login')">Login</a>
+      <a onclick="goto('upgrade')">Pricing</a>
+      <a onclick="goto('legal')">Privacy</a>
+      <a onclick="goto('legal')">Terms</a>
+    </div>
+    <div class="footer-copy">2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
+  </footer>
+</div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+
+<div class="page" id="page-login">
+  <div class="login-card">
+    <div class="login-logo">VAULT<span>FLOW</span></div>
+    <div class="login-tag">INTELLIGENT WEALTH ALLOCATION</div>
+    <div class="gold-line" style="margin-bottom:28px"></div>
+    <div class="login-tabs">
+      <button class="ltab active" id="ltab-signin" onclick="showLoginTab('signin')">SIGN IN</button>
+      <button class="ltab" id="ltab-signup" onclick="showLoginTab('signup')">CREATE ACCOUNT</button>
+    </div>
+    <div id="lform-signin">
+      <div class="inp-label">EMAIL</div>
+      <input class="inp" type="email" id="siEmail" placeholder="your@email.com">
+      <div class="inp-label">PASSWORD</div>
+      <input class="inp" type="password" id="siPass" placeholder="••••••••">
+      <button class="btn-gold" style="margin-top:20px" onclick="doLogin()">SIGN IN</button>
+    </div>
+    <div id="lform-signup" style="display:none">
+      <div class="inp-label">EMAIL</div>
+      <input class="inp" type="email" id="suEmail" placeholder="your@email.com">
+      <div class="inp-label">PASSWORD</div>
+      <input class="inp" type="password" id="suPass" placeholder="Min 6 characters">
+      <div class="inp-label">CONFIRM PASSWORD</div>
+      <input class="inp" type="password" id="suPass2" placeholder="Repeat password">
+      <button class="btn-gold" style="margin-top:20px" onclick="doSignup()">CREATE ACCOUNT</button>
+    </div>
+    <div class="msg-box" id="loginMsg"></div>
+    <div class="back-link" onclick="goto('home')">← BACK TO VAULTFLOW</div>
   </div>
-  <div class="fcopy">2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
-</footer>
+</div>
+
+<!-- ==================== DASHBOARD ==================== -->
+
+<div class="page" id="page-dashboard">
+  <nav class="dash-nav">
+    <div class="logo" onclick="goto('home')">VAULT<span>FLOW</span></div>
+    <div style="display:flex;gap:8px">
+      <button class="nav-cta" onclick="goto('upgrade')">UPGRADE</button>
+      <button class="nav-link" onclick="doLogout()">SIGN OUT</button>
+    </div>
+  </nav>
+  <div class="dash-main">
+    <div class="dash-tabs">
+      <button class="dtab active" onclick="showDashTab('overview')">OVERVIEW</button>
+      <button class="dtab" onclick="showDashTab('allocator')">ALLOCATOR</button>
+      <button class="dtab" onclick="showDashTab('tools')">TOOLS</button>
+      <button class="dtab" onclick="goto('upgrade')">UPGRADE ↗</button>
+    </div>
+
+```
+<!-- OVERVIEW -->
+<div id="dtab-overview">
+  <div class="tag">DASHBOARD</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:16px">Welcome back.</div>
+  <div class="d-stat-grid">
+    <div class="d-stat"><div class="d-stat-lbl">MONTHLY INCOME</div><div class="d-stat-val" id="dIncome" style="color:var(--gold)">$0</div></div>
+    <div class="d-stat"><div class="d-stat-lbl">FREE CASH</div><div class="d-stat-val" id="dFree" style="color:#00ff88">$0</div></div>
+    <div class="d-stat"><div class="d-stat-lbl">TO INVESTING</div><div class="d-stat-val" id="dInvest" style="color:#0088ff">$0</div></div>
+    <div class="d-stat"><div class="d-stat-lbl">TO REAL ESTATE</div><div class="d-stat-val" id="dRE" style="color:#ff6b35">$0</div></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:12px">ALLOCATION</div>
+    <div class="d-alloc-row"><div class="d-alloc-meta"><span class="d-alloc-name">Emergency Fund</span><span class="d-alloc-pct" id="dp1">20%</span></div><div class="d-alloc-bar"><div class="d-alloc-fill" id="db1" style="width:20%;background:var(--gold)"></div></div></div>
+    <div class="d-alloc-row"><div class="d-alloc-meta"><span class="d-alloc-name">Debt Payoff</span><span class="d-alloc-pct" id="dp2">15%</span></div><div class="d-alloc-bar"><div class="d-alloc-fill" id="db2" style="width:15%;background:var(--gold-dim)"></div></div></div>
+    <div class="d-alloc-row"><div class="d-alloc-meta"><span class="d-alloc-name">Real Estate</span><span class="d-alloc-pct" id="dp3">25%</span></div><div class="d-alloc-bar"><div class="d-alloc-fill" id="db3" style="width:25%;background:#ff6b35"></div></div></div>
+    <div class="d-alloc-row"><div class="d-alloc-meta"><span class="d-alloc-name">Stock Algo</span><span class="d-alloc-pct" id="dp4">30%</span></div><div class="d-alloc-bar"><div class="d-alloc-fill" id="db4" style="width:30%;background:#0088ff"></div></div></div>
+    <div class="d-alloc-row"><div class="d-alloc-meta"><span class="d-alloc-name">Liquid Savings</span><span class="d-alloc-pct" id="dp5">10%</span></div><div class="d-alloc-bar"><div class="d-alloc-fill" id="db5" style="width:10%;background:#444"></div></div></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:10px">PAYDAY CHECKLIST</div>
+    <div id="dChecklist" style="color:var(--white-dim);font-size:11px">Enter your numbers in the Allocator tab to generate your checklist.</div>
+  </div>
+  <div class="upgrade-banner">
+    <div class="upgrade-banner-title">Unlock Auto-Allocation</div>
+    <div class="upgrade-banner-sub">Connect your bank and route every dollar automatically on payday.</div>
+    <button class="btn-gold" style="width:auto;padding:11px 24px;font-size:9px" onclick="goto('upgrade')">UPGRADE TO PRIME — $9.99/MO</button>
+  </div>
+</div>
+
+<!-- ALLOCATOR -->
+<div id="dtab-allocator" style="display:none">
+  <div class="tag">YOUR FINANCES</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Set Your Numbers</div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">INCOME</div>
+    <div class="inp-label">MARITIME DAYS/HITCH</div><input class="inp" type="number" id="al_days" value="28">
+    <div class="inp-label">DAILY RATE ($)</div><input class="inp" type="number" id="al_rate" value="362">
+    <div class="inp-label">VA DISABILITY (monthly)</div><input class="inp" type="number" id="al_va" value="3938">
+    <div class="inp-label">VR&E SUBSISTENCE (monthly)</div><input class="inp" type="number" id="al_vre" value="800">
+    <div class="inp-label">OTHER INCOME (monthly)</div><input class="inp" type="number" id="al_other" value="0">
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">EXPENSES</div>
+    <div class="inp-label">RENT / HOUSING</div><input class="inp" type="number" id="al_rent" value="800">
+    <div class="inp-label">FOOD</div><input class="inp" type="number" id="al_food" value="400">
+    <div class="inp-label">PHONE</div><input class="inp" type="number" id="al_phone" value="80">
+    <div class="inp-label">TRANSPORT</div><input class="inp" type="number" id="al_transport" value="200">
+    <div class="inp-label">OTHER FIXED</div><input class="inp" type="number" id="al_otherexp" value="200">
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">GOALS</div>
+    <div class="inp-label">EMERGENCY FUND TARGET ($)</div><input class="inp" type="number" id="al_em" value="15000">
+    <div class="inp-label">RE DOWN PAYMENT TARGET ($)</div><input class="inp" type="number" id="al_re" value="60000">
+    <div class="inp-label">MONTHLY INVESTING TARGET ($)</div><input class="inp" type="number" id="al_invest" value="2000">
+  </div>
+  <button class="btn-gold" onclick="runAllocator()">CALCULATE MY ALLOCATION</button>
+  <div class="msg-box" id="alMsg"></div>
+</div>
+
+<!-- TOOLS -->
+<div id="dtab-tools" style="display:none">
+  <div class="tag">FINANCIAL TOOLS</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Quick Calculators</div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">DEBT PAYOFF</div>
+    <div class="inp-label">BALANCE ($)</div><input class="inp" type="number" id="t_dbal" placeholder="10000">
+    <div class="inp-label">INTEREST RATE (%)</div><input class="inp" type="number" id="t_drate" placeholder="22">
+    <div class="inp-label">MONTHLY PAYMENT ($)</div><input class="inp" type="number" id="t_dpmt" placeholder="300">
+    <button class="btn-gold" onclick="calcDebt()">CALCULATE</button>
+    <div class="result-box" id="debtResult"></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">INVESTMENT GROWTH</div>
+    <div class="inp-label">MONTHLY CONTRIBUTION ($)</div><input class="inp" type="number" id="t_iamt" placeholder="2000">
+    <div class="inp-label">ANNUAL RETURN (%)</div><input class="inp" type="number" id="t_irate" placeholder="10">
+    <div class="inp-label">YEARS</div><input class="inp" type="number" id="t_iyrs" placeholder="10">
+    <button class="btn-gold" onclick="calcInvest()">CALCULATE</button>
+    <div class="result-box" id="investResult"></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">REAL ESTATE DEAL</div>
+    <div class="inp-label">PURCHASE PRICE ($)</div><input class="inp" type="number" id="t_rprice" placeholder="350000">
+    <div class="inp-label">MONTHLY RENT ($)</div><input class="inp" type="number" id="t_rrent" placeholder="3200">
+    <div class="inp-label">DOWN PAYMENT (%)</div><input class="inp" type="number" id="t_rdown" placeholder="20">
+    <div class="inp-label">INTEREST RATE (%)</div><input class="inp" type="number" id="t_rrate" placeholder="7.25">
+    <div class="inp-label">MONTHLY EXPENSES ($)</div><input class="inp" type="number" id="t_rexp" placeholder="400">
+    <button class="btn-gold" onclick="calcRE()">ANALYZE DEAL</button>
+    <div class="result-box" id="reResult"></div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- ==================== UPGRADE PAGE ==================== -->
+
+<div class="page" id="page-upgrade">
+  <nav>
+    <div class="logo" onclick="goto('home')">VAULT<span>FLOW</span></div>
+    <button class="nav-link" onclick="history.back()">← BACK</button>
+  </nav>
+  <div class="upgrade-main">
+    <div class="tag">UPGRADE YOUR PLAN</div>
+    <h2 class="section-title" style="font-size:32px;margin-bottom:8px">Choose your <em>membership.</em></h2>
+    <p style="font-size:11px;color:var(--white-dim);margin-bottom:28px;line-height:1.7">Unlock bank connection, auto-allocation, and trading integration. Cancel anytime.</p>
+
+```
+<div class="plan-select-row">
+  <div class="plan-select active" id="ps-prime" onclick="selectPlan('prime')">
+    <div class="plan-select-badge">SELECTED</div>
+    <div class="plan-select-name">PRIME</div>
+    <div class="plan-select-price">$9.99</div>
+    <div class="plan-select-period">PER MONTH</div>
+  </div>
+  <div class="plan-select" id="ps-vault" onclick="selectPlan('vault')">
+    <div class="plan-select-badge">SELECTED</div>
+    <div class="plan-select-name">VAULT</div>
+    <div class="plan-select-price" style="color:var(--white)">$24.99</div>
+    <div class="plan-select-period">PER MONTH</div>
+  </div>
+</div>
+
+<div class="order-summary">
+  <div class="os-row"><span class="os-lbl">Plan</span><span class="os-val" id="os-plan">Prime</span></div>
+  <div class="os-row"><span class="os-lbl">Billing</span><span class="os-val">Monthly</span></div>
+  <div class="os-total"><span class="os-total-lbl">TOTAL TODAY</span><span class="os-total-val" id="os-total">$9.99</span></div>
+</div>
+
+<div class="inp-label">EMAIL</div>
+<input class="inp" type="email" id="up_email" placeholder="your@email.com">
+<div class="inp-label">NAME ON CARD</div>
+<input class="inp" type="text" id="up_name" placeholder="Full name">
+<div class="inp-label" style="margin-bottom:8px">CARD DETAILS</div>
+<div id="cardElement" style="background:var(--black3);border:1px solid #C9A84C22;padding:13px 14px;margin-bottom:8px"></div>
+<div id="cardErrors" style="color:#ff4444;font-size:10px;margin-bottom:8px;min-height:14px"></div>
+<button class="btn-gold" id="payBtn" onclick="handlePayment()">COMPLETE PURCHASE</button>
+<div class="msg-box" id="payMsg"></div>
+<div class="secure-badge">🔒 SECURED BY STRIPE · 256-BIT ENCRYPTION</div>
+```
+
+  </div>
+</div>
+
+<!-- ==================== LEGAL PAGE ==================== -->
+
+<div class="page" id="page-legal">
+  <nav>
+    <div class="logo" onclick="goto('home')">VAULT<span>FLOW</span></div>
+    <button class="nav-link" onclick="goto('home')">← HOME</button>
+  </nav>
+  <div class="legal-main">
+    <div class="legal-tabs">
+      <button class="legal-tab active" id="ltab-tos" onclick="showLegalTab('tos')">TERMS OF SERVICE</button>
+      <button class="legal-tab" id="ltab-priv" onclick="showLegalTab('priv')">PRIVACY POLICY</button>
+    </div>
+
+```
+<div id="lcontent-tos">
+  <div class="legal-h1">Terms of <em>Service</em></div>
+  <div class="legal-date">LAST UPDATED — MAY 2025</div>
+  <div class="legal-section"><div class="legal-section-title">1. Acceptance of Terms</div><div class="legal-text">By accessing or using VaultFlow, you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</div></div>
+  <div class="legal-section"><div class="legal-section-title">2. Description of Service</div><div class="legal-text">VaultFlow is a personal financial management platform providing allocation tools, investment tracking, and financial planning. VaultFlow is not a registered investment advisor or financial institution. All content is for informational purposes only. Nothing constitutes financial, investment, legal, or tax advice.</div></div>
+  <div class="legal-section"><div class="legal-section-title">3. Not Financial Advice</div><div class="legal-text">All tools and recommendations are informational only. Past performance does not indicate future results. All financial decisions are solely your responsibility. Stock trading and real estate investing involve significant risk of loss.</div></div>
+  <div class="legal-section"><div class="legal-section-title">4. User Accounts</div><div class="legal-text">You are responsible for maintaining confidentiality of your credentials. You must be at least 18 years old to use the Service. Notify us immediately of any unauthorized account access.</div></div>
+  <div class="legal-section"><div class="legal-section-title">5. Subscriptions and Payments</div><div class="legal-text">Paid subscriptions are billed monthly. Cancel anytime — access continues through the end of the billing period. No refunds for partial months. Pricing may change with 30 days notice.</div></div>
+  <div class="legal-section"><div class="legal-section-title">6. Third Party Integrations</div><div class="legal-text">VaultFlow integrates with Plaid, Alpaca, and Stripe. Your use of these is subject to their respective terms. VaultFlow is not responsible for third-party actions or policies.</div></div>
+  <div class="legal-section"><div class="legal-section-title">7. Limitation of Liability</div><div class="legal-text">VaultFlow and its founders shall not be liable for any indirect, incidental, or consequential damages, including financial losses resulting from use of the Service.</div></div>
+  <div class="legal-section"><div class="legal-section-title">8. Contact</div><div class="legal-text">Questions: deionsebastian97@gmail.com</div></div>
+</div>
+
+<div id="lcontent-priv" style="display:none">
+  <div class="legal-h1">Privacy <em>Policy</em></div>
+  <div class="legal-date">LAST UPDATED — MAY 2025</div>
+  <div class="legal-section"><div class="legal-section-title">1. Information We Collect</div><div class="legal-text">We collect your email, name, and financial profile data you enter. If you connect a bank via Plaid, we receive read-only transaction and balance data. We do not store your bank credentials. We also collect usage data automatically.</div></div>
+  <div class="legal-section"><div class="legal-section-title">2. How We Use Your Information</div><div class="legal-text">We use your data to provide the Service, send allocation reports and alerts, process payments, and communicate about your account. We do not sell your personal information.</div></div>
+  <div class="legal-section"><div class="legal-section-title">3. Data Storage and Security</div><div class="legal-text">Data is stored securely via Supabase with industry-standard encryption at rest and in transit. We use SSL/TLS for all transmission. No method is 100% secure — we cannot guarantee absolute security.</div></div>
+  <div class="legal-section"><div class="legal-section-title">4. Third Party Services</div><div class="legal-text">We use Supabase (database/auth), Stripe (payments), Plaid (bank connections), Alpaca (trading), and FormSubmit (email). Each has their own privacy policies.</div></div>
+  <div class="legal-section"><div class="legal-section-title">5. Your Rights</div><div class="legal-text">You may access, correct, or delete your data at any time via dashboard settings. California residents have CCPA rights. EU residents have GDPR rights. Contact us to exercise these rights.</div></div>
+  <div class="legal-section"><div class="legal-section-title">6. Contact</div><div class="legal-text">Privacy questions: deionsebastian97@gmail.com</div></div>
+</div>
+```
+
+  </div>
+  <footer>
+    <div class="footer-logo">VAULT<span>FLOW</span></div>
+    <div class="footer-copy">2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
+  </footer>
+</div>
+
+<style>
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+</style>
 
 <script>
-function submitForm(inputId,msgId){
-  var email=document.getElementById(inputId).value;
-  var msg=document.getElementById(msgId);
-  if(!email||email.indexOf('@')===-1){
-    msg.style.display='block';msg.style.color='#ff4444';
-    msg.textContent='Please enter a valid email.';return;
-  }
-  msg.style.display='block';msg.style.color='#C9A84C';
-  msg.textContent='Submitting...';
-  fetch('https://formsubmit.co/ajax/deionsebastian97@gmail.com',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Accept':'application/json'},
-    body:JSON.stringify({email:email,_subject:'New VaultFlow Signup'})
-  }).then(function(){
-    msg.style.color='#00ff88';
-    msg.textContent='You are on the list. Welcome to VaultFlow.';
-    document.getElementById(inputId).value='';
-  }).catch(function(){
-    msg.style.color='#00ff88';
-    msg.textContent='You are on the list. Welcome to VaultFlow.';
-    document.getElementById(inputId).value='';
-  });
+// SUPABASE
+const SB_URL='https://sefxpcatuctgqwflmrdj.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhwY2F0dWN0Z3F3ZmxtcmRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjU5NjEsImV4cCI6MjA5NDI0MTk2MX0.64rTufpnz7YFn_WRP5es2zwpd5sQxP1I24U8Dj_QtgQ';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+// STRIPE
+const SK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
+let stripe,cardEl,stripeReady=false;
+function initStripe(){
+  if(stripeReady)return;
+  try{
+    stripe=Stripe(SK);
+    const elements=stripe.elements({appearance:{theme:'night',variables:{colorPrimary:'#C9A84C',colorBackground:'#141414',colorText:'#F5F0E8',fontFamily:'Montserrat,sans-serif',borderRadius:'0px'}}});
+    cardEl=elements.create('card',{style:{base:{color:'#F5F0E8',fontFamily:'Montserrat,sans-serif',fontSize:'12px','::placeholder':{color:'#8A8070'}}}});
+    cardEl.mount('#cardElement');
+    cardEl.on('change',e=>{document.getElementById('cardErrors').textContent=e.error?e.error.message:'';});
+    stripeReady=true;
+  }catch(e){console.log('Stripe init:',e);}
 }
-function scrollToCTA(){
-  document.getElementById('cta').scrollIntoView({behavior:'smooth'});
-  setTimeout(function(){document.getElementById('e2').focus();},800);
+
+// NAVIGATION
+function goto(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='upgrade')setTimeout(initStripe,300);
+  updateNav(page);
+}
+
+async function updateNav(page){
+  const{data:{session}}=await sb.auth.getSession();
+  const loggedIn=!!session;
+  document.getElementById('navButtons').style.display=loggedIn?'none':'flex';
+  document.getElementById('navDash').style.display=loggedIn?'flex':'none';
+  if(page==='dashboard'&&!loggedIn){goto('login');}
+}
+
+// INIT
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    document.getElementById('navButtons').style.display='none';
+    document.getElementById('navDash').style.display='flex';
+  }
+  runAllocator();
+}
+init();
+
+// AUTH
+function showLoginTab(t){
+  document.getElementById('lform-signin').style.display=t==='signin'?'block':'none';
+  document.getElementById('lform-signup').style.display=t==='signup'?'block':'none';
+  document.getElementById('ltab-signin').className='ltab'+(t==='signin'?' active':'');
+  document.getElementById('ltab-signup').className='ltab'+(t==='signup'?' active':'');
+  document.getElementById('loginMsg').textContent='';
+}
+
+function setMsg(id,text,color){
+  var el=document.getElementById(id);
+  el.textContent=text;el.style.color=color||'#C9A84C';
+}
+
+async function doLogin(){
+  var email=document.getElementById('siEmail').value;
+  var pass=document.getElementById('siPass').value;
+  if(!email||!pass){setMsg('loginMsg','Please fill in all fields.','#ff4444');return;}
+  setMsg('loginMsg','Signing in...','#C9A84C');
+  var{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){setMsg('loginMsg',error.message,'#ff4444');}
+  else{setMsg('loginMsg','Welcome back.','#00ff88');setTimeout(()=>{updateNav('dashboard');goto('dashboard');runAllocator();},800);}
+}
+
+async function doSignup(){
+  var email=document.getElementById('suEmail').value;
+  var pass=document.getElementById('suPass').value;
+  var pass2=document.getElementById('suPass2').value;
+  if(!email||!pass||!pass2){setMsg('loginMsg','Please fill in all fields.','#ff4444');return;}
+  if(pass!==pass2){setMsg('loginMsg','Passwords do not match.','#ff4444');return;}
+  if(pass.length<6){setMsg('loginMsg','Password must be at least 6 characters.','#ff4444');return;}
+  setMsg('loginMsg','Creating account...','#C9A84C');
+  var{error}=await sb.auth.signUp({email,password:pass});
+  if(error){setMsg('loginMsg',error.message,'#ff4444');}
+  else{setMsg('loginMsg','Account created. Welcome to VaultFlow.','#00ff88');setTimeout(()=>{updateNav('dashboard');goto('dashboard');runAllocator();},1000);}
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  document.getElementById('navButtons').style.display='flex';
+  document.getElementById('navDash').style.display='none';
+  goto('home');
+}
+
+// WAITLIST
+function submitWaitlist(inputId,msgId){
+  var email=document.getElementById(inputId).value;
+  if(!email||email.indexOf('@')===-1){setMsg(msgId,'Please enter a valid email.','#ff4444');return;}
+  setMsg(msgId,'Submitting...','#C9A84C');
+  fetch('https://formsubmit.co/ajax/deionsebastian97@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({email:email,_subject:'New VaultFlow Signup'})}).then(function(){setMsg(msgId,'You are on the list. Welcome to VaultFlow.','#00ff88');document.getElementById(inputId).value='';}).catch(function(){setMsg(msgId,'You are on the list. Welcome to VaultFlow.','#00ff88');document.getElementById(inputId).value='';});
+}
+
+// ALLOCATOR
+function fmt(n){return '$'+Math.round(n||0).toLocaleString();}
+function runAllocator(){
+  var g=id=>parseFloat(document.getElementById(id)?.value)||0;
+  var income=(g('al_days')||28)*(g('al_rate')||362)+(g('al_va')||3938)+(g('al_vre')||800)+g('al_other');
+  var expenses=(g('al_rent')||800)+(g('al_food')||400)+(g('al_phone')||80)+(g('al_transport')||200)+(g('al_otherexp')||200);
+  var avail=income-expenses;
+  var em=Math.round(avail*0.20),debt=Math.round(avail*0.15),re=Math.round(avail*0.25);
+  var invest=Math.min(Math.round(avail*0.30),g('al_invest')||2000);
+  var liquid=avail-em-debt-re-invest;
+  var set=function(id,val){var el=document.getElementById(id);if(el)el.textContent=val;};
+  set('dIncome',fmt(income));set('dFree',fmt(avail));set('dInvest',fmt(invest));set('dRE',fmt(re));
+  [{p:'dp1',b:'db1',v:20},{p:'dp2',b:'db2',v:15},{p:'dp3',b:'db3',v:25},{p:'dp4',b:'db4',v:30},{p:'dp5',b:'db5',v:10}].forEach(function(x){set(x.p,x.v+'%');var el=document.getElementById(x.b);if(el)el.style.width=x.v+'%';});
+  var cl=document.getElementById('dChecklist');
+  if(cl)cl.innerHTML='<div class="checklist-item"><span class="ci-num">01</span><span class="ci-text">Auto-pay bills from checking: '+fmt(expenses)+'/mo</span></div><div class="checklist-item"><span class="ci-num">02</span><span class="ci-text">Transfer to Emergency Fund: '+fmt(em)+'</span></div><div class="checklist-item"><span class="ci-num">03</span><span class="ci-text">Extra debt payment: '+fmt(debt)+'</span></div><div class="checklist-item"><span class="ci-num">04</span><span class="ci-text">Transfer to RE savings: '+fmt(re)+'</span></div><div class="checklist-item"><span class="ci-num">05</span><span class="ci-text">Transfer to Alpaca algo: '+fmt(invest)+'</span></div><div class="checklist-item"><span class="ci-num">06</span><span class="ci-text">Park in HYSA: '+fmt(liquid)+'</span></div>';
+  var msg=document.getElementById('alMsg');if(msg){msg.style.color='#00ff88';msg.textContent='Allocation updated.';}
+  showDashTab('overview');
+}
+
+// DASHBOARD TABS
+function showDashTab(t){
+  ['overview','allocator','tools'].forEach(function(id){var el=document.getElementById('dtab-'+id);if(el)el.style.display=id===t?'block':'none';});
+  document.querySelectorAll('.dtab').forEach(function(btn,i){btn.className='dtab'+(['overview','allocator','tools','upgrade'][i]===t?' active':'');});
+}
+
+// TOOLS
+function calcDebt(){
+  var bal=parseFloat(document.getElementById('t_dbal').value)||0;
+  var rate=parseFloat(document.getElementById('t_drate').value)||0;
+  var pmt=parseFloat(document.getElementById('t_dpmt').value)||0;
+  if(!bal||!pmt)return;
+  var r=rate/100/12;
+  var months=r>0?Math.ceil(-Math.log(1-(bal*r/pmt))/Math.log(1+r)):Math.ceil(bal/pmt);
+  var total=pmt*months;
+  var el=document.getElementById('debtResult');
+  el.style.display='block';
+  el.innerHTML='Payoff: <span class="result-val">'+months+' months</span><br>Total paid: <span class="result-val">'+fmt(total)+'</span><br>Interest paid: <span class="result-val" style="color:#ff4444">'+fmt(total-bal)+'</span>';
+}
+
+function calcInvest(){
+  var amt=parseFloat(document.getElementById('t_iamt').value)||0;
+  var rate=parseFloat(document.getElementById('t_irate').value)||10;
+  var years=parseFloat(document.getElementById('t_iyrs').value)||10;
+  if(!amt)return;
+  var r=rate/100/12,n=years*12;
+  var fv=amt*(Math.pow(1+r,n)-1)/r;
+  var el=document.getElementById('investResult');
+  el.style.display='block';
+  el.innerHTML='Portfolio value: <span class="result-val">'+fmt(fv)+'</span><br>Amount contributed: <span class="result-val">'+fmt(amt*n)+'</span><br>Investment gains: <span class="result-val" style="color:#00ff88">'+fmt(fv-(amt*n))+'</span>';
+}
+
+function calcRE(){
+  var price=parseFloat(document.getElementById('t_rprice').value)||0;
+  var rent=parseFloat(document.getElementById('t_rrent').value)||0;
+  var downPct=parseFloat(document.getElementById('t_rdown').value)||20;
+  var intRate=parseFloat(document.getElementById('t_rrate').value)||7.25;
+  var exp=parseFloat(document.getElementById('t_rexp').value)||0;
+  if(!price||!rent)return;
+  var down=price*(downPct/100),loan=price-down;
+  var r=intRate/100/12;
+  var mortgage=loan*(r*Math.pow(1+r,360))/(Math.pow(1+r,360)-1);
+  var noi=rent-exp,cashFlow=noi-mortgage;
+  var capRate=(noi*12)/price*100,coc=(cashFlow*12)/down*100;
+  var el=document.getElementById('reResult');
+  el.style.display='block';
+  el.innerHTML='Monthly cash flow: <span class="result-val" style="color:'+(cashFlow>0?'#00ff88':'#ff4444')+'">'+fmt(cashFlow)+'</span><br>Cap rate: <span class="result-val">'+capRate.toFixed(2)+'%</span><br>Cash-on-cash: <span class="result-val">'+coc.toFixed(2)+'%</span><br>Down payment: <span class="result-val">'+fmt(down)+'</span><br>Monthly mortgage: <span class="result-val">'+fmt(mortgage)+'</span>';
+}
+
+// UPGRADE
+var selectedPlan='prime';
+function selectPlan(plan){
+  selectedPlan=plan;
+  document.getElementById('ps-prime').className='plan-select'+(plan==='prime'?' active':'');
+  document.getElementById('ps-vault').className='plan-select'+(plan==='vault'?' active':'');
+  document.getElementById('os-plan').textContent=plan==='prime'?'Prime':'Vault';
+  document.getElementById('os-total').textContent=plan==='prime'?'$9.99':'$24.99';
+}
+
+async function handlePayment(){
+  if(!stripeReady){setMsg('payMsg','Payment form loading...','#C9A84C');return;}
+  var email=document.getElementById('up_email').value;
+  var name=document.getElementById('up_name').value;
+  if(!email||!name){document.getElementById('cardErrors').textContent='Please fill in email and name.';return;}
+  document.getElementById('payBtn').disabled=true;
+  document.getElementById('payBtn').textContent='PROCESSING...';
+  var{paymentMethod,error}=await stripe.createPaymentMethod({type:'card',card:cardEl,billing_details:{name:name,email:email}});
+  if(error){document.getElementById('cardErrors').textContent=error.message;document.getElementById('payBtn').disabled=false;document.getElementById('payBtn').textContent='COMPLETE PURCHASE';return;}
+  setMsg('payMsg','Payment successful! Redirecting to dashboard...','#00ff88');
+  setTimeout(()=>{goto('dashboard');},1500);
+}
+
+// LEGAL
+function showLegalTab(t){
+  document.getElementById('lcontent-tos').style.display=t==='tos'?'block':'none';
+  document.getElementById('lcontent-priv').style.display=t==='priv'?'block':'none';
+  document.getElementById('ltab-tos').className='legal-tab'+(t==='tos'?' active':'');
+  document.getElementById('ltab-priv').className='legal-tab'+(t==='priv'?' active':'');
 }
 </script>
 
