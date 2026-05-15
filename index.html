@@ -207,12 +207,12 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
 <nav id="mainNav">
   <div class="logo" onclick="goto('home')">VAULT<span>FLOW</span></div>
   <div class="nav-right" id="navButtons">
-    <button onclick="goto('login')" style="background:transparent;border:1px solid #C9A84C44;color:#C9A84C;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:Montserrat,sans-serif;transition:all 0.3s">LOGIN</button>
-    <button onclick="goto('login')" style="background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:Montserrat,sans-serif;font-weight:700">JOIN FREE</button>
+    <button class="nav-link" onclick="goto('login')">LOGIN</button>
+    <button class="nav-cta" onclick="goto('login')">JOIN FREE</button>
   </div>
   <div class="nav-right" id="navDash" style="display:none">
-    <button onclick="goto('upgrade')" style="background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:8px 14px;font-size:8px;letter-spacing:2px;cursor:pointer;font-family:Montserrat,sans-serif;font-weight:700">UPGRADE</button>
-    <button onclick="doLogout()" style="background:transparent;border:1px solid #C9A84C22;color:#8A8070;padding:8px 14px;font-size:8px;letter-spacing:2px;cursor:pointer;font-family:Montserrat,sans-serif">SIGN OUT</button>
+    <button class="nav-cta" onclick="goto('upgrade')">UPGRADE</button>
+    <button class="nav-link" onclick="doLogout()">SIGN OUT</button>
   </div>
 </nav>
 
