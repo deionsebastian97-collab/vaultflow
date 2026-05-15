@@ -414,6 +414,10 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
       <button class="dtab" onclick="showDashTab('allocator')">ALLOCATOR</button>
       <button class="dtab" onclick="showDashTab('tools')">TOOLS</button>
       <button class="dtab" onclick="showDashTab('networth')">NET WORTH</button>
+      <button class="dtab" onclick="showDashTab('goals')">GOALS</button>
+      <button class="dtab" onclick="showDashTab('properties')">PROPERTIES</button>
+      <button class="dtab" onclick="showDashTab('blog')">BLOG</button>
+      <button class="dtab" onclick="showDashTab('profile')">PROFILE</button>
       <button class="dtab" onclick="goto('upgrade')">UPGRADE ↗</button>
     </div>
 
@@ -555,6 +559,140 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
     <div id="nwProjection" style="font-size:11px;color:var(--white-dim);line-height:2">Enter your assets and liabilities above to see your wealth projection.</div>
   </div>
 </div>
+
+
+<!-- GOALS TAB -->
+<div id="dtab-goals" style="display:none">
+  <div class="tag">FINANCIAL GOALS</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Your Progress</div>
+  <div id="goals-list">
+    <div class="goal-item"><div class="goal-name">Emergency Fund</div><div class="goal-meta"><span>$0 saved</span><span>$15,000 target</span></div><div class="goal-track"><div class="goal-fill" style="width:0%"></div></div></div>
+    <div class="goal-item"><div class="goal-name">Real Estate Down Payment</div><div class="goal-meta"><span>$0 saved</span><span>$60,000 target</span></div><div class="goal-track"><div class="goal-fill" style="width:0%"></div></div></div>
+    <div class="goal-item"><div class="goal-name">Investment Portfolio</div><div class="goal-meta"><span>$0 invested</span><span>$100,000 target</span></div><div class="goal-track"><div class="goal-fill" style="width:0%"></div></div></div>
+    <div class="goal-item"><div class="goal-name">Net Worth $1M</div><div class="goal-meta"><span>$0 current</span><span>$1,000,000 target</span></div><div class="goal-track"><div class="goal-fill" style="width:0%"></div></div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="tag" style="margin-bottom:8px">UPDATE PROGRESS</div>
+    <div class="inp-label">EMERGENCY FUND SAVED ($)</div><input class="inp" type="number" id="g_em" placeholder="0">
+    <div class="inp-label">RE DOWN PAYMENT SAVED ($)</div><input class="inp" type="number" id="g_re" placeholder="0">
+    <div class="inp-label">INVESTMENT PORTFOLIO ($)</div><input class="inp" type="number" id="g_invest" placeholder="0">
+    <div class="inp-label">CURRENT NET WORTH ($)</div><input class="inp" type="number" id="g_nw" placeholder="0">
+    <button class="btn-gold" onclick="updateGoals()">UPDATE GOALS</button>
+  </div>
+</div>
+
+<!-- PROPERTIES TAB -->
+<div id="dtab-properties" style="display:none">
+  <div class="tag">REAL ESTATE PIPELINE</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Deal Tracker</div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">ADD A PROPERTY</div>
+    <div class="inp-label">ADDRESS</div><input class="inp" type="text" id="p_addr" placeholder="123 Main St, City, State">
+    <div class="inp-label">PURCHASE PRICE ($)</div><input class="inp" type="number" id="p_price" placeholder="350000">
+    <div class="inp-label">MONTHLY RENT ($)</div><input class="inp" type="number" id="p_rent" placeholder="3200">
+    <div class="inp-label">STATUS</div>
+    <select class="inp" id="p_status" style="cursor:pointer">
+      <option value="Analyzing">Analyzing</option>
+      <option value="Offer Submitted">Offer Submitted</option>
+      <option value="Under Contract">Under Contract</option>
+      <option value="Closed">Closed</option>
+      <option value="Pass">Pass</option>
+    </select>
+    <button class="btn-gold" onclick="addProperty()">ADD TO PIPELINE</button>
+  </div>
+  <div id="properties-list" style="margin-top:4px"></div>
+</div>
+
+<!-- BLOG TAB -->
+<div id="dtab-blog" style="display:none">
+  <div class="tag">MARITIME WEALTH</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">The VaultFlow Blog</div>
+  <div class="blog-card">
+    <div class="blog-date">MAY 2025</div>
+    <div class="blog-title">How I Allocate $14,000/Month as a Merchant Mariner</div>
+    <div class="blog-excerpt">Working 28 days on, 14 days off changes everything about how you manage money. Here is the exact system I use to turn irregular maritime income into consistent wealth building.</div>
+    <div class="blog-read">READ MORE →</div>
+  </div>
+  <div class="blog-card">
+    <div class="blog-date">APRIL 2025</div>
+    <div class="blog-title">The VA Disability Wealth Strategy Nobody Talks About</div>
+    <div class="blog-excerpt">Tax-free VA disability income is one of the most powerful wealth-building tools available to veterans. Here is how to stack it with maritime pay to accelerate your path to financial independence.</div>
+    <div class="blog-read">READ MORE →</div>
+  </div>
+  <div class="blog-card">
+    <div class="blog-date">MARCH 2025</div>
+    <div class="blog-title">Buying Your First Multifamily Property on a Maritime Schedule</div>
+    <div class="blog-excerpt">The 28/14 rotation is actually an advantage in real estate investing. Here is how to use your time off to analyze deals, build relationships with agents, and close on properties.</div>
+    <div class="blog-read">READ MORE →</div>
+  </div>
+  <div class="blog-card">
+    <div class="blog-date">FEBRUARY 2025</div>
+    <div class="blog-title">Kelly Criterion Position Sizing for the Individual Investor</div>
+    <div class="blog-excerpt">Institutional investors use the Kelly Criterion to size their positions. Here is how to apply the same math to your stock algo and never blow up your account again.</div>
+    <div class="blog-read">READ MORE →</div>
+  </div>
+</div>
+
+<!-- PROFILE TAB -->
+<div id="dtab-profile" style="display:none">
+  <div class="tag">YOUR ACCOUNT</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Profile & Settings</div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">ACCOUNT INFO</div>
+    <div class="inp-label">EMAIL</div>
+    <div id="profileEmail" style="font-size:12px;color:var(--white-dim);padding:10px 0;border-bottom:1px solid #C9A84C11">Loading...</div>
+    <div class="inp-label">PLAN</div>
+    <div style="font-size:12px;color:var(--gold);padding:10px 0;border-bottom:1px solid #C9A84C11">Essential (Free)</div>
+    <button class="btn-gold" style="margin-top:16px" onclick="goto('upgrade')">UPGRADE TO PRIME</button>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">REFERRAL PROGRAM</div>
+    <div class="referral-box">
+      <div style="font-size:11px;color:var(--white-dim);margin-bottom:6px">Share VaultFlow and earn 1 free month for every friend who upgrades.</div>
+      <div class="referral-link" id="referralLink">vaultflow.org?ref=loading...</div>
+      <button class="btn-gold" onclick="copyReferral()">COPY REFERRAL LINK</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">BANK CONNECTION</div>
+    <div class="locked-feature" style="min-height:120px">
+      <div style="font-size:11px;color:var(--white-dim);line-height:1.8;padding:10px 0">Connect your bank to detect payday automatically and route funds instantly. Supports 12,000+ banks via Plaid.</div>
+      <div class="locked-overlay">
+        <div class="locked-icon">🔒</div>
+        <div class="locked-text">PRIME FEATURE</div>
+        <button class="locked-btn" onclick="goto('upgrade')">UNLOCK NOW</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">AUTO-TRANSFER HISTORY</div>
+    <div class="locked-feature" style="min-height:180px">
+      <div>
+        <div class="transfer-item"><span class="transfer-label">Emergency Fund</span><span class="transfer-amt">$2,639</span><span class="transfer-date">Payday</span></div>
+        <div class="transfer-item"><span class="transfer-label">Debt Payment</span><span class="transfer-amt">$1,979</span><span class="transfer-date">Payday</span></div>
+        <div class="transfer-item"><span class="transfer-label">RE Savings</span><span class="transfer-amt">$3,299</span><span class="transfer-date">Payday</span></div>
+        <div class="transfer-item"><span class="transfer-label">Alpaca Algo</span><span class="transfer-amt">$2,000</span><span class="transfer-date">Payday</span></div>
+      </div>
+      <div class="locked-overlay">
+        <div class="locked-icon">🔒</div>
+        <div class="locked-text">PRIME FEATURE</div>
+        <button class="locked-btn" onclick="goto('upgrade')">UNLOCK NOW</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">EMAIL ALERTS</div>
+    <div class="locked-feature" style="min-height:100px">
+      <div style="font-size:11px;color:var(--white-dim);line-height:1.8;padding:10px 0">Get weekly allocation reports and payday alerts sent straight to your inbox.</div>
+      <div class="locked-overlay">
+        <div class="locked-icon">🔒</div>
+        <div class="locked-text">PRIME FEATURE</div>
+        <button class="locked-btn" onclick="goto('upgrade')">UNLOCK NOW</button>
+      </div>
+    </div>
+  </div>
+  <button class="btn-outline" style="margin-top:16px" onclick="doLogout()">SIGN OUT</button>
+</div>
 ```
 
   </div>
@@ -657,6 +795,13 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
 
 <style>
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.locked-feature{position:relative;overflow:hidden}.locked-overlay{position:absolute;inset:0;background:#080808cc;backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}.locked-icon{font-size:24px;margin-bottom:8px}.locked-text{font-size:9px;letter-spacing:3px;color:var(--gold-dim);margin-bottom:12px}.locked-btn{background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;color:var(--black);padding:8px 20px;font-size:8px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700}
+.goal-item{background:var(--black3);border:1px solid #C9A84C11;border-radius:3px;padding:14px;margin-bottom:10px}.goal-name{font-size:10px;color:var(--white);margin-bottom:4px}.goal-meta{display:flex;justify-content:space-between;font-size:9px;color:var(--white-dim);margin-bottom:8px}.goal-track{background:var(--black4);height:4px;border-radius:2px}.goal-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transition:width 1s ease}
+.prop-card{background:var(--black3);border:1px solid #C9A84C11;border-radius:3px;padding:14px;margin-bottom:10px}.prop-address{font-size:11px;color:var(--white);font-weight:500;margin-bottom:4px}.prop-meta{font-size:9px;color:var(--white-dim);line-height:1.8}.prop-signal{font-size:9px;font-weight:700;letter-spacing:2px;margin-top:6px}
+.blog-card{background:var(--black3);border:1px solid #C9A84C11;border-radius:3px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.3s}.blog-card:hover{border-color:var(--gold-dim)}.blog-date{font-size:8px;letter-spacing:3px;color:var(--gold-dim);margin-bottom:6px}.blog-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--white);margin-bottom:6px}.blog-excerpt{font-size:10px;color:var(--white-dim);line-height:1.7}.blog-read{font-size:8px;letter-spacing:2px;color:var(--gold);margin-top:8px}
+.referral-box{background:linear-gradient(135deg,#1A1500,var(--black2));border:1px solid #C9A84C33;border-radius:3px;padding:16px;margin-bottom:12px}.referral-link{background:var(--black3);border:1px solid #C9A84C22;padding:10px 12px;font-size:10px;color:var(--gold);font-family:'Courier',monospace;word-break:break-all;margin:10px 0}
+.transfer-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #C9A84C11;font-size:11px}.transfer-label{color:var(--white-dim)}.transfer-amt{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:16px}.transfer-date{font-size:9px;color:var(--white-dim)}
+
 </style>
 
 <script>
@@ -781,8 +926,9 @@ function runAllocator(){
 
 // DASHBOARD TABS
 function showDashTab(t){
-  ['overview','allocator','tools','networth'].forEach(function(id){var el=document.getElementById('dtab-'+id);if(el)el.style.display=id===t?'block':'none';});
-  document.querySelectorAll('.dtab').forEach(function(btn,i){btn.className='dtab'+(['overview','allocator','tools','networth','upgrade'][i]===t?' active':'');});
+  ['overview','allocator','tools','networth','goals','properties','blog','profile'].forEach(function(id){var el=document.getElementById('dtab-'+id);if(el)el.style.display=id===t?'block':'none';});
+  document.querySelectorAll('.dtab').forEach(function(btn,i){btn.className='dtab'+(['overview','allocator','tools','networth','goals','properties','blog','profile','upgrade'][i]===t?' active':'');});
+  if(t==='profile')loadProfile();
 }
 
 // TOOLS
@@ -872,6 +1018,69 @@ async function handlePayment(){
 }
 
 
+
+// GOALS
+function updateGoals(){
+  var em=parseFloat(document.getElementById('g_em').value)||0;
+  var re=parseFloat(document.getElementById('g_re').value)||0;
+  var inv=parseFloat(document.getElementById('g_invest').value)||0;
+  var nw=parseFloat(document.getElementById('g_nw').value)||0;
+  var goals=[
+    {name:'Emergency Fund',saved:em,target:15000},
+    {name:'Real Estate Down Payment',saved:re,target:60000},
+    {name:'Investment Portfolio',saved:inv,target:100000},
+    {name:'Net Worth $1M',saved:Math.max(0,nw),target:1000000},
+  ];
+  var html='';
+  goals.forEach(function(g){
+    var pct=Math.min(100,Math.round(g.saved/g.target*100));
+    html+='<div class="goal-item"><div class="goal-name">'+g.name+'</div><div class="goal-meta"><span>'+fmt(g.saved)+' saved</span><span>'+fmt(g.target)+' target — '+pct+'%</span></div><div class="goal-track"><div class="goal-fill" style="width:'+pct+'%"></div></div></div>';
+  });
+  document.getElementById('goals-list').innerHTML=html;
+}
+
+// PROPERTIES
+var properties=[];
+function addProperty(){
+  var addr=document.getElementById('p_addr').value;
+  var price=parseFloat(document.getElementById('p_price').value)||0;
+  var rent=parseFloat(document.getElementById('p_rent').value)||0;
+  var status=document.getElementById('p_status').value;
+  if(!addr||!price){return;}
+  var down=price*0.20;
+  var r=0.0725/12,mortgage=((price-down)*(r*Math.pow(1+r,360)))/(Math.pow(1+r,360)-1);
+  var cashflow=rent-400-mortgage;
+  var cap=(rent-400)*12/price*100;
+  properties.push({addr,price,rent,status,cashflow,cap:cap.toFixed(2)});
+  renderProperties();
+  document.getElementById('p_addr').value='';
+  document.getElementById('p_price').value='';
+  document.getElementById('p_rent').value='';
+}
+function renderProperties(){
+  if(!properties.length){document.getElementById('properties-list').innerHTML='<div style="font-size:11px;color:var(--white-dim);text-align:center;padding:20px">No properties added yet. Add your first deal above.</div>';return;}
+  var html='';
+  properties.forEach(function(p,i){
+    var sc=p.status==='Closed'?'#00ff88':p.status==='Pass'?'#ff4444':p.status==='Under Contract'?'#C9A84C':'var(--white-dim)';
+    html+='<div class="prop-card"><div class="prop-address">'+p.addr+'</div><div class="prop-meta">Price: '+fmt(p.price)+' &nbsp;|&nbsp; Rent: '+fmt(p.rent)+'/mo &nbsp;|&nbsp; Cap: '+p.cap+'% &nbsp;|&nbsp; Cash flow: <span style="color:'+(p.cashflow>0?'#00ff88':'#ff4444')+'">'+fmt(p.cashflow)+'/mo</span></div><div class="prop-signal" style="color:'+sc+'">'+p.status.toUpperCase()+'</div></div>';
+  });
+  document.getElementById('properties-list').innerHTML=html;
+}
+
+// PROFILE
+async function loadProfile(){
+  var{data:{session}}=await sb.auth.getSession();
+  if(session){
+    document.getElementById('profileEmail').textContent=session.user.email;
+    document.getElementById('referralLink').textContent='vaultflow.org?ref='+session.user.id.substring(0,8);
+  }
+}
+function copyReferral(){
+  var link=document.getElementById('referralLink').textContent;
+  navigator.clipboard.writeText(link).then(function(){
+    var btn=event.target;btn.textContent='COPIED!';setTimeout(function(){btn.textContent='COPY REFERRAL LINK';},2000);
+  });
+}
 // TAX ESTIMATOR
 function calcTax(){
   var mar=parseFloat(document.getElementById('t_tmar').value)||0;
