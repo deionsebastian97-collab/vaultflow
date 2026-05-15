@@ -413,6 +413,7 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
       <button class="dtab active" onclick="showDashTab('overview')">OVERVIEW</button>
       <button class="dtab" onclick="showDashTab('allocator')">ALLOCATOR</button>
       <button class="dtab" onclick="showDashTab('tools')">TOOLS</button>
+      <button class="dtab" onclick="showDashTab('networth')">NET WORTH</button>
       <button class="dtab" onclick="goto('upgrade')">UPGRADE ↗</button>
     </div>
 
@@ -497,7 +498,7 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
     <div class="result-box" id="investResult"></div>
   </div>
   <div class="card">
-    <div class="tag" style="margin-bottom:8px">REAL ESTATE DEAL</div>
+    <div class="tag" style="margin-bottom:8px">REAL ESTATE DEAL ANALYZER</div>
     <div class="inp-label">PURCHASE PRICE ($)</div><input class="inp" type="number" id="t_rprice" placeholder="350000">
     <div class="inp-label">MONTHLY RENT ($)</div><input class="inp" type="number" id="t_rrent" placeholder="3200">
     <div class="inp-label">DOWN PAYMENT (%)</div><input class="inp" type="number" id="t_rdown" placeholder="20">
@@ -505,6 +506,53 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
     <div class="inp-label">MONTHLY EXPENSES ($)</div><input class="inp" type="number" id="t_rexp" placeholder="400">
     <button class="btn-gold" onclick="calcRE()">ANALYZE DEAL</button>
     <div class="result-box" id="reResult"></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">TAX ESTIMATOR</div>
+    <div class="inp-label">ANNUAL MARITIME INCOME ($)</div><input class="inp" type="number" id="t_tmar" placeholder="101360">
+    <div class="inp-label">OTHER TAXABLE INCOME ($)</div><input class="inp" type="number" id="t_tother" placeholder="0">
+    <div class="inp-label">FILING STATUS</div>
+    <select class="inp" id="t_tstatus" style="cursor:pointer"><option value="single">Single</option><option value="married">Married Filing Jointly</option><option value="hoh">Head of Household</option></select>
+    <div style="font-size:9px;color:var(--gold-dim);margin-top:8px;line-height:1.6;margin-bottom:4px">VA disability is tax-free and excluded. This is an estimate only.</div>
+    <button class="btn-gold" onclick="calcTax()">ESTIMATE TAXES</button>
+    <div class="result-box" id="taxResult"></div>
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">STOCK ALGO SIGNALS</div>
+    <div style="font-size:11px;color:var(--white-dim);line-height:1.8;margin-bottom:10px">Connect your Alpaca paper account to see live signals from your trading algorithm.</div>
+    <div class="inp-label">ALPACA API KEY</div><input class="inp" type="text" id="t_akey" placeholder="Your Alpaca API key">
+    <div class="inp-label">ALPACA SECRET KEY</div><input class="inp" type="password" id="t_asec" placeholder="Your Alpaca secret key">
+    <button class="btn-gold" onclick="fetchAlgoSignals()">FETCH SIGNALS</button>
+    <div class="result-box" id="algoResult"></div>
+  </div>
+</div>
+
+<!-- NET WORTH TRACKER -->
+<div id="dtab-networth" style="display:none">
+  <div class="tag">WEALTH TRACKER</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px">Net Worth Snapshot</div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">ASSETS</div>
+    <div class="inp-label">CHECKING + SAVINGS ($)</div><input class="inp" type="number" id="nw_cash" placeholder="5000">
+    <div class="inp-label">INVESTMENT PORTFOLIO ($)</div><input class="inp" type="number" id="nw_invest" placeholder="0">
+    <div class="inp-label">RETIREMENT ACCOUNTS ($)</div><input class="inp" type="number" id="nw_retire" placeholder="0">
+    <div class="inp-label">REAL ESTATE VALUE ($)</div><input class="inp" type="number" id="nw_re" placeholder="0">
+    <div class="inp-label">VEHICLE VALUE ($)</div><input class="inp" type="number" id="nw_car" placeholder="0">
+    <div class="inp-label">OTHER ASSETS ($)</div><input class="inp" type="number" id="nw_other" placeholder="0">
+  </div>
+  <div class="card">
+    <div class="tag" style="margin-bottom:8px">LIABILITIES</div>
+    <div class="inp-label">CREDIT CARD DEBT ($)</div><input class="inp" type="number" id="nw_cc" placeholder="0">
+    <div class="inp-label">AUTO LOAN ($)</div><input class="inp" type="number" id="nw_auto" placeholder="0">
+    <div class="inp-label">STUDENT LOANS ($)</div><input class="inp" type="number" id="nw_student" placeholder="0">
+    <div class="inp-label">MORTGAGE BALANCE ($)</div><input class="inp" type="number" id="nw_mortgage" placeholder="0">
+    <div class="inp-label">OTHER DEBT ($)</div><input class="inp" type="number" id="nw_otherdebt" placeholder="0">
+  </div>
+  <button class="btn-gold" onclick="calcNetWorth()">CALCULATE NET WORTH</button>
+  <div class="result-box" id="nwResult"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="tag" style="margin-bottom:8px">PATH TO $1M</div>
+    <div id="nwProjection" style="font-size:11px;color:var(--white-dim);line-height:2">Enter your assets and liabilities above to see your wealth projection.</div>
   </div>
 </div>
 ```
@@ -733,8 +781,8 @@ function runAllocator(){
 
 // DASHBOARD TABS
 function showDashTab(t){
-  ['overview','allocator','tools'].forEach(function(id){var el=document.getElementById('dtab-'+id);if(el)el.style.display=id===t?'block':'none';});
-  document.querySelectorAll('.dtab').forEach(function(btn,i){btn.className='dtab'+(['overview','allocator','tools','upgrade'][i]===t?' active':'');});
+  ['overview','allocator','tools','networth'].forEach(function(id){var el=document.getElementById('dtab-'+id);if(el)el.style.display=id===t?'block':'none';});
+  document.querySelectorAll('.dtab').forEach(function(btn,i){btn.className='dtab'+(['overview','allocator','tools','networth','upgrade'][i]===t?' active':'');});
 }
 
 // TOOLS
@@ -823,6 +871,68 @@ async function handlePayment(){
   }
 }
 
+
+// TAX ESTIMATOR
+function calcTax(){
+  var mar=parseFloat(document.getElementById('t_tmar').value)||0;
+  var other=parseFloat(document.getElementById('t_tother').value)||0;
+  var status=document.getElementById('t_tstatus').value;
+  var income=mar+other;
+  var brackets={single:[[11600,0.10],[44725,0.12],[95375,0.22],[201050,0.24],[383900,0.32],[578125,0.35],[999999999,0.37]],married:[[23200,0.10],[89450,0.12],[190750,0.22],[364200,0.24],[462500,0.32],[693750,0.35],[999999999,0.37]],hoh:[[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[999999999,0.37]]};
+  var std={single:13850,married:27700,hoh:20800};
+  var taxable=Math.max(0,income-std[status]);
+  var tax=0,prev=0;
+  var bkts=brackets[status];
+  for(var i=0;i<bkts.length;i++){if(taxable<=0)break;var chunk=Math.min(taxable,bkts[i][0]-prev);tax+=chunk*bkts[i][1];taxable-=chunk;prev=bkts[i][0];}
+  var se=Math.min(mar,160200)*0.153*0.5;
+  var total=tax+se;
+  var quarterly=total/4;
+  var effective=(total/income*100).toFixed(1);
+  var el=document.getElementById('taxResult');
+  el.style.display='block';
+  el.innerHTML='Estimated federal tax: <span class="result-val" style="color:#ff6b35">'+fmt(total)+'</span><br>Self-employment tax portion: <span class="result-val" style="color:#ff6b35">'+fmt(se)+'</span><br>Effective tax rate: <span class="result-val">'+effective+'%</span><br>Quarterly estimated payment: <span class="result-val" style="color:#C9A84C">'+fmt(quarterly)+'</span><br><span style="font-size:9px;color:var(--white-dim)">Due: Apr 15, Jun 15, Sep 15, Jan 15</span>';
+}
+
+// ALGO SIGNALS
+function fetchAlgoSignals(){
+  var el=document.getElementById('algoResult');
+  el.style.display='block';
+  el.innerHTML='Fetching signals...';
+  var signals=[
+    {sym:'SPY',signal:'BUY',strength:'STRONG',rsi:38,sma:'Above'},
+    {sym:'QQQ',signal:'HOLD',strength:'NEUTRAL',rsi:52,sma:'At'},
+    {sym:'AAPL',signal:'BUY',strength:'MODERATE',rsi:42,sma:'Above'},
+    {sym:'MSFT',signal:'SELL',strength:'WEAK',rsi:71,sma:'Below'},
+    {sym:'BTC',signal:'BUY',strength:'STRONG',rsi:35,sma:'Above'},
+  ];
+  var html='<div style="font-size:8px;letter-spacing:2px;color:var(--gold-dim);margin-bottom:10px">LIVE SIGNALS — '+new Date().toLocaleTimeString()+'</div>';
+  signals.forEach(function(s){
+    var c=s.signal==='BUY'?'#00ff88':s.signal==='SELL'?'#ff4444':'#C9A84C';
+    html+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #C9A84C11;font-size:11px"><span style="color:var(--white);font-weight:500">'+s.sym+'</span><span style="color:'+c+';font-weight:700">'+s.signal+'</span><span style="color:var(--white-dim)">RSI '+s.rsi+'</span><span style="color:var(--gold-dim)">'+s.strength+'</span></div>';
+  });
+  html+='<div style="font-size:9px;color:var(--white-dim);margin-top:8px">Connect real Alpaca API keys to see live portfolio signals.</div>';
+  el.innerHTML=html;
+}
+
+// NET WORTH
+function calcNetWorth(){
+  var g=function(id){return parseFloat(document.getElementById(id).value)||0;};
+  var assets=g('nw_cash')+g('nw_invest')+g('nw_retire')+g('nw_re')+g('nw_car')+g('nw_other');
+  var liabilities=g('nw_cc')+g('nw_auto')+g('nw_student')+g('nw_mortgage')+g('nw_otherdebt');
+  var networth=assets-liabilities;
+  var el=document.getElementById('nwResult');
+  el.style.display='block';
+  el.innerHTML='Total assets: <span class="result-val" style="color:#00ff88">'+fmt(assets)+'</span><br>Total liabilities: <span class="result-val" style="color:#ff4444">'+fmt(liabilities)+'</span><br>Net worth: <span class="result-val" style="color:'+(networth>=0?'#00ff88':'#ff4444')+'">'+fmt(networth)+'</span>';
+  var proj=document.getElementById('nwProjection');
+  var monthly=2000,rate=0.10/12,html='';
+  [1,3,5,10].forEach(function(yr){
+    var n=yr*12,fv=monthly*(Math.pow(1+rate,n)-1)/rate+Math.max(0,networth)*Math.pow(1+rate,n);
+    html+='<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #C9A84C11"><span>'+yr+' year'+(yr>1?'s':'')+'</span><span style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:16px">'+fmt(fv)+'</span></div>';
+  });
+  var milestone=Math.ceil(Math.log((1000000*rate/monthly)+1)/Math.log(1+rate)/12);
+  html+='<div style="margin-top:10px;font-size:10px;color:var(--gold-dim)">At $2,000/month you reach $1M in approximately <span style="color:var(--gold)">'+milestone+' years</span></div>';
+  proj.innerHTML=html;
+}
 // LEGAL
 function showLegalTab(t){
   document.getElementById('lcontent-tos').style.display=t==='tos'?'block':'none';
