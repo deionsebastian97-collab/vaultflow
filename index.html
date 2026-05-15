@@ -4,7 +4,7 @@ html,body{background:#080808!important;}
 :root{–gold:#C9A84C;–gold-dim:#8B6914;–gold-light:#E8C96A;–black:#080808;–black2:#0E0E0E;–black3:#141414;–black4:#1A1A1A;–white:#F5F0E8;–white-dim:#8A8070;}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{background:#080808!important;color:#F5F0E8!important;font-family:‘Montserrat’,sans-serif;overflow-x:hidden;min-height:100vh}
-.page{display:none;min-height:100vh}
+.page{display:none;min-height:100vh}.page.active{display:block}
 .page.active{display:block}
 
 /* NAV */
@@ -218,7 +218,7 @@ footer{flex-direction:column;text-align:center;padding:24px 16px}
 
 <!-- ==================== HOME PAGE ==================== -->
 
-<div class="page active" id="page-home">
+<div class="page" id="page-home" style="display:block">
   <section class="hero">
     <div class="grid-bg"></div>
     <div style="position:relative;z-index:1;animation:fadeUp 1s ease both">
@@ -828,8 +828,13 @@ function initStripe(){
 
 // NAVIGATION
 function goto(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.page').forEach(function(p){
+    p.classList.remove('active');
+    p.style.display='none';
+  });
+  var el=document.getElementById('page-'+page);
+  el.classList.add('active');
+  el.style.display=page==='login'?'flex':'block';
   window.scrollTo(0,0);
   if(page==='upgrade')setTimeout(initStripe,300);
   updateNav(page);
@@ -845,6 +850,10 @@ async function updateNav(page){
 
 // INIT
 async function init(){
+  // Make sure home page is visible on load
+  document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
+  document.getElementById('page-home').style.display='block';
+  
   const{data:{session}}=await sb.auth.getSession();
   if(session){
     document.getElementById('navButtons').style.display='none';
