@@ -797,10 +797,30 @@ async function handlePayment(){
   if(!email||!name){document.getElementById('cardErrors').textContent='Please fill in email and name.';return;}
   document.getElementById('payBtn').disabled=true;
   document.getElementById('payBtn').textContent='PROCESSING...';
+  document.getElementById('cardErrors').textContent='';
   var{paymentMethod,error}=await stripe.createPaymentMethod({type:'card',card:cardEl,billing_details:{name:name,email:email}});
   if(error){document.getElementById('cardErrors').textContent=error.message;document.getElementById('payBtn').disabled=false;document.getElementById('payBtn').textContent='COMPLETE PURCHASE';return;}
-  setMsg('payMsg','Payment successful! Redirecting to dashboard...','#00ff88');
-  setTimeout(()=>{goto('dashboard');},1500);
+  try{
+    var res=await fetch('https://vaultflow-production.up.railway.app/create-subscription',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,payment_method_id:paymentMethod.id,plan:selectedPlan})
+    });
+    var data=await res.json();
+    if(data.success){
+      setMsg('payMsg','Payment successful! Welcome to VaultFlow.','#00ff88');
+      localStorage.setItem('vaultflow_plan',selectedPlan);
+      setTimeout(()=>{goto('dashboard');},1500);
+    }else{
+      document.getElementById('cardErrors').textContent=data.detail||'Payment failed. Please try again.';
+      document.getElementById('payBtn').disabled=false;
+      document.getElementById('payBtn').textContent='COMPLETE PURCHASE';
+    }
+  }catch(e){
+    document.getElementById('cardErrors').textContent='Connection error. Please try again.';
+    document.getElementById('payBtn').disabled=false;
+    document.getElementById('payBtn').textContent='COMPLETE PURCHASE';
+  }
 }
 
 // LEGAL
