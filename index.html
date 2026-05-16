@@ -708,25 +708,53 @@ var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 var PK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
 var RAIL='https://vaultflow-production.up.railway.app';
 
-// ===== SUPABASE INIT =====
-var sb=null;
+// ===== STATE =====
 var props=[];
 var selPlanVal='prime';
 var stripe=null,cardEl=null,stripeOk=false;
+var currentSession=null;
+
+// ===== SUPABASE REST API (no SDK needed) =====
+function sbHeaders(){
+  var h={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  if(currentSession)h['Authorization']='Bearer '+currentSession.access_token;
+  return h;
+}
+
+function sbSignIn(email,password){
+  return fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({email:email,password:password})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.access_token){currentSession=d;showLoggedIn();return{error:null};}
+    return{error:{message:d.error_description||d.msg||'Login failed'}};
+  });
+}
+
+function sbSignUp(email,password){
+  return fetch(SB_URL+'/auth/v1/signup',{
+    method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({email:email,password:password})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.id||d.access_token){if(d.access_token)currentSession=d;showLoggedIn();return{error:null};}
+    return{error:{message:d.error_description||d.msg||'Signup failed'}};
+  });
+}
+
+function sbSignOut(){
+  currentSession=null;
+  showLoggedOut();
+}
 
 function initSB(){
-  if(sb)return;
+  // Check localStorage for existing session
   try{
-    sb=window.supabase.createClient(SB_URL,SB_KEY);
-    sb.auth.getSession().then(function(r){
-      if(r.data&&r.data.session){
-        showLoggedIn();
-      }
-    });
-  }catch(e){
-    console.log('Supabase not ready yet, retrying...');
-    setTimeout(initSB,500);
-  }
+    var stored=localStorage.getItem('vf_session');
+    if(stored){
+      var s=JSON.parse(stored);
+      if(s&&s.access_token){currentSession=s;showLoggedIn();}
+    }
+  }catch(e){}
 }
 
 // ===== PAGE SHOW =====
@@ -738,13 +766,10 @@ function go(name){
   window.scrollTo(0,0);
   if(name==='upgrade')setTimeout(initStripe,400);
   if(name==='dashboard'){
-    if(!sb){initSB();setTimeout(function(){go('dashboard');},600);return;}
-    sb.auth.getSession().then(function(r){
-      if(!r.data||!r.data.session){go('login');return;}
-      showLoggedIn();
-      loadProfile();
-      alloc();
-    });
+    if(!currentSession){go('login');return;}
+    showLoggedIn();
+    loadProfile();
+    alloc();
   }
 }
 
@@ -764,9 +789,7 @@ function showLoggedOut(){
 
 // ===== START =====
 document.getElementById('page-home').style.display='block';
-window.addEventListener('load',function(){
-  initSB();
-});
+initSB();
 
 // ===== STRIPE =====
 function initStripe(){
@@ -799,19 +822,21 @@ function msg(id,txt,color){
 }
 
 function signin(){
-  if(!sb){msg('lmsg','Connecting... please wait.','#C9A84C');initSB();setTimeout(signin,1000);return;}
   var e=document.getElementById('sie').value;
   var p=document.getElementById('sip').value;
   if(!e||!p){msg('lmsg','Please fill in all fields.','#ff4444');return;}
   msg('lmsg','Signing in...','#C9A84C');
-  sb.auth.signInWithPassword({email:e,password:p}).then(function(r){
+  sbSignIn(e,p).then(function(r){
     if(r.error){msg('lmsg',r.error.message,'#ff4444');}
-    else{showLoggedIn();msg('lmsg','Welcome back.','#00ff88');setTimeout(function(){go('dashboard');},800);}
-  });
+    else{
+      try{localStorage.setItem('vf_session',JSON.stringify(currentSession));}catch(ex){}
+      msg('lmsg','Welcome back.','#00ff88');
+      setTimeout(function(){go('dashboard');},800);
+    }
+  }).catch(function(err){msg('lmsg','Connection error. Check your internet.','#ff4444');});
 }
 
 function signup(){
-  if(!sb){msg('lmsg','Connecting... please wait.','#C9A84C');initSB();setTimeout(signup,1000);return;}
   var e=document.getElementById('sue').value;
   var p=document.getElementById('sup').value;
   var p2=document.getElementById('sup2').value;
@@ -819,15 +844,19 @@ function signup(){
   if(p!==p2){msg('lmsg','Passwords do not match.','#ff4444');return;}
   if(p.length<6){msg('lmsg','Password must be at least 6 characters.','#ff4444');return;}
   msg('lmsg','Creating account...','#C9A84C');
-  sb.auth.signUp({email:e,password:p}).then(function(r){
+  sbSignUp(e,p).then(function(r){
     if(r.error){msg('lmsg',r.error.message,'#ff4444');}
-    else{showLoggedIn();msg('lmsg','Account created. Welcome to VaultFlow.','#00ff88');setTimeout(function(){go('dashboard');},1000);}
-  });
+    else{
+      try{localStorage.setItem('vf_session',JSON.stringify(currentSession));}catch(ex){}
+      msg('lmsg','Account created. Welcome to VaultFlow.','#00ff88');
+      setTimeout(function(){go('dashboard');},1000);
+    }
+  }).catch(function(err){msg('lmsg','Connection error. Check your internet.','#ff4444');});
 }
 
 function signout(){
-  if(sb)sb.auth.signOut();
-  showLoggedOut();
+  sbSignOut();
+  try{localStorage.removeItem('vf_session');}catch(e){}
   go('home');
 }
 
@@ -967,13 +996,10 @@ function renderProps(){
 
 // ===== PROFILE =====
 function loadProfile(){
-  if(!sb)return;
-  sb.auth.getSession().then(function(r){
-    if(r.data&&r.data.session){
-      var el=document.getElementById('pemail');if(el)el.textContent=r.data.session.user.email;
-      var rl=document.getElementById('rlink');if(rl)rl.textContent='vaultflow.org?ref='+r.data.session.user.id.substring(0,8);
-    }
-  });
+  if(currentSession&&currentSession.user){
+    var el=document.getElementById('pemail');if(el)el.textContent=currentSession.user.email||'';
+    var rl=document.getElementById('rlink');if(rl)rl.textContent='vaultflow.org?ref='+(currentSession.user.id||'').substring(0,8);
+  }
 }
 function copyRef(){
   var t=document.getElementById('rlink').textContent;
@@ -1016,7 +1042,7 @@ function legTab(t){
 </script>
 
 <!-- Load Supabase and Stripe AFTER page content -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="initSB()"></script>
+
 <script src="https://js.stripe.com/v3/"></script>
 </body>
 </html>
