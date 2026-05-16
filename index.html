@@ -611,9 +611,18 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">BANK CONNECTION</div>
-        <div class="lock">
-          <div style="font-size:11px;color:#8A8070;line-height:1.8;padding:10px 0">Connect your bank to detect payday automatically.</div>
-          <div class="loverlay"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK NOW</button></div>
+        <div id="bank-disconnected">
+          <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">Connect your bank to detect paychecks automatically and see your real balance.</div>
+          <button class="btngold" onclick="connectBank()">CONNECT YOUR BANK</button>
+          <div id="bank-msg" class="msgbox"></div>
+        </div>
+        <div id="bank-connected" style="display:none">
+          <div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:10px">CONNECTED ACCOUNT</div>
+          <div id="bank-balance" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#C9A84C;margin-bottom:4px">$0.00</div>
+          <div style="font-size:9px;color:#8A8070;margin-bottom:14px">Current balance</div>
+          <div id="bank-transactions"></div>
+          <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">DETECT PAYCHECKS</button>
+          <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
         </div>
       </div>
       <div class="card">
@@ -997,7 +1006,99 @@ function loadProfile(){
     var el=document.getElementById('pemail');if(el)el.textContent=currentSession.user.email||'';
     var rl=document.getElementById('rlink');if(rl)rl.textContent='vaultflow.org?ref='+(currentSession.user.id||'').substring(0,8);
   }
+  // Load saved plaid token
+  try{
+    var saved=localStorage.getItem('vf_plaid_token');
+    if(saved){plaidAccessToken=saved;loadBankData();}
+  }catch(e){}
 }
+// ===== PLAID =====
+var plaidAccessToken = null;
+
+function connectBank(){
+  msg('bank-msg','Connecting to bank...','#C9A84C');
+  fetch(RAIL+'/plaid/create-link-token',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id: currentSession ? currentSession.user.id : 'user'})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.link_token){
+      var handler = Plaid.create({
+        token: d.link_token,
+        onSuccess: function(public_token, metadata){
+          msg('bank-msg','Exchanging token...','#C9A84C');
+          fetch(RAIL+'/plaid/exchange-token',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({public_token: public_token})
+          }).then(function(r){return r.json();}).then(function(d2){
+            if(d2.success){
+              plaidAccessToken = d2.access_token;
+              try{localStorage.setItem('vf_plaid_token', plaidAccessToken);}catch(e){}
+              loadBankData();
+            }
+          });
+        },
+        onExit: function(){
+          msg('bank-msg','','');
+        }
+      });
+      handler.open();
+    } else {
+      msg('bank-msg','Could not connect. Try again.','#ff4444');
+    }
+  }).catch(function(){
+    msg('bank-msg','Connection error. Check your internet.','#ff4444');
+  });
+}
+
+function loadBankData(){
+  if(!plaidAccessToken){
+    try{plaidAccessToken=localStorage.getItem('vf_plaid_token');}catch(e){}
+  }
+  if(!plaidAccessToken)return;
+  fetch(RAIL+'/plaid/transactions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({access_token: plaidAccessToken})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.success){
+      document.getElementById('bank-disconnected').style.display='none';
+      document.getElementById('bank-connected').style.display='block';
+      document.getElementById('bank-balance').textContent='$'+parseFloat(d.balance||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+      var txHtml='<div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:8px">RECENT TRANSACTIONS</div>';
+      (d.transactions||[]).slice(0,5).forEach(function(t){
+        var amt=Math.abs(t.amount||0);
+        var isDeposit=t.amount<0;
+        txHtml+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:10px"><span style="color:#8A8070">'+t.name+'</span><span style="color:'+(isDeposit?'#00ff88':'#F5F0E8')+'">'+(isDeposit?'+':'-')+'$'+amt.toFixed(2)+'</span></div>';
+      });
+      document.getElementById('bank-transactions').innerHTML=txHtml;
+    }
+  }).catch(function(){
+    msg('bank-msg','Could not load bank data.','#ff4444');
+  });
+}
+
+function detectPaycheck(){
+  if(!plaidAccessToken)return;
+  fetch(RAIL+'/plaid/transactions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({access_token: plaidAccessToken})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.paychecks&&d.paychecks.length>0){
+      var p=d.paychecks[0];
+      var amt=Math.abs(p.amount||0);
+      document.getElementById('paycheck-result').innerHTML=
+        '<div style="color:#00ff88;font-size:10px;margin-bottom:8px">✓ Paycheck detected: $'+amt.toFixed(2)+'</div>'+
+        '<div style="font-size:10px;color:#8A8070">Date: '+p.date+'</div>'+
+        '<div style="font-size:10px;color:#C9A84C;margin-top:8px">Ready to auto-allocate on next deposit.</div>';
+    } else {
+      document.getElementById('paycheck-result').textContent='No large deposits found in recent transactions.';
+    }
+  });
+}
+
 function copyRef(){
   var t=document.getElementById('rlink').textContent;
   if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('Referral link copied!');});}
@@ -1041,5 +1142,6 @@ function legTab(t){
 <!-- Load Supabase and Stripe AFTER page content -->
 
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </body>
 </html>
