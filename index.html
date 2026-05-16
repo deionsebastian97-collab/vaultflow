@@ -220,14 +220,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
   </div>
 </nav>
 
-<!-- DASH NAV (logged in) -->
-<nav class="dnav" id="nav-dash" style="display:none">
-  <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
-  <div class="nav-r">
-    <button class="ngold" onclick="go('upgrade')">UPGRADE</button>
-    <button class="nbtn" onclick="signout()">SIGN OUT</button>
-  </div>
-</nav>
+
 
 <!-- ===== HOME ===== -->
 <div class="page" id="page-home">
@@ -389,6 +382,13 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 
 <!-- ===== DASHBOARD ===== -->
 <div class="page" id="page-dashboard">
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:999;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.96);border-bottom:1px solid rgba(201,168,76,0.07)">
+    <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+    <div style="display:flex;gap:8px">
+      <button class="ngold" onclick="go('upgrade')">UPGRADE</button>
+      <button class="nbtn" onclick="signout()">SIGN OUT</button>
+    </div>
+  </nav>
   <div class="dmain">
     <div class="dtabs">
       <button class="dtab on" onclick="dtab('ov')">OVERVIEW</button>
@@ -770,21 +770,18 @@ function go(name){
     showLoggedIn();
     loadProfile();
     alloc();
+    dtab('ov');
   }
 }
 
 function showLoggedIn(){
   var n1=document.getElementById('nav-pub');
-  var n2=document.getElementById('nav-dash');
   if(n1)n1.style.display='none';
-  if(n2)n2.style.display='flex';
 }
 
 function showLoggedOut(){
   var n1=document.getElementById('nav-pub');
-  var n2=document.getElementById('nav-dash');
   if(n1)n1.style.display='flex';
-  if(n2)n2.style.display='none';
 }
 
 // ===== START =====
