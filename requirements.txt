@@ -2,3 +2,5 @@ fastapi
 uvicorn
 stripe
 python-multipart
+httpx
+
