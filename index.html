@@ -88,7 +88,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:13px 22px;display:fl
 .pc-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:2px;padding:3px 12px;font-weight:700;white-space:nowrap;border-radius:0 0 4px 4px}
 
 /* LOGIN */
-#page-login{display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
+#page-login{display:none;align-items:center;justify-content:center;padding:20px;height:100vh;overflow:hidden}
 .lcard{width:100%;max-width:340px;background:linear-gradient(160deg,#0D0D0D,#090909);border:1px solid rgba(201,168,76,0.12);padding:32px 26px;border-radius:5px}
 .llogo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px;text-align:center;margin-bottom:4px;color:#F5F0E8}
 .llogo span{color:#C9A84C}
@@ -577,7 +577,12 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
         <div id="pemail" style="font-size:11px;color:#8A8070;padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.05)">Loading...</div>
         <div style="font-size:7px;color:#8B6914;letter-spacing:2px;margin-bottom:3px;margin-top:10px">PLAN</div>
         <div id="plan-display" style="font-size:11px;color:var(--accent,#C9A84C);padding:8px 0">Essential (Free)</div>
-        <button class="btn" style="margin-top:11px" onclick="go('upgrade')">UPGRADE →</button>
+        <button class="btn" style="margin-top:11px" onclick="go('upgrade')">CHANGE PLAN →</button>
+        <div id="downgrade-section" style="display:none;margin-top:8px">
+          <div style="font-size:8px;letter-spacing:2px;color:#8B6914;margin-bottom:6px">DOWNGRADE PLAN</div>
+          <div style="font-size:9px;color:#555;margin-bottom:8px;line-height:1.6">Downgrading removes access to paid features immediately.</div>
+          <button class="btn-o" onclick="downgradePlan()">DOWNGRADE TO FREE</button>
+        </div>
       </div>
 
       <div class="card" id="bank-card">
@@ -750,63 +755,71 @@ var tabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
 // CLOSE LOGIN OVERLAY
 function closeLogin(){
   var lp=document.getElementById('page-login');
-  if(lp){lp.style.display='none';lp.style.position='';}
-  // Make sure home is visible
-  if(document.getElementById('page-home').style.display==='none'&&!sess){
+  lp.style.display='none';
+  lp.style.position='';
+  lp.style.zIndex='';
+  // Make sure something is visible underneath
+  var anyVisible=false;
+  document.querySelectorAll('.page').forEach(function(x){if(x.style.display!=='none')anyVisible=true;});
+  if(!anyVisible){
     document.getElementById('page-home').style.display='block';
-    document.getElementById('nav-pub').style.display='flex';
+    var np=document.getElementById('nav-pub');if(np)np.style.display='flex';
   }
 }
 
 // SHOW LOGIN OVERLAY (works from any page)
 function showLogin(){
-  var lp=document.getElementById('page-login');
-  if(!lp)return;
-  lp.style.display='flex';
-  lp.style.position='fixed';
-  lp.style.top='0';
-  lp.style.left='0';
-  lp.style.right='0';
-  lp.style.bottom='0';
-  lp.style.zIndex='1000';
-  // Reset form
-  document.getElementById('lmsg').textContent='';
-  document.getElementById('sie').value='';
-  document.getElementById('sip').value='';
+  go('login');
 }
 
-// START
+// START — show home, hide dashboard nav
 document.getElementById('page-home').style.display='block';
+var startBnav=document.getElementById('bnav');
+if(startBnav)startBnav.style.display='none';
 
 // NAV
 function go(p){
+  // Close login overlay first
+  var lp=document.getElementById('page-login');
+  lp.style.display='none';
+  lp.style.position='';
+  lp.style.zIndex='';
+
+  if(p==='login'){
+    // Show as overlay on top of current page
+    lp.style.display='flex';
+    lp.style.position='fixed';
+    lp.style.top='0';lp.style.left='0';lp.style.right='0';lp.style.bottom='0';
+    lp.style.zIndex='2000';
+    lp.style.background='rgba(4,4,4,0.97)';
+    return;
+  }
+
   // Hide all pages
   document.querySelectorAll('.page').forEach(function(x){x.style.display='none';});
+
   var el=document.getElementById('page-'+p);
   if(!el)return;
-  // Show selected page
-  if(p==='login'){
-    el.style.display='flex';
-    el.style.position='fixed';
-    el.style.top='0';
-    el.style.left='0';
-    el.style.right='0';
-    el.style.bottom='0';
-    el.style.zIndex='1000';
-    document.getElementById('nav-pub').style.display='none';
-  } else {
-    el.style.display='block';
-    el.style.position='';
-    // Show correct nav
-    if(p==='dashboard'){
-      document.getElementById('nav-pub').style.display='none';
-    } else if(p==='home'){
-      document.getElementById('nav-pub').style.display='flex';
-    }
-  }
+  el.style.display='block';
   window.scrollTo(0,0);
+
+  var navPub=document.getElementById('nav-pub');
+  if(navPub)navPub.style.display=(p==='home'||p==='upgrade'||p==='legal')?'flex':'none';
+
+  var bnav=document.getElementById('bnav');
+  if(bnav)bnav.style.display=(p==='dashboard')?'flex':'none';
+
   if(p==='upgrade')setTimeout(iStripe,300);
-  if(p==='dashboard'){if(!sess){go('login');return;}loadProf();alloc();dtab('ov');}
+  if(p==='dashboard'){
+    if(!sess){go('login');return;}
+    // New accounts default to free plan unless they have an active subscription
+    if(!sess.plan){
+      document.body.setAttribute('data-plan','free');
+    }
+    loadProf();
+    alloc();
+    dtab('ov');
+  }
 }
 
 // STRIPE
@@ -843,12 +856,7 @@ function signin(){
     if(d.access_token){
       sess=d;
       m('lmsg','Welcome back.','#10B981');
-      setTimeout(function(){
-        // Close login overlay
-        var lp=document.getElementById('page-login');
-        if(lp){lp.style.display='none';lp.style.position='';}
-        go('dashboard');
-      },600);
+      setTimeout(function(){closeLogin();go('dashboard');},600);
     }
     else m('lmsg',d.error_description||'Login failed.','#ff4444');
   }).catch(function(){m('lmsg','Connection error. Try cellular.','#ff4444');});
@@ -864,11 +872,7 @@ function signup(){
     if(d.id||d.access_token){
       if(d.access_token)sess=d;else sess={user:{email:e,id:d.id||''}};
       m('lmsg','Account created! Welcome.','#10B981');
-      setTimeout(function(){
-        var lp=document.getElementById('page-login');
-        if(lp){lp.style.display='none';lp.style.position='';}
-        go('dashboard');
-      },700);
+      setTimeout(function(){closeLogin();go('dashboard');},700);
     } else m('lmsg',d.error_description||'Signup failed.','#ff4444');
   }).catch(function(){m('lmsg','Connection error.','#ff4444');});
 }
@@ -1112,69 +1116,86 @@ function triggerAlloc(){
   steps.forEach(function(s){setTimeout(function(){addWh(s);},s.d);});
 }
 
-// PLAN ACTIVATION — unlocks features based on plan
+// PLAN ACTIVATION — unlocks/locks features based on plan
 function activatePlan(plan){
   if(sess)sess.plan=plan;
   document.body.setAttribute('data-plan',plan);
-  var isV=plan==='vault',isF=plan==='free';
-  var accent=isV?'#8B5CF6':isF?'#10B981':'#C9A84C';
-  var label=isV?'VAULT':isF?'ESSENTIAL':'PRIME';
+  var isV=plan==='vault',isP=plan==='prime',isF=plan==='free';
+  var accent=isV?'#8B5CF6':isP?'#C9A84C':'#10B981';
+  var label=isV?'VAULT':isP?'PRIME':'ESSENTIAL';
 
-  // Theme body bg
-  if(isV){var s=document.getElementById('vcss');if(!s){s=document.createElement('style');s.id='vcss';document.head.appendChild(s);}s.textContent='body{background:#060408!important}';}
-  if(isF){var s2=document.getElementById('fcss');if(!s2){s2=document.createElement('style');s2.id='fcss';document.head.appendChild(s2);}s2.textContent='body{background:#040A06!important}';}
+  // Body theme
+  var vcss=document.getElementById('vcss');if(vcss)vcss.remove();
+  var fcss=document.getElementById('fcss');if(fcss)fcss.remove();
+  var pcss=document.getElementById('pcss');if(pcss)pcss.remove();
+  var s=document.createElement('style');
+  s.id=isV?'vcss':isF?'fcss':'pcss';
+  s.textContent=isV?'body{background:#060408!important}':isF?'body{background:#040A06!important}':'body{background:#080806!important}';
+  document.head.appendChild(s);
 
   // Logo badge
   var logo=document.getElementById('dash-logo');
   var ob=document.getElementById('pb');if(ob)ob.remove();
   if(logo&&!isF){
     var b=document.createElement('span');b.id='pb';
-    var bg2=isV?'linear-gradient(135deg,#4C1D95,#8B5CF6)':'linear-gradient(135deg,#8B6914,#C9A84C)';
-    b.style.cssText='display:inline-block;background:'+bg2+';color:'+(isV?'#fff':'#000')+';font-size:7px;letter-spacing:2px;padding:2px 6px;font-weight:700;margin-left:6px;vertical-align:middle;border-radius:2px;font-family:Montserrat,sans-serif';
+    b.style.cssText='display:inline-block;background:linear-gradient(135deg,'+(isV?'#4C1D95,#8B5CF6':'#8B6914,#C9A84C')+');color:'+(isV?'#fff':'#000')+';font-size:7px;letter-spacing:2px;padding:2px 6px;font-weight:700;margin-left:6px;vertical-align:middle;border-radius:2px;font-family:Montserrat,sans-serif';
     b.textContent=label;logo.appendChild(b);
   }
 
   // Plan display
   var pd=document.getElementById('plan-display');
-  if(pd){pd.textContent=isV?'Vault — $24.99/mo':isF?'Essential (Free)':'Prime — $9.99/mo';pd.style.color=accent;}
+  if(pd){pd.textContent=isV?'Vault — $24.99/mo':isP?'Prime — $9.99/mo':'Essential (Free)';pd.style.color=accent;}
 
   // Overview banner
   var ov=document.getElementById('dt-ov');
   var ob2=document.getElementById('plan-bn');if(ob2)ob2.remove();
   if(ov&&!isF){
-    var bg3=isV?'linear-gradient(135deg,#060310,#080808)':'linear-gradient(135deg,#0D0900,#080808)';
-    var bc=isV?'rgba(139,92,246,0.3)':'rgba(201,168,76,0.25)';
     var bn=document.createElement('div');bn.id='plan-bn';
-    bn.style.cssText='background:'+bg3+';border:1px solid '+bc+';border-radius:4px;padding:12px 14px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between';
-    bn.innerHTML='<div><div style="font-family:Cormorant Garamond,serif;font-size:15px;color:'+accent+'">'+label+' ACTIVE</div><div style="font-size:7px;color:'+(isV?'rgba(139,92,246,0.7)':'#8B6914')+';letter-spacing:2px;margin-top:2px">'+(isV?'ALL FEATURES UNLOCKED':'BANK · AUTO-ALLOCATE · SIGNALS')+'</div></div><div style="font-size:7px;color:#10B981;letter-spacing:2px">LIVE</div>';
+    bn.style.cssText='background:linear-gradient(135deg,'+(isV?'#060310':'#0D0900')+',#080808);border:1px solid '+(isV?'rgba(139,92,246,0.3)':'rgba(201,168,76,0.25)')+';border-radius:4px;padding:12px 14px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between';
+    bn.innerHTML='<div><div style="font-family:Cormorant Garamond,serif;font-size:15px;color:'+accent+'">'+label+' ACTIVE</div><div style="font-size:7px;color:'+(isV?'rgba(139,92,246,0.6)':'#8B6914')+';letter-spacing:2px;margin-top:2px">'+(isV?'ALL FEATURES UNLOCKED':'BANK · AUTO-ALLOCATE · SIGNALS')+'</div></div><div style="font-size:7px;color:#10B981;letter-spacing:2px">LIVE</div>';
     ov.insertBefore(bn,ov.firstChild);
   }
 
-  // Upgrade banner update
+  // Upgrade banner
   var ub=document.getElementById('upgrade-banner');
-  if(ub&&!isF){
-    ub.style.borderColor=accent;
-    var ubt=ub.querySelector('div:first-child');if(ubt)ubt.style.color=accent;
-    var ubtn=ub.querySelector('button');if(ubtn){ubtn.textContent='SET UP BANK →';ubtn.onclick=function(){dtab('pf');};}
+  if(ub){
+    ub.style.borderColor=isF?'rgba(16,185,89,0.12)':accent;
+    var ubtn=ub.querySelector('button');
+    if(ubtn){
+      if(isF){ubtn.textContent='UPGRADE TO PRIME';ubtn.onclick=function(){go('upgrade');};}
+      else{ubtn.textContent='SET UP BANK →';ubtn.onclick=function(){dtab('pf');};}
+    }
   }
 
-  // UNLOCK features based on plan
-  if(!isF){
-    // Unlock bank connect
-    var bl=document.getElementById('bank-prime-lock');if(bl)bl.style.display='none';
-    var bb=document.getElementById('bank-prime-btn');if(bb)bb.style.display='block';
-    // Unlock auto-allocation
-    var al=document.getElementById('alloc-prime-lock');if(al)al.style.display='none';
-    var ae=document.getElementById('alloc-engine');if(ae)ae.style.display='block';
-    // Unlock algo signals
-    var sl=document.getElementById('sig-locked');if(sl)sl.style.display='none';
-    var su=document.getElementById('sig-unlocked');if(su)su.style.display='block';
-    // Unlock transfer history
-    var tl=document.getElementById('transfer-lock');if(tl)tl.style.display='none';
+  // UNLOCK or LOCK features based on plan
+  var hasPaid=isP||isV;
+
+  // Bank connect
+  var bl=document.getElementById('bank-prime-lock');if(bl)bl.style.display=hasPaid?'none':'block';
+  var bb=document.getElementById('bank-prime-btn');if(bb)bb.style.display=hasPaid?'block':'none';
+
+  // Auto-allocation engine
+  var al=document.getElementById('alloc-prime-lock');if(al)al.style.display=hasPaid?'none':'block';
+  var ae=document.getElementById('alloc-engine');if(ae)ae.style.display=hasPaid?'block':'none';
+
+  // Algo signals
+  var sl=document.getElementById('sig-locked');if(sl)sl.style.display=hasPaid?'none':'block';
+  var su=document.getElementById('sig-unlocked');if(su)su.style.display=hasPaid?'block':'none';
+
+  // Transfer history
+  var tl=document.getElementById('transfer-lock');if(tl)tl.style.display=hasPaid?'none':'flex';
+
+  // If downgraded to free - disconnect bank and clear data
+  if(isF){
+    plaidTok=null;
+    var bc=document.getElementById('bank-connected');if(bc)bc.style.display='none';
+    var bd=document.getElementById('bank-disconnected');if(bd)bd.style.display='block';
+    var whl=document.getElementById('wh-log');if(whl)whl.innerHTML='<div style="color:#444;font-size:9px">Connect bank to start monitoring.</div>';
   }
 
-  addWh({t:label+'_ACTIVATED',m:'VaultFlow '+label+' features unlocked',c:accent});
+  addWh({t:label+'_'+(hasPaid?'ACTIVATED':'DOWNGRADED'),m:hasPaid?'VaultFlow '+label+' features unlocked':'Downgraded to '+label+' — paid features removed',c:accent});
 }
+
 
 // UPGRADE / STRIPE
 function selPlan(p){
@@ -1215,7 +1236,9 @@ function pay(){
       if(d.success){
         m('paymsg','✓ Payment successful! Welcome to VaultFlow '+curPlan.charAt(0).toUpperCase()+curPlan.slice(1)+'.','#10B981');
         activatePlan(curPlan);
-        setTimeout(function(){go('dashboard');dtab('ov');},1500);
+        // Show downgrade option in profile
+        var ds=document.getElementById('downgrade-section');if(ds)ds.style.display='block';
+        setTimeout(function(){go('dashboard');dtab('pf');},1500);
       } else {
         document.getElementById('cardErr').textContent=d.detail||'Payment failed. Please try again.';
         paybtn.disabled=false;paybtn.textContent='🔒 COMPLETE PURCHASE';
@@ -1225,6 +1248,17 @@ function pay(){
       paybtn.disabled=false;paybtn.textContent='🔒 COMPLETE PURCHASE';
     });
   });
+}
+
+// DOWNGRADE PLAN
+function downgradePlan(){
+  if(!confirm('Downgrade to Free? You will lose access to bank connection, auto-allocation, and algo signals immediately.'))return;
+  if(sess)sess.plan='free';
+  activatePlan('free');
+  // Show downgrade confirmation
+  m('plan-display','Downgraded to Essential (Free)','#10B981');
+  // Hide downgrade section
+  var ds=document.getElementById('downgrade-section');if(ds)ds.style.display='none';
 }
 
 // LEGAL
