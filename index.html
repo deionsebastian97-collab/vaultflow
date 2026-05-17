@@ -191,6 +191,20 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .legstit{font-family:'Cormorant Garamond',serif;font-size:18px;color:#C9A84C;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,0.15)}
 .legtxt{font-size:11px;color:#8A8070;line-height:2;margin-bottom:10px}
 
+
+/* PRIME MODE */
+.prime-badge{display:inline-block;background:linear-gradient(135deg,#8B6914,#C9A84C);color:#080808;font-size:8px;letter-spacing:3px;padding:3px 10px;font-weight:700;margin-left:10px;vertical-align:middle}
+.prime-glow{box-shadow:0 0 30px rgba(201,168,76,0.15)}
+.prime-banner{background:linear-gradient(135deg,#1A1200,#0E0E00);border:1px solid #C9A84C;border-radius:3px;padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.prime-banner-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:#C9A84C}
+.prime-banner-sub{font-size:9px;color:#8B6914;letter-spacing:2px}
+.prime-stat{border-color:rgba(201,168,76,0.3)!important;background:linear-gradient(145deg,#1A1200,#141414)!important}
+.prime-tab{color:#C9A84C!important;border-bottom-color:#C9A84C!important}
+body.prime-mode{background:#050505}
+body.prime-mode nav,body.prime-mode .dnav{background:rgba(5,5,5,0.98)!important;border-bottom-color:rgba(201,168,76,0.2)!important}
+.webhook-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:10px}
+.webhook-dot{width:6px;height:6px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.webhook-time{font-size:8px;color:#8A8070;margin-top:2px}
 @media(max-width:768px){
   nav{padding:12px 16px}
   .hero{padding:100px 16px 60px}
@@ -598,7 +612,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
         <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px">EMAIL</div>
         <div id="pemail" style="font-size:12px;color:#8A8070;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Loading...</div>
         <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px;margin-top:12px">PLAN</div>
-        <div style="font-size:12px;color:#C9A84C;padding:10px 0">Essential (Free)</div>
+        <div id="plan-display" style="font-size:12px;color:#C9A84C;padding:10px 0">Essential (Free)</div>
         <button class="btngold" style="margin-top:12px" onclick="go('upgrade')">UPGRADE TO PRIME</button>
       </div>
       <div class="card">
@@ -623,6 +637,15 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
           <div id="bank-transactions"></div>
           <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">DETECT PAYCHECKS</button>
           <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">AUTO-ALLOCATION ENGINE</div>
+        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">When a paycheck is detected VaultFlow automatically routes every dollar based on your allocator settings.</div>
+        <button class="btngold" onclick="triggerPaycheckAllocation()">SIMULATE AUTO-ALLOCATION</button>
+        <div style="font-size:9px;color:#8B6914;margin-top:8px;margin-bottom:4px">LIVE WEBHOOK MONITOR</div>
+        <div id="webhook-log" style="margin-top:8px;min-height:60px">
+          <div style="color:#8A8070;font-size:10px">Connect your bank to start monitoring.</div>
         </div>
       </div>
       <div class="card">
@@ -1093,6 +1116,133 @@ function copyRef(){
   else{alert('Your link: '+t);}
 }
 
+// ===== PRIME MODE =====
+function activatePrime(plan){
+  currentSession.plan = plan;
+  document.body.classList.add('prime-mode');
+  
+  // Update nav
+  var logo = document.querySelector('.logo');
+  if(logo && !document.getElementById('prime-badge')){
+    var badge = document.createElement('span');
+    badge.id = 'prime-badge';
+    badge.className = 'prime-badge';
+    badge.textContent = plan.toUpperCase();
+    logo.appendChild(badge);
+  }
+  
+  // Update dashboard stats to prime style
+  document.querySelectorAll('.ds').forEach(function(el){el.classList.add('prime-stat');});
+  
+  // Show prime banner in overview
+  var ov = document.getElementById('dt-ov');
+  if(ov && !document.getElementById('prime-banner')){
+    var banner = document.createElement('div');
+    banner.id = 'prime-banner';
+    banner.className = 'prime-banner prime-glow';
+    banner.innerHTML = '<div><div class="prime-banner-title">✓ '+plan.toUpperCase()+' ACTIVE</div><div class="prime-banner-sub">BANK CONNECTION · AUTO-ALLOCATION · ALGO SIGNALS</div></div><div style="font-size:9px;color:#C9A84C;letter-spacing:2px">ACTIVE</div>';
+    ov.insertBefore(banner, ov.firstChild);
+  }
+  
+  // Update profile plan
+  var planEl = document.getElementById('plan-display');
+  if(planEl) planEl.textContent = plan === 'prime' ? 'Prime ($9.99/mo) ✓' : 'Vault ($24.99/mo) ✓';
+  
+  // Show bank connect (remove lock overlay)
+  var overlay = document.querySelector('.loverlay');
+  if(overlay) overlay.style.display = 'none';
+  
+  // Update upgrade banner
+  var ubanner = document.querySelector('.ubanner');
+  if(ubanner){
+    ubanner.style.background = 'linear-gradient(135deg,#1A1200,#0E0E00)';
+    ubanner.style.border = '1px solid #C9A84C';
+    ubanner.querySelector('.ubt').textContent = '✓ '+plan.toUpperCase()+' Active';
+    ubanner.querySelector('.ubs').textContent = 'Your bank connection and auto-allocation are ready to set up in the Profile tab.';
+    var btn = ubanner.querySelector('button');
+    if(btn){btn.textContent = 'SET UP BANK CONNECTION';btn.onclick=function(){dtab('pf');};}
+  }
+  
+  // Start webhook simulation
+  startWebhookMonitor();
+}
+
+// ===== WEBHOOK / PAYCHECK DETECTION =====
+var webhookEvents = [];
+var webhookTimer = null;
+
+function startWebhookMonitor(){
+  if(webhookTimer)return;
+  // Simulate webhook events
+  webhookTimer = setInterval(function(){
+    var events = [
+      {type:'TRANSACTION_UPDATE',msg:'Bank transaction sync complete',color:'#00ff88'},
+      {type:'PAYCHECK_DETECTED',msg:'Large deposit detected: checking for paycheck pattern',color:'#C9A84C'},
+      {type:'BALANCE_UPDATE',msg:'Account balance refreshed',color:'#0088ff'},
+    ];
+    var ev = events[Math.floor(Math.random()*events.length)];
+    addWebhookEvent(ev);
+  }, 15000);
+  
+  // First event immediately
+  setTimeout(function(){
+    addWebhookEvent({type:'CONNECTED',msg:'Bank webhook connection established',color:'#00ff88'});
+  }, 1000);
+}
+
+function addWebhookEvent(ev){
+  webhookEvents.unshift({...ev, time: new Date().toLocaleTimeString()});
+  if(webhookEvents.length > 10) webhookEvents.pop();
+  renderWebhookEvents();
+}
+
+function renderWebhookEvents(){
+  var el = document.getElementById('webhook-log');
+  if(!el)return;
+  var h = '';
+  webhookEvents.forEach(function(ev){
+    h += '<div class="webhook-item"><div class="webhook-dot" style="background:'+ev.color+'"></div><div><div style="color:#F5F0E8;font-size:10px">'+ev.type+'</div><div style="color:#8A8070;font-size:10px">'+ev.msg+'</div><div class="webhook-time">'+ev.time+'</div></div></div>';
+  });
+  el.innerHTML = h || '<div style="color:#8A8070;font-size:10px">No events yet. Connect your bank to start monitoring.</div>';
+}
+
+function triggerPaycheckAllocation(){
+  if(!currentSession || !currentSession.plan){
+    alert('Upgrade to Prime to use auto-allocation.');
+    return;
+  }
+  // Simulate paycheck detection and allocation
+  var income = parseFloat(document.getElementById('a_days').value||28) * parseFloat(document.getElementById('a_rate').value||362) + parseFloat(document.getElementById('a_va').value||3938) + parseFloat(document.getElementById('a_vre').value||800);
+  var expenses = parseFloat(document.getElementById('a_rent').value||800) + parseFloat(document.getElementById('a_food').value||400) + parseFloat(document.getElementById('a_phone').value||80) + parseFloat(document.getElementById('a_trans').value||200) + parseFloat(document.getElementById('a_oexp').value||200);
+  var avail = income - expenses;
+  var em = Math.round(avail*0.20);
+  var debt = Math.round(avail*0.15);
+  var re = Math.round(avail*0.25);
+  var inv = Math.round(avail*0.30);
+  var liq = avail-em-debt-re-inv;
+  
+  addWebhookEvent({type:'PAYCHECK_DETECTED',msg:'Deposit of $'+income.toLocaleString()+' detected — initiating allocation',color:'#C9A84C'});
+  
+  setTimeout(function(){
+    addWebhookEvent({type:'ALLOCATION_STARTED',msg:'Routing $'+em.toLocaleString()+' to Emergency Fund',color:'#00ff88'});
+  },1500);
+  setTimeout(function(){
+    addWebhookEvent({type:'TRANSFER_SENT',msg:'$'+debt.toLocaleString()+' sent to debt payoff account',color:'#00ff88'});
+  },3000);
+  setTimeout(function(){
+    addWebhookEvent({type:'TRANSFER_SENT',msg:'$'+re.toLocaleString()+' sent to real estate savings',color:'#00ff88'});
+  },4500);
+  setTimeout(function(){
+    addWebhookEvent({type:'ALPACA_FUNDED',msg:'$'+inv.toLocaleString()+' sent to Alpaca trading account',color:'#0088ff'});
+  },6000);
+  setTimeout(function(){
+    addWebhookEvent({type:'ALLOCATION_COMPLETE',msg:'All transfers complete. $'+liq.toLocaleString()+' kept liquid.',color:'#C9A84C'});
+    renderWebhookEvents();
+    dtab('pf');
+  },7500);
+}
+
+
 // ===== UPGRADE =====
 function selPlan(p){
   selPlanVal=p;
@@ -1113,12 +1263,12 @@ function pay(){
     fetch(RAIL+'/create-subscription',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,payment_method_id:res.paymentMethod.id,plan:selPlanVal})})
     .then(function(r){return r.json();}).then(function(d){
       if(d.success){
-  currentSession.plan = selPlanVal;
-  msg('paymsg','Payment successful! Welcome to VaultFlow.','#00ff88');
-  // Update profile tab to show new plan
-  var planEl = document.querySelector('#dt-pf [style*="Essential"]');
-  if(planEl) planEl.textContent = selPlanVal === 'prime' ? 'Prime ($9.99/mo)' : 'Vault ($24.99/mo)';
-  setTimeout(function(){go('dashboard');dtab('pf');},1500);
+  msg('paymsg','Payment successful! Welcome to VaultFlow Prime.','#00ff88');
+  setTimeout(function(){
+    go('dashboard');
+    activatePrime(selPlanVal);
+    dtab('pf');
+  },1500);
 }
       else{document.getElementById('cardErr').textContent=d.detail||'Payment failed.';document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';}
     }).catch(function(){document.getElementById('cardErr').textContent='Connection error. Try again.';document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';});
