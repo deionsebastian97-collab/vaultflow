@@ -258,6 +258,186 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .sp-lbl{font-size:6px;letter-spacing:3px;color:#555;margin-top:2px}
 .invite-only-banner{background:linear-gradient(135deg,#0D0900,#080808);border:1px solid rgba(201,168,76,0.12);border-radius:5px;padding:20px;text-align:center;margin-bottom:20px}
 
+
+/* ══ PLAN VARIABLES ══ */
+body{--a:#C9A84C;--ad:#8B6914;--ab:rgba(201,168,76,0.07);--bg:#080808;--glow:rgba(201,168,76,0.15)}
+body[data-plan="free"]{--a:#10B981;--ad:#065F46;--ab:rgba(16,185,89,0.07);--bg:#020A05;--glow:rgba(16,185,89,0.2)}
+body[data-plan="prime"]{--a:#F0C040;--ad:#A07010;--ab:rgba(240,192,64,0.08);--bg:#080700;--glow:rgba(240,192,64,0.25)}
+body[data-plan="vault"]{--a:#B983FF;--ad:#6B21A8;--ab:rgba(185,131,255,0.08);--bg:#050212;--glow:rgba(185,131,255,0.25)}
+
+/* ══ BUBBLIE PLAN BACKGROUNDS ══ */
+body[data-plan="free"]{background:var(--bg)}
+body[data-plan="prime"]{background:var(--bg)}
+body[data-plan="vault"]{background:var(--bg)}
+body[data-plan="free"]::before,body[data-plan="prime"]::before,body[data-plan="vault"]::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 20%,var(--glow) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 80%,var(--glow) 0%,transparent 50%);
+  animation:bubble-drift 8s ease-in-out infinite alternate
+}
+@keyframes bubble-drift{0%{opacity:0.6;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
+
+/* ══ DASHBOARD STYLES ══ */
+.dmain{padding:52px 13px 68px}
+.dash-nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,4,4,0.95);border-bottom:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(20px)}
+
+/* ══ BOTTOM NAV ══ */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:998;background:rgba(4,4,4,0.96);border-top:1px solid rgba(255,255,255,0.05);padding:2px 0 4px;backdrop-filter:blur(20px)}
+.bnav.on{display:flex}
+.btab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 4px;background:none;border:none;color:#333;font-size:5px;letter-spacing:1px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;position:relative}
+.btab:hover{color:#888}
+.btab.on{color:var(--a,#C9A84C)}
+.btab.on::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--a,#C9A84C);border-radius:0 0 3px 3px;box-shadow:0 0 8px var(--a,#C9A84C)}
+.btab-icon{font-size:18px;line-height:1}
+.btab.dim{opacity:0.2;pointer-events:none}
+
+/* MORE DRAWER */
+.more-drawer{display:none;position:fixed;bottom:56px;left:0;right:0;z-index:997;background:rgba(4,4,4,0.97);border-top:1px solid rgba(255,255,255,0.04);padding:8px 6px;backdrop-filter:blur(20px)}
+.more-drawer.on{display:block}
+.more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+
+/* ══ PLAN HERO CARDS ══ */
+.plan-hero{border-radius:12px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;transition:all 0.4s}
+.plan-hero::after{content:'';position:absolute;inset:0;border-radius:12px;background:inherit;filter:blur(20px);opacity:0.3;z-index:-1;transform:scale(1.1)}
+
+.plan-hero-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.25);box-shadow:0 8px 32px rgba(16,185,89,0.12),inset 0 1px 0 rgba(16,185,89,0.2)}
+.plan-hero-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.3);box-shadow:0 8px 32px rgba(240,192,64,0.15),inset 0 1px 0 rgba(240,192,64,0.25)}
+.plan-hero-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.3);box-shadow:0 8px 32px rgba(185,131,255,0.15),inset 0 1px 0 rgba(185,131,255,0.2)}
+
+/* ══ STAT CARDS ══ */
+.dsg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ds{border-radius:10px;padding:13px;position:relative;overflow:hidden;transition:all 0.3s}
+.ds:hover{transform:translateY(-2px)}
+.ds-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.2);box-shadow:0 4px 16px rgba(16,185,89,0.08)}
+.ds-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.2);box-shadow:0 4px 16px rgba(240,192,64,0.08)}
+.ds-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.2);box-shadow:0 4px 16px rgba(185,131,255,0.08)}
+.dsl{font-size:6px;letter-spacing:3px;color:var(--ad,#8B6914);margin-bottom:5px}
+.dsv{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--a,#C9A84C)}
+
+/* ══ ALLOC BARS ══ */
+.abar{margin-bottom:11px}
+.ameta2{display:flex;justify-content:space-between;margin-bottom:4px}
+.an{font-size:8px;color:#555}
+.ap{font-size:9px;font-family:'Cormorant Garamond',serif;color:var(--a,#C9A84C)}
+.atrack2{background:rgba(255,255,255,0.04);height:5px;border-radius:10px;overflow:hidden}
+.afill2{height:100%;border-radius:10px;transition:width 1.3s cubic-bezier(0.4,0,0.2,1)}
+
+/* ══ CHECKLIST ══ */
+.ci{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:9px}
+.cn{font-size:7px;letter-spacing:2px;color:var(--a,#C9A84C);min-width:18px;margin-top:2px;flex-shrink:0}
+.ct{color:#666;line-height:1.5;flex:1}
+
+/* ══ ACCORDION TOOLS ══ */
+.acc{border-radius:10px;margin-bottom:8px;overflow:hidden;transition:all 0.3s}
+.acc-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.12)}
+.acc-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.12)}
+.acc-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.12)}
+.acc.open.acc-free{border-color:rgba(16,185,89,0.35);box-shadow:0 4px 20px rgba(16,185,89,0.1)}
+.acc.open.acc-prime{border-color:rgba(240,192,64,0.35);box-shadow:0 4px 20px rgba(240,192,64,0.1)}
+.acc.open.acc-vault{border-color:rgba(185,131,255,0.35);box-shadow:0 4px 20px rgba(185,131,255,0.1)}
+.acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;user-select:none;transition:all 0.3s}
+.acc-htit{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:#F5F0E8}
+.acc-hsub{font-size:6px;letter-spacing:2px;color:var(--ad,#8B6914);margin-top:2px}
+.acc-arr{font-size:16px;color:var(--a,#C9A84C);transition:transform 0.3s;flex-shrink:0}
+.acc.open .acc-arr{transform:rotate(90deg)}
+.acc-body{padding:0 14px 14px;display:none}
+
+/* ══ GOALS ══ */
+.goal{border-radius:10px;padding:13px;margin-bottom:8px;transition:all 0.3s}
+.goal:hover{transform:translateY(-1px)}
+.goal-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.12)}
+.goal-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.12)}
+.goal-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.12)}
+.gname{font-size:10px;color:#F5F0E8;margin-bottom:4px;font-weight:500}
+.gmeta{display:flex;justify-content:space-between;font-size:8px;color:#555;margin-bottom:8px}
+.gtrack{background:rgba(255,255,255,0.04);height:5px;border-radius:10px;overflow:hidden}
+.gfill{height:100%;border-radius:10px;transition:width 1.3s cubic-bezier(0.4,0,0.2,1);background:linear-gradient(90deg,var(--ad,#8B6914),var(--a,#C9A84C));box-shadow:0 0 10px var(--glow,rgba(201,168,76,0.3))}
+
+/* ══ BLOG ══ */
+.blog{border-radius:10px;padding:16px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.blog-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.1)}
+.blog-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.1)}
+.blog-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.1)}
+.blog:hover{transform:translateX(4px)}
+.blog::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--a,#C9A84C);opacity:0;transition:opacity 0.3s;border-radius:0 3px 3px 0;box-shadow:2px 0 10px var(--a,#C9A84C)}
+.blog:hover::before{opacity:1}
+.bdate{font-size:6px;letter-spacing:3px;color:var(--ad,#8B6914);margin-bottom:6px}
+.btit{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:#F5F0E8;margin-bottom:5px;line-height:1.3}
+.bex{font-size:8px;color:#555;line-height:1.7}
+.bread{font-size:6px;letter-spacing:3px;color:var(--a,#C9A84C);margin-top:7px}
+
+/* ══ PROPS ══ */
+.prop{border-radius:10px;padding:14px;margin-bottom:8px;transition:all 0.3s}
+.prop:hover{transform:translateY(-1px)}
+.prop-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.12)}
+.prop-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.12)}
+.prop-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.12)}
+
+/* ══ LOCK ══ */
+.lock{position:relative;overflow:hidden;min-height:80px;border-radius:8px}
+.lovl{position:absolute;inset:0;backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:6px;border-radius:8px}
+.lovl-prime{background:rgba(10,7,0,0.85)}
+.lovl-vault{background:rgba(5,2,12,0.85)}
+.licon{font-size:22px}
+.ltxt2-prime{font-size:6px;letter-spacing:3px;color:#A07010}
+.ltxt2-vault{font-size:6px;letter-spacing:3px;color:#6B21A8}
+.lbtn-prime{background:linear-gradient(135deg,#A07010,#F0C040);color:#000;border:none;padding:7px 18px;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px}
+.lbtn-vault{background:linear-gradient(135deg,#6B21A8,#B983FF);color:#fff;border:none;padding:7px 18px;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px}
+
+/* ══ WEBHOOK ══ */
+.wh-item{display:flex;gap:7px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:8px}
+.wh-dot{width:5px;height:5px;border-radius:50%;margin-top:3px;flex-shrink:0}
+
+/* ══ CARD GENERIC ══ */
+.card{border-radius:10px;padding:14px;margin-bottom:10px;position:relative}
+.card-free{background:linear-gradient(135deg,#021A0C,#031209);border:1px solid rgba(16,185,89,0.1)}
+.card-prime{background:linear-gradient(135deg,#1A1200,#0D0900);border:1px solid rgba(240,192,64,0.1)}
+.card-vault{background:linear-gradient(135deg,#0E0520,#080212);border:1px solid rgba(185,131,255,0.1)}
+
+/* ══ PLAN BADGE ══ */
+.plan-badge-el{display:inline-block;font-size:7px;letter-spacing:2px;padding:3px 8px;font-weight:700;margin-left:7px;vertical-align:middle;border-radius:50px;font-family:'Montserrat',sans-serif}
+.plan-badge-free{background:linear-gradient(135deg,#065F46,#10B981);color:#fff;box-shadow:0 0 10px rgba(16,185,89,0.4)}
+.plan-badge-prime{background:linear-gradient(135deg,#A07010,#F0C040);color:#000;box-shadow:0 0 10px rgba(240,192,64,0.4)}
+.plan-badge-vault{background:linear-gradient(135deg,#6B21A8,#B983FF);color:#fff;box-shadow:0 0 10px rgba(185,131,255,0.4)}
+
+/* ══ RBOX ══ */
+.rbox{border-radius:8px;padding:13px;margin-top:10px;display:none;font-size:10px;color:#888;line-height:1.9}
+.rbox-free{background:#021A0C;border:1px solid rgba(16,185,89,0.1)}
+.rbox-prime{background:#1A1200;border:1px solid rgba(240,192,64,0.1)}
+.rbox-vault{background:#0E0520;border:1px solid rgba(185,131,255,0.1)}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ritem{border-radius:8px;padding:11px;text-align:center}
+.ritem-free{background:#031209;border:1px solid rgba(16,185,89,0.1)}
+.ritem-prime{background:#0D0900;border:1px solid rgba(240,192,64,0.1)}
+.ritem-vault{background:#080212;border:1px solid rgba(185,131,255,0.1)}
+.rlbl{font-size:6px;letter-spacing:2px;color:var(--ad,#8B6914);margin-bottom:4px}
+.rval{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--a,#C9A84C)}
+
+/* ══ REFERRAL ══ */
+.rlink{border-radius:6px;padding:9px 11px;font-size:9px;color:var(--a,#C9A84C);font-family:'Courier',monospace;word-break:break-all;margin:7px 0}
+.rlink-free{background:#021A0C;border:1px solid rgba(16,185,89,0.15)}
+.rlink-prime{background:#1A1200;border:1px solid rgba(240,192,64,0.15)}
+.rlink-vault{background:#0E0520;border:1px solid rgba(185,131,255,0.15)}
+.titem{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:10px}
+.tlbl{color:#555}
+.tamt{color:var(--a,#C9A84C);font-family:'Cormorant Garamond',serif;font-size:15px}
+
+/* ══ BUTTONS ══ */
+.btn{width:100%;margin-top:11px;padding:12px;border:none;color:#080808;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px;transition:all 0.3s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--glow,rgba(201,168,76,0.3))}
+.btn-free{background:linear-gradient(135deg,#065F46,#10B981,#34D399);color:#fff}
+.btn-prime{background:linear-gradient(135deg,#A07010,#F0C040,#FBBF24);color:#000}
+.btn-vault{background:linear-gradient(135deg,#6B21A8,#B983FF,#DDD6FE);color:#fff}
+.btn-o{width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#666;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:50px;transition:all 0.3s;margin-top:8px}
+.btn-o:hover{border-color:var(--a,#C9A84C);color:var(--a,#C9A84C)}
+.inp{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#F5F0E8;padding:10px 13px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:8px;transition:border 0.3s;margin-bottom:3px}
+.inp:focus{border-color:var(--a,#C9A84C)}
+.inp::placeholder{color:#333}
+.lbl{font-size:7px;letter-spacing:2px;color:var(--ad,#8B6914);margin-bottom:4px;margin-top:10px;display:block}
+.mbox{font-size:9px;text-align:center;margin-top:7px;min-height:13px;padding:2px 0}
+.gline{height:1px;background:linear-gradient(90deg,transparent,var(--a,#C9A84C),transparent);opacity:0.2;margin:16px 0}
+.tag{font-size:7px;letter-spacing:5px;color:var(--ad,#8B6914);margin-bottom:7px}
+
 @media(max-width:768px){
   nav{padding:12px 16px}
   .hero{padding:100px 16px 60px}
@@ -454,371 +634,284 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 <!-- ===== DASHBOARD ===== -->
 <div class="page" id="page-dashboard">
   <nav class="dash-nav">
-    <button class="logo" id="dash-logo" onclick="go('home')">VAULT<span>FLOW</span></button>
-    <div style="display:flex;gap:8px">
-      <button class="ngold" onclick="go('upgrade')">UPGRADE</button>
-      <button class="nbtn" onclick="signout()">SIGN OUT</button>
+    <button style="font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:5px;cursor:pointer;color:#F5F0E8;background:none;border:none" id="dash-logo" onclick="go('home')">VAULT<span style="color:var(--a,#C9A84C)">FLOW</span></button>
+    <div style="display:flex;gap:6px">
+      <button onclick="go('upgrade')" style="border:none;color:#080808;padding:7px 14px;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px;background:linear-gradient(135deg,var(--ad,#8B6914),var(--a,#C9A84C))">UPGRADE</button>
+      <button onclick="signout()" style="background:transparent;border:1px solid rgba(255,255,255,0.08);color:#555;padding:7px 13px;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:50px">OUT</button>
     </div>
   </nav>
-  <div class="dash-main">
-    <div class="dtabs">
-      <button class="dtab on" onclick="dtab('ov')"><span class="dtab-icon">⬡</span>OVERVIEW</button>
-      <button class="dtab" onclick="dtab('al')"><span class="dtab-icon">⟁</span>ALLOCATE</button>
-      <button class="dtab" onclick="dtab('tl')"><span class="dtab-icon">◈</span>TOOLS</button>
-      <button class="dtab" onclick="dtab('nw')"><span class="dtab-icon">◎</span>WEALTH</button>
-      <button class="dtab" onclick="dtab('gl')"><span class="dtab-icon">◇</span>GOALS</button>
-      <button class="dtab" onclick="dtab('pr')"><span class="dtab-icon">⬢</span>DEALS</button>
-      <button class="dtab" onclick="dtab('bl')"><span class="dtab-icon">▣</span>BLOG</button>
-      <button class="dtab" onclick="dtab('pf')"><span class="dtab-icon">◉</span>PROFILE</button>
-      <button class="dtab" onclick="go('upgrade')" style="color:#C9A84C"><span class="dtab-icon">★</span>UPGRADE</button>
+
+  <!-- BOTTOM NAV 5 tabs -->
+  <div class="bnav" id="bnav">
+    <button class="btab on" id="bt-ov" onclick="dtab('ov')"><span class="btab-icon">◈</span>HOME</button>
+    <button class="btab" id="bt-al" onclick="dtab('al')"><span class="btab-icon">⟁</span>ALLOCATE</button>
+    <button class="btab" id="bt-tl" onclick="dtab('tl')"><span class="btab-icon">◎</span>TOOLS</button>
+    <button class="btab" id="bt-pf" onclick="dtab('pf')"><span class="btab-icon">◉</span>ME</button>
+    <button class="btab" id="bt-more" onclick="toggleMore()"><span class="btab-icon">⋯</span>MORE</button>
+  </div>
+  <div class="more-drawer" id="more-drawer">
+    <div class="more-grid">
+      <button class="btab" id="bt-nw" onclick="dtab('nw');closeMore()"><span class="btab-icon">◇</span>WEALTH</button>
+      <button class="btab" id="bt-gl" onclick="dtab('gl');closeMore()"><span class="btab-icon">⬡</span>GOALS</button>
+      <button class="btab" id="bt-pr" onclick="dtab('pr');closeMore()"><span class="btab-icon">⬢</span>DEALS</button>
+      <button class="btab" id="bt-bl" onclick="dtab('bl');closeMore()"><span class="btab-icon">▣</span>BLOG</button>
     </div>
+  </div>
+
+  <div class="dmain" style="padding:52px 13px 70px">
 
     <!-- OVERVIEW -->
     <div id="dt-ov">
-      <div class="tag">DASHBOARD</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:16px;color:#F5F0E8">Welcome back.</div>
-      <div class="dsg">
-        <div class="ds"><div class="dsl">MONTHLY INCOME</div><div class="dsv" id="dInc" style="color:#C9A84C">$0</div></div>
-        <div class="ds"><div class="dsl">FREE CASH</div><div class="dsv" id="dFree" style="color:#00ff88">$0</div></div>
-        <div class="ds"><div class="dsl">TO INVESTING</div><div class="dsv" id="dInv" style="color:#0088ff">$0</div></div>
-        <div class="ds"><div class="dsl">TO REAL ESTATE</div><div class="dsv" id="dRE" style="color:#ff6b35">$0</div></div>
+      <div class="tag">MEMBER DASHBOARD</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:14px;color:#F5F0E8">Welcome back.</div>
+      <!-- Plan hero -->
+      <div id="plan-hero" class="plan-hero plan-hero-prime" style="margin-bottom:14px">
+        <div id="plan-hero-tag" style="font-size:7px;letter-spacing:4px;color:var(--ad);margin-bottom:6px">PRIME MEMBER</div>
+        <div id="plan-hero-title" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--a);margin-bottom:4px">Automated Wealth Engine</div>
+        <div id="plan-hero-desc" style="font-size:8px;color:#555;line-height:1.6">Your bank is connected and allocation is running on autopilot.</div>
       </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:12px">ALLOCATION BREAKDOWN</div>
-        <div class="abar"><div class="ameta2"><span class="an">Emergency Fund</span><span class="ap" id="p1">20%</span></div><div class="atrack2"><div class="afill2" id="b1" style="width:20%;background:#C9A84C"></div></div></div>
+      <!-- Stats -->
+      <div class="dsg">
+        <div class="ds ds-prime" id="ds1"><div class="dsl">MONTHLY INCOME</div><div class="dsv" id="dInc">$0</div></div>
+        <div class="ds ds-prime" id="ds2"><div class="dsl">FREE CASH</div><div class="dsv" id="dFree">$0</div></div>
+        <div class="ds ds-prime" id="ds3"><div class="dsl">TO INVESTING</div><div class="dsv" id="dInv" style="color:#0088ff">$0</div></div>
+        <div class="ds ds-prime" id="ds4"><div class="dsl">TO REAL ESTATE</div><div class="dsv" id="dRE" style="color:#ff6b35">$0</div></div>
+      </div>
+      <!-- Alloc bars -->
+      <div id="ov-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:10px">ALLOCATION</div>
+        <div class="abar"><div class="ameta2"><span class="an">Emergency Fund</span><span class="ap" id="p1">20%</span></div><div class="atrack2"><div class="afill2" id="b1" style="width:20%;background:linear-gradient(90deg,var(--ad),var(--a))"></div></div></div>
         <div class="abar"><div class="ameta2"><span class="an">Debt Payoff</span><span class="ap" id="p2">15%</span></div><div class="atrack2"><div class="afill2" id="b2" style="width:15%;background:#8B6914"></div></div></div>
         <div class="abar"><div class="ameta2"><span class="an">Real Estate</span><span class="ap" id="p3">25%</span></div><div class="atrack2"><div class="afill2" id="b3" style="width:25%;background:#ff6b35"></div></div></div>
         <div class="abar"><div class="ameta2"><span class="an">Stock Algo</span><span class="ap" id="p4">30%</span></div><div class="atrack2"><div class="afill2" id="b4" style="width:30%;background:#0088ff"></div></div></div>
-        <div class="abar"><div class="ameta2"><span class="an">Liquid Savings</span><span class="ap" id="p5">10%</span></div><div class="atrack2"><div class="afill2" id="b5" style="width:10%;background:#444"></div></div></div>
+        <div class="abar"><div class="ameta2"><span class="an">Liquid Savings</span><span class="ap" id="p5">10%</span></div><div class="atrack2"><div class="afill2" id="b5" style="width:10%;background:#333"></div></div></div>
       </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:10px">PAYDAY CHECKLIST</div>
-        <div id="chklist" style="color:#8A8070;font-size:11px">Enter your numbers in the Allocator tab to generate your checklist.</div>
+      <div id="cl-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:8px">PAYDAY CHECKLIST</div>
+        <div id="chklist" style="color:#444;font-size:9px">Run the Allocator to generate your checklist.</div>
       </div>
-      <div class="ubanner" id="upgrade-banner">
-        <div class="ubt">Unlock Auto-Allocation</div>
-        <div class="ubs">Connect your bank and route every dollar automatically on payday.</div>
-        <button class="btngold" style="width:auto;padding:11px 24px;font-size:9px" onclick="go('upgrade')">UPGRADE TO PRIME — $9.99/MO</button>
+      <div id="upgrade-banner" class="card card-prime" style="text-align:center">
+        <div id="ub-title" style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--a);margin-bottom:4px">Unlock Auto-Allocation</div>
+        <div id="ub-desc" style="font-size:8px;color:#555;line-height:1.6;margin-bottom:11px">Connect your bank and route every dollar automatically on payday.</div>
+        <button onclick="go('upgrade')" id="ub-btn" class="btn btn-prime" style="width:auto;padding:9px 20px;font-size:7px">UPGRADE TO PRIME</button>
       </div>
     </div>
 
     <!-- ALLOCATOR -->
     <div id="dt-al" style="display:none">
-      <div class="tag">YOUR FINANCES</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Set Your Numbers</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Enter your income, expenses and goals then tap Calculate</div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">💰 INCOME</div>
-        <label class="lbl">MARITIME DAYS PER HITCH</label><input class="inp" type="number" id="a_days" value="28">
+      <div class="tag">ALLOCATOR</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Set Your Numbers</div>
+      <div style="font-size:8px;color:#444;margin-bottom:13px">Enter income, expenses and goals then calculate</div>
+      <div id="al-card1" class="card card-prime"><div class="tag" style="margin-bottom:5px">INCOME</div>
+        <label class="lbl">MARITIME DAYS/HITCH</label><input class="inp" type="number" id="a_days" value="28">
         <label class="lbl">DAILY RATE ($)</label><input class="inp" type="number" id="a_rate" value="362">
-        <label class="lbl">VA DISABILITY — monthly ($)</label><input class="inp" type="number" id="a_va" value="3938">
-        <label class="lbl">VR&amp;E SUBSISTENCE — monthly ($)</label><input class="inp" type="number" id="a_vre" value="800">
-        <label class="lbl">OTHER INCOME — monthly ($)</label><input class="inp" type="number" id="a_oth" value="0">
+        <label class="lbl">VA DISABILITY (monthly $)</label><input class="inp" type="number" id="a_va" value="3938">
+        <label class="lbl">VR&amp;E SUBSISTENCE (monthly $)</label><input class="inp" type="number" id="a_vre" value="800">
+        <label class="lbl">OTHER INCOME ($)</label><input class="inp" type="number" id="a_oth" value="0">
       </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">🏠 EXPENSES</div>
-        <label class="lbl">RENT / HOUSING ($)</label><input class="inp" type="number" id="a_rent" value="800">
+      <div id="al-card2" class="card card-prime"><div class="tag" style="margin-bottom:5px">EXPENSES</div>
+        <label class="lbl">RENT ($)</label><input class="inp" type="number" id="a_rent" value="800">
         <label class="lbl">FOOD ($)</label><input class="inp" type="number" id="a_food" value="400">
         <label class="lbl">PHONE ($)</label><input class="inp" type="number" id="a_phone" value="80">
         <label class="lbl">TRANSPORT ($)</label><input class="inp" type="number" id="a_trans" value="200">
-        <label class="lbl">OTHER FIXED ($)</label><input class="inp" type="number" id="a_oexp" value="200">
+        <label class="lbl">OTHER ($)</label><input class="inp" type="number" id="a_oexp" value="200">
       </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">🎯 GOALS</div>
+      <div id="al-card3" class="card card-prime"><div class="tag" style="margin-bottom:5px">GOALS</div>
         <label class="lbl">EMERGENCY FUND TARGET ($)</label><input class="inp" type="number" id="a_em" value="15000">
         <label class="lbl">RE DOWN PAYMENT TARGET ($)</label><input class="inp" type="number" id="a_re" value="60000">
         <label class="lbl">MONTHLY INVESTING TARGET ($)</label><input class="inp" type="number" id="a_inv" value="2000">
       </div>
-      <button class="btngold" onclick="alloc()">⚡ CALCULATE MY ALLOCATION</button>
-      <div class="msgbox" id="almsg"></div>
+      <button id="al-btn" class="btn btn-prime" onclick="alloc()">⚡ CALCULATE ALLOCATION</button>
+      <div class="mbox" id="almsg"></div>
     </div>
 
     <!-- TOOLS -->
     <div id="dt-tl" style="display:none">
-      <div class="tag">FINANCIAL TOOLS</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Calculators</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Professional-grade tools used by institutional investors</div>
+      <div class="tag">TOOLS</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Calculators</div>
+      <div style="font-size:8px;color:#444;margin-bottom:13px">Tap any tool to expand</div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">💳</div>
-          <div><div class="tool-title">Debt Payoff Calculator</div><div class="tool-sub">AVALANCHE METHOD — HIGHEST INTEREST FIRST</div></div>
-        </div>
-        <label class="lbl">CURRENT BALANCE ($)</label>
-        <input class="inp" type="number" id="t_db" placeholder="e.g. 15000">
-        <label class="lbl">ANNUAL INTEREST RATE (%)</label>
-        <input class="inp" type="number" id="t_dr" placeholder="e.g. 22.99" step="0.01">
-        <label class="lbl">MONTHLY PAYMENT ($)</label>
-        <input class="inp" type="number" id="t_dp" placeholder="e.g. 500">
-        <button class="btngold" onclick="cDebt()">CALCULATE PAYOFF DATE</button>
-        <div class="resbox" id="r_debt"></div>
-      </div>
+      <div class="acc acc-prime" id="acc-debt"><div class="acc-hdr" onclick="tacc('debt')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">💳</span><div><div class="acc-htit">Debt Payoff</div><div class="acc-hsub">AVALANCHE METHOD</div></div></div><span class="acc-arr">›</span></div>
+        <div class="acc-body" id="body-debt"><label class="lbl">BALANCE ($)</label><input class="inp" type="number" id="t_db" placeholder="15000"><label class="lbl">ANNUAL INTEREST RATE (%)</label><input class="inp" type="number" id="t_dr" placeholder="22.99" step="0.01"><label class="lbl">MONTHLY PAYMENT ($)</label><input class="inp" type="number" id="t_dp" placeholder="500"><button id="tool-btn-debt" class="btn btn-prime" onclick="cDebt()">CALCULATE</button><div class="rbox rbox-prime" id="r_debt"></div></div></div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">📈</div>
-          <div><div class="tool-title">Investment Growth</div><div class="tool-sub">COMPOUND INTEREST CALCULATOR</div></div>
-        </div>
-        <label class="lbl">STARTING BALANCE ($)</label>
-        <input class="inp" type="number" id="t_ib" placeholder="e.g. 5000" value="0">
-        <label class="lbl">MONTHLY CONTRIBUTION ($)</label>
-        <input class="inp" type="number" id="t_ia" placeholder="e.g. 2000">
-        <label class="lbl">ANNUAL RETURN (%) — S&amp;P 500 avg is 10%</label>
-        <input class="inp" type="number" id="t_ir" placeholder="e.g. 10" step="0.1" value="10">
-        <label class="lbl">TIME PERIOD (years)</label>
-        <input class="inp" type="number" id="t_iy" placeholder="e.g. 10" value="10">
-        <button class="btngold" onclick="cInv()">CALCULATE GROWTH</button>
-        <div class="resbox" id="r_inv"></div>
-      </div>
+      <div class="acc acc-prime" id="acc-inv"><div class="acc-hdr" onclick="tacc('inv')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">📈</span><div><div class="acc-htit">Investment Growth</div><div class="acc-hsub">COMPOUND INTEREST</div></div></div><span class="acc-arr">›</span></div>
+        <div class="acc-body" id="body-inv"><label class="lbl">STARTING BALANCE ($)</label><input class="inp" type="number" id="t_ib" value="0"><label class="lbl">MONTHLY CONTRIBUTION ($)</label><input class="inp" type="number" id="t_ia" placeholder="2000"><label class="lbl">ANNUAL RETURN (%) — S&amp;P avg 10%</label><input class="inp" type="number" id="t_ir" value="10" step="0.1"><label class="lbl">YEARS</label><input class="inp" type="number" id="t_iy" value="10"><button id="tool-btn-inv" class="btn btn-prime" onclick="cInv()">CALCULATE</button><div class="rbox rbox-prime" id="r_inv"></div></div></div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">🏘️</div>
-          <div><div class="tool-title">Real Estate Deal Analyzer</div><div class="tool-sub">CAP RATE · CASH-ON-CASH · DEBT SERVICE</div></div>
-        </div>
-        <label class="lbl">PROPERTY ADDRESS (optional — for your records)</label>
-        <input class="inp" type="text" id="t_ra" placeholder="e.g. 123 Main St, Cleveland OH 44101">
-        <label class="lbl">NUMBER OF UNITS</label>
-        <select class="inp" id="t_ru" style="cursor:pointer">
-          <option value="1">1 unit — Single family</option>
-          <option value="2">2 units — Duplex</option>
-          <option value="3">3 units — Triplex</option>
-          <option value="4" selected>4 units — Quadplex</option>
-          <option value="5">5+ units — Commercial</option>
-        </select>
-        <label class="lbl">PURCHASE PRICE ($)</label>
-        <input class="inp" type="number" id="t_rp" placeholder="e.g. 350000">
-        <label class="lbl">TOTAL MONTHLY RENT — all units ($)</label>
-        <input class="inp" type="number" id="t_rr" placeholder="e.g. 3200">
-        <label class="lbl">DOWN PAYMENT (%)</label>
-        <select class="inp" id="t_rd" style="cursor:pointer">
-          <option value="3.5">3.5% — FHA loan</option>
-          <option value="5">5% — Conventional</option>
-          <option value="10">10% — Conventional</option>
-          <option value="20" selected>20% — Standard investment</option>
-          <option value="25">25% — Investment property</option>
-          <option value="100">100% — Cash purchase</option>
-        </select>
-        <label class="lbl">MORTGAGE INTEREST RATE (%)</label>
-        <input class="inp" type="number" id="t_ri" placeholder="e.g. 7.25" step="0.05" value="7.25">
-        <label class="lbl">MONTHLY OPERATING EXPENSES ($) — taxes, insurance, maintenance</label>
-        <input class="inp" type="number" id="t_re" placeholder="e.g. 600">
-        <label class="lbl">VACANCY RATE (%)</label>
-        <input class="inp" type="number" id="t_rv" placeholder="e.g. 5" value="5">
-        <button class="btngold" onclick="cRE()">⚡ ANALYZE THIS DEAL</button>
-        <div class="resbox" id="r_re"></div>
-      </div>
+      <div class="acc acc-prime" id="acc-re"><div class="acc-hdr" onclick="tacc('re')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">🏘️</span><div><div class="acc-htit">Real Estate Analyzer</div><div class="acc-hsub">CAP RATE · CASH-ON-CASH · VA LOAN</div></div></div><span class="acc-arr">›</span></div>
+        <div class="acc-body" id="body-re">
+          <label class="lbl">ADDRESS (optional)</label><input class="inp" type="text" id="t_ra" placeholder="123 Main St, Cleveland OH">
+          <label class="lbl">UNITS</label><select class="inp" id="t_ru" style="cursor:pointer"><option value="1">1 — Single family</option><option value="2">2 — Duplex</option><option value="3">3 — Triplex</option><option value="4" selected>4 — Quadplex</option><option value="5">5+ Units</option></select>
+          <label class="lbl">LOAN TYPE</label>
+          <select class="inp" id="t_ltype" style="cursor:pointer" onchange="toggleVA()">
+            <option value="conv">Conventional — 20% down</option>
+            <option value="fha">FHA — 3.5% down</option>
+            <option value="va">🎖️ VA Home Loan — 0% down (Veterans)</option>
+            <option value="conv5">Conventional — 5% down</option>
+            <option value="conv10">Conventional — 10% down</option>
+            <option value="cash">Cash Purchase</option>
+          </select>
+          <div id="va-info" style="display:none;border-radius:8px;padding:9px;margin-top:6px;font-size:8px;color:#A07010;line-height:1.7;background:#1A1200;border:1px solid rgba(240,192,64,0.15)">🎖️ <strong style="color:var(--a)">VA Loan:</strong> No down payment. No PMI. VA Funding Fee 2.15% (waived for 10%+ disability rating).</div>
+          <label class="lbl">PURCHASE PRICE ($)</label><input class="inp" type="number" id="t_rp" placeholder="350000">
+          <label class="lbl">TOTAL MONTHLY RENT ($)</label><input class="inp" type="number" id="t_rr" placeholder="3200">
+          <label class="lbl">DOWN PAYMENT (%)</label><select class="inp" id="t_rd" style="cursor:pointer"><option value="0">0% — VA</option><option value="3.5">3.5% — FHA</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="25">25%</option><option value="100">Cash</option></select>
+          <label class="lbl">INTEREST RATE (%)</label><input class="inp" type="number" id="t_ri" value="7.25" step="0.05">
+          <label class="lbl">MONTHLY EXPENSES ($)</label><input class="inp" type="number" id="t_re2" placeholder="600">
+          <label class="lbl">VACANCY RATE (%)</label><input class="inp" type="number" id="t_rv" value="5">
+          <button id="tool-btn-re" class="btn btn-prime" onclick="cRE()">ANALYZE DEAL</button><div class="rbox rbox-prime" id="r_re"></div>
+        </div></div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">🧾</div>
-          <div><div class="tool-title">Tax Estimator</div><div class="tool-sub">FEDERAL TAX + QUARTERLY PAYMENTS</div></div>
-        </div>
-        <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px;margin-bottom:8px;font-size:10px;color:#8B6914;line-height:1.6">
-          ⚠️ VA disability is tax-free and excluded. This is an estimate only — consult a tax professional.
-        </div>
-        <label class="lbl">ANNUAL MARITIME / W2 INCOME ($)</label>
-        <input class="inp" type="number" id="t_tm" placeholder="e.g. 101360">
-        <label class="lbl">SELF-EMPLOYMENT / SIDE INCOME ($)</label>
-        <input class="inp" type="number" id="t_ts2" placeholder="e.g. 0" value="0">
-        <label class="lbl">OTHER TAXABLE INCOME ($)</label>
-        <input class="inp" type="number" id="t_to" placeholder="e.g. 0" value="0">
-        <label class="lbl">FILING STATUS</label>
-        <select class="inp" id="t_ts" style="cursor:pointer">
-          <option value="single">Single</option>
-          <option value="married">Married Filing Jointly</option>
-          <option value="hoh">Head of Household</option>
-        </select>
-        <label class="lbl">PRE-TAX DEDUCTIONS — 401k, HSA, etc ($)</label>
-        <input class="inp" type="number" id="t_td" placeholder="e.g. 6000" value="0">
-        <button class="btngold" onclick="cTax()">ESTIMATE MY TAXES</button>
-        <div class="resbox" id="r_tax"></div>
-      </div>
+      <div class="acc acc-prime" id="acc-tax"><div class="acc-hdr" onclick="tacc('tax')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">🧾</span><div><div class="acc-htit">Tax Estimator</div><div class="acc-hsub">PRIME+ FEATURE</div></div></div><span class="acc-arr">›</span></div>
+        <div class="acc-body" id="body-tax">
+          <div id="tax-lock" class="lock"><div class="lovl lovl-prime"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK PRIME</button></div></div>
+          <div id="tax-content" style="display:none"><div style="border-radius:8px;padding:8px;margin-bottom:7px;font-size:8px;color:var(--ad);background:var(--ab);border:1px solid rgba(255,255,255,0.04)">⚠️ VA disability excluded. Estimate only.</div><label class="lbl">MARITIME / W2 INCOME ($)</label><input class="inp" type="number" id="t_tm" placeholder="101360"><label class="lbl">SELF-EMPLOYMENT ($)</label><input class="inp" type="number" id="t_ts2" value="0"><label class="lbl">OTHER TAXABLE ($)</label><input class="inp" type="number" id="t_to" value="0"><label class="lbl">FILING STATUS</label><select class="inp" id="t_ts" style="cursor:pointer"><option value="single">Single</option><option value="married">Married Filing Jointly</option><option value="hoh">Head of Household</option></select><label class="lbl">PRE-TAX DEDUCTIONS ($)</label><input class="inp" type="number" id="t_td" value="0"><button id="tool-btn-tax" class="btn btn-prime" onclick="cTax()">ESTIMATE TAXES</button><div class="rbox rbox-prime" id="r_tax"></div></div>
+        </div></div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">📊</div>
-          <div><div class="tool-title">Stock Algo Signals</div><div class="tool-sub">LIVE BUY/SELL/HOLD — SMA + RSI + MOMENTUM</div></div>
-        </div>
-        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:12px">Institutional-grade signals scanning S&P 500, crypto, and sector ETFs using 4-factor confirmation.</div>
-        <button class="btngold" onclick="cSig()">FETCH LIVE SIGNALS</button>
-        <div class="resbox" id="r_sig"></div>
-      </div>
+      <div class="acc acc-vault" id="acc-sig"><div class="acc-hdr" onclick="tacc('sig')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">📊</span><div><div class="acc-htit">Algo Signals</div><div class="acc-hsub">VAULT EXCLUSIVE</div></div></div><span class="acc-arr" style="color:#B983FF">›</span></div>
+        <div class="acc-body" id="body-sig">
+          <div id="sig-lock" class="lock"><div class="lovl lovl-vault"><div class="licon">🔒</div><div class="ltxt2-vault">VAULT EXCLUSIVE</div><button class="lbtn-vault" onclick="go('upgrade')">UNLOCK VAULT</button></div></div>
+          <div id="sig-content" style="display:none"><div style="font-size:9px;color:#555;line-height:1.8;margin-bottom:10px">4-factor signals across S&P 500, crypto, and ETFs.</div><button id="tool-btn-sig" class="btn btn-vault" onclick="cSig()">FETCH LIVE SIGNALS</button><div class="rbox rbox-vault" id="r_sig"></div></div>
+        </div></div>
     </div>
 
-    <!-- NET WORTH -->
+    <!-- WEALTH -->
     <div id="dt-nw" style="display:none">
-      <div class="tag">WEALTH TRACKER</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Net Worth Snapshot</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Your complete financial picture</div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">✅ ASSETS</div>
-        <label class="lbl">CHECKING + SAVINGS ($)</label><input class="inp" type="number" id="n_cash" placeholder="e.g. 5000" value="0">
-        <label class="lbl">INVESTMENT PORTFOLIO — stocks, ETFs ($)</label><input class="inp" type="number" id="n_inv" placeholder="e.g. 0" value="0">
-        <label class="lbl">RETIREMENT — 401k, IRA, TSP ($)</label><input class="inp" type="number" id="n_ret" placeholder="e.g. 0" value="0">
-        <label class="lbl">REAL ESTATE EQUITY ($)</label><input class="inp" type="number" id="n_re" placeholder="e.g. 0" value="0">
-        <label class="lbl">VEHICLE VALUE ($)</label><input class="inp" type="number" id="n_car" placeholder="e.g. 0" value="0">
-        <label class="lbl">OTHER ASSETS ($)</label><input class="inp" type="number" id="n_oth" placeholder="e.g. 0" value="0">
-      </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">❌ LIABILITIES</div>
-        <label class="lbl">CREDIT CARD DEBT ($)</label><input class="inp" type="number" id="n_cc" placeholder="e.g. 0" value="0">
-        <label class="lbl">AUTO LOAN ($)</label><input class="inp" type="number" id="n_auto" placeholder="e.g. 0" value="0">
-        <label class="lbl">STUDENT LOANS ($)</label><input class="inp" type="number" id="n_stud" placeholder="e.g. 0" value="0">
-        <label class="lbl">MORTGAGE BALANCE ($)</label><input class="inp" type="number" id="n_mort" placeholder="e.g. 0" value="0">
-        <label class="lbl">OTHER DEBT ($)</label><input class="inp" type="number" id="n_odbt" placeholder="e.g. 0" value="0">
-      </div>
-      <button class="btngold" onclick="cNW()">CALCULATE NET WORTH</button>
-      <div class="resbox" id="r_nw"></div>
-      <div class="card" style="margin-top:12px">
-        <div class="tag" style="margin-bottom:8px">PATH TO $1M</div>
-        <div id="nw_proj" style="font-size:11px;color:#8A8070;line-height:2">Enter your assets and liabilities above to see your wealth projection.</div>
+      <div class="tag">WEALTH</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Net Worth Tracker</div>
+      <div id="nw-lock" class="lock" style="min-height:100px;border-radius:10px"><div class="lovl lovl-prime"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK PRIME</button></div></div>
+      <div id="nw-content" style="display:none">
+        <div id="nw-card1" class="card card-prime"><div class="tag" style="margin-bottom:5px">ASSETS</div>
+          <label class="lbl">CHECKING + SAVINGS ($)</label><input class="inp" type="number" id="n_cash" value="0">
+          <label class="lbl">INVESTMENTS ($)</label><input class="inp" type="number" id="n_inv" value="0">
+          <label class="lbl">RETIREMENT ($)</label><input class="inp" type="number" id="n_ret" value="0">
+          <label class="lbl">REAL ESTATE EQUITY ($)</label><input class="inp" type="number" id="n_re" value="0">
+          <label class="lbl">VEHICLE ($)</label><input class="inp" type="number" id="n_car" value="0">
+          <label class="lbl">OTHER ($)</label><input class="inp" type="number" id="n_oth" value="0">
+        </div>
+        <div id="nw-card2" class="card card-prime"><div class="tag" style="margin-bottom:5px">LIABILITIES</div>
+          <label class="lbl">CREDIT CARD ($)</label><input class="inp" type="number" id="n_cc" value="0">
+          <label class="lbl">AUTO LOAN ($)</label><input class="inp" type="number" id="n_auto" value="0">
+          <label class="lbl">STUDENT LOANS ($)</label><input class="inp" type="number" id="n_stud" value="0">
+          <label class="lbl">MORTGAGE ($)</label><input class="inp" type="number" id="n_mort" value="0">
+          <label class="lbl">OTHER DEBT ($)</label><input class="inp" type="number" id="n_odbt" value="0">
+        </div>
+        <button id="nw-btn" class="btn btn-prime" onclick="cNW()">CALCULATE NET WORTH</button>
+        <div class="rbox rbox-prime" id="r_nw"></div>
+        <div id="nw-proj-card" class="card card-prime" style="margin-top:10px"><div class="tag" style="margin-bottom:5px">PATH TO $1M</div><div id="nw_proj" style="font-size:9px;color:#444">Enter assets and liabilities above.</div></div>
       </div>
     </div>
 
     <!-- GOALS -->
     <div id="dt-gl" style="display:none">
-      <div class="tag">FINANCIAL GOALS</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Your Progress</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Track your journey to financial independence</div>
+      <div class="tag">GOALS</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Your Progress</div>
+      <div style="font-size:8px;color:#444;margin-bottom:13px">Track your journey to financial independence</div>
       <div id="goals_list">
-        <div class="goal"><div class="gname">🛡️ Emergency Fund</div><div class="gmeta"><span>$0 saved</span><span>$15,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
-        <div class="goal"><div class="gname">🏘️ Real Estate Down Payment</div><div class="gmeta"><span>$0 saved</span><span>$60,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
-        <div class="goal"><div class="gname">📈 Investment Portfolio</div><div class="gmeta"><span>$0 invested</span><span>$100,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
-        <div class="goal"><div class="gname">💰 Net Worth $1M</div><div class="gmeta"><span>$0 current</span><span>$1,000,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal goal-prime"><div class="gname">🛡️ Emergency Fund</div><div class="gmeta"><span>$0</span><span>$15,000 — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal goal-prime"><div class="gname">🏘️ RE Down Payment</div><div class="gmeta"><span>$0</span><span>$60,000 — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal goal-prime"><div class="gname">📈 Investments</div><div class="gmeta"><span>$0</span><span>$100,000 — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal goal-prime"><div class="gname">💰 Net Worth $1M</div><div class="gmeta"><span>$0</span><span>$1,000,000 — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
       </div>
-      <div class="card" style="margin-top:12px">
-        <div class="tag" style="margin-bottom:8px">UPDATE YOUR PROGRESS</div>
-        <label class="lbl">EMERGENCY FUND SAVED ($)</label><input class="inp" type="number" id="g_e" placeholder="0" value="0">
-        <label class="lbl">RE DOWN PAYMENT SAVED ($)</label><input class="inp" type="number" id="g_r" placeholder="0" value="0">
-        <label class="lbl">INVESTMENT PORTFOLIO ($)</label><input class="inp" type="number" id="g_i" placeholder="0" value="0">
-        <label class="lbl">CURRENT NET WORTH ($)</label><input class="inp" type="number" id="g_n" placeholder="0" value="0">
-        <button class="btngold" onclick="cGoals()">UPDATE PROGRESS</button>
+      <div id="gl-update-card" class="card card-prime" style="margin-top:10px"><div class="tag" style="margin-bottom:5px">UPDATE PROGRESS</div>
+        <label class="lbl">EMERGENCY FUND ($)</label><input class="inp" type="number" id="g_e" value="0">
+        <label class="lbl">RE DOWN PAYMENT ($)</label><input class="inp" type="number" id="g_r" value="0">
+        <label class="lbl">INVESTMENTS ($)</label><input class="inp" type="number" id="g_i" value="0">
+        <label class="lbl">NET WORTH ($)</label><input class="inp" type="number" id="g_n" value="0">
+        <button id="gl-btn" class="btn btn-prime" onclick="cGoals()">UPDATE</button>
       </div>
     </div>
 
-    <!-- DEALS / PROPERTIES -->
+    <!-- DEALS -->
     <div id="dt-pr" style="display:none">
-      <div class="tag">REAL ESTATE PIPELINE</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Deal Tracker</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Track every deal from analysis to close</div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">➕ ADD A PROPERTY</div>
-        <label class="lbl">PROPERTY ADDRESS</label>
-        <input class="inp" type="text" id="p_a" placeholder="e.g. 456 Oak Ave, Detroit MI 48201">
-        <label class="lbl">PROPERTY TYPE</label>
-        <select class="inp" id="p_t" style="cursor:pointer">
-          <option>Single Family</option>
-          <option selected>Duplex</option>
-          <option>Triplex</option>
-          <option>Quadplex</option>
-          <option>5+ Units</option>
-          <option>Commercial</option>
-        </select>
-        <label class="lbl">PURCHASE PRICE ($)</label>
-        <input class="inp" type="number" id="p_p" placeholder="e.g. 250000">
-        <label class="lbl">MONTHLY RENT — total all units ($)</label>
-        <input class="inp" type="number" id="p_r" placeholder="e.g. 2400">
-        <label class="lbl">MONTHLY EXPENSES — taxes, insurance, mgmt ($)</label>
-        <input class="inp" type="number" id="p_e" placeholder="e.g. 400">
-        <label class="lbl">STATUS</label>
-        <select class="inp" id="p_s" style="cursor:pointer">
-          <option>🔍 Analyzing</option>
-          <option>📝 Offer Submitted</option>
-          <option>🤝 Under Contract</option>
-          <option>✅ Closed</option>
-          <option>❌ Pass</option>
-        </select>
-        <label class="lbl">NOTES</label>
-        <input class="inp" type="text" id="p_n" placeholder="e.g. Good neighborhood, needs roof in 5 years">
-        <button class="btngold" onclick="addProp()">ADD TO PIPELINE</button>
+      <div class="tag">DEAL TRACKER</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Properties</div>
+      <div id="pr-lock" class="lock" style="min-height:100px;border-radius:10px"><div class="lovl lovl-prime"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK PRIME</button></div></div>
+      <div id="pr-content" style="display:none">
+        <div id="pr-card" class="card card-prime"><div class="tag" style="margin-bottom:5px">ADD PROPERTY</div>
+          <label class="lbl">ADDRESS</label><input class="inp" type="text" id="p_a" placeholder="123 Main St, Detroit MI">
+          <label class="lbl">TYPE</label><select class="inp" id="p_t" style="cursor:pointer"><option>Single Family</option><option selected>Duplex</option><option>Triplex</option><option>Quadplex</option><option>5+ Units</option></select>
+          <label class="lbl">PURCHASE PRICE ($)</label><input class="inp" type="number" id="p_p" placeholder="250000">
+          <label class="lbl">MONTHLY RENT ($)</label><input class="inp" type="number" id="p_r" placeholder="2400">
+          <label class="lbl">MONTHLY EXPENSES ($)</label><input class="inp" type="number" id="p_e" placeholder="400">
+          <label class="lbl">STATUS</label><select class="inp" id="p_s" style="cursor:pointer"><option>Analyzing</option><option>Offer Submitted</option><option>Under Contract</option><option>Closed</option><option>Pass</option></select>
+          <label class="lbl">NOTES</label><input class="inp" type="text" id="p_n" placeholder="e.g. Needs roof in 3 years">
+          <button id="pr-btn" class="btn btn-prime" onclick="addProp()">ADD TO PIPELINE</button>
+        </div>
+        <div id="props_list" style="margin-top:6px"></div>
       </div>
-      <div id="props_list" style="margin-top:4px"></div>
     </div>
 
     <!-- BLOG -->
     <div id="dt-bl" style="display:none">
       <div class="tag">MARITIME WEALTH</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">The VaultFlow Blog</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Wealth building for mariners, veterans, and high earners</div>
-      <div class="blog"><div class="bdate">MAY 2025</div><div class="btit">How I Allocate $14,000/Month as a Merchant Mariner</div><div class="bex">Working 28 days on, 14 days off changes everything about how you manage money. Here is the exact system I built to turn irregular maritime income into consistent wealth building — emergency fund, debt payoff, real estate, and stock algo all on autopilot.</div><div class="bread">READ MORE →</div></div>
-      <div class="blog"><div class="bdate">APRIL 2025</div><div class="btit">The VA Disability Wealth Strategy Nobody Talks About</div><div class="bex">Tax-free VA disability income is one of the most powerful wealth-building tools available to veterans. Here is how to stack it with maritime pay to accelerate your path to financial independence — and why most veterans leave money on the table.</div><div class="bread">READ MORE →</div></div>
-      <div class="blog"><div class="bdate">MARCH 2025</div><div class="btit">Buying Your First Multifamily Property on a Maritime Schedule</div><div class="bex">The 28/14 rotation is actually an advantage in real estate investing. Your 14 days off are the perfect window to analyze deals, build relationships with agents, and close on properties while your shipmates spend money instead of building it.</div><div class="bread">READ MORE →</div></div>
-      <div class="blog"><div class="bdate">FEBRUARY 2025</div><div class="btit">Kelly Criterion Position Sizing: The Institutional Edge for Individual Investors</div><div class="bex">Institutional investors use the Kelly Criterion to mathematically size their positions and never blow up their account. Here is how to apply the same formula to your stock algo and protect your capital while maximizing growth.</div><div class="bread">READ MORE →</div></div>
-      <div class="blog"><div class="bdate">JANUARY 2025</div><div class="btit">The 28/14 Wealth Blueprint: $1M Net Worth by 35</div><div class="bex">I mapped out exactly what it takes to hit $1M net worth by 35 starting from scratch as a merchant mariner. The math works if you follow the system — here is the complete blueprint with monthly targets and investment allocation.</div><div class="bread">READ MORE →</div></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">The VaultFlow Blog</div>
+      <div style="font-size:8px;color:#444;margin-bottom:13px">Wealth building for mariners, veterans, and high earners</div>
+      <div id="blog1" class="blog blog-prime"><div class="bdate">MAY 2025</div><div class="btit">How I Allocate $14,000/Month as a Merchant Mariner</div><div class="bex">The exact system I built to turn irregular maritime income into consistent wealth — emergency fund, debt, real estate, and stock algo all on autopilot.</div><div class="bread">READ MORE →</div></div>
+      <div id="blog2" class="blog blog-prime"><div class="bdate">APRIL 2025</div><div class="btit">The VA Disability Wealth Strategy Nobody Talks About</div><div class="bex">Tax-free VA income stacked with maritime pay. How to hit financial independence faster than any other veteran wealth path.</div><div class="bread">READ MORE →</div></div>
+      <div id="blog3" class="blog blog-prime"><div class="bdate">MARCH 2025</div><div class="btit">Buying Your First Multifamily on a Maritime Schedule</div><div class="bex">The 28/14 rotation is an advantage in real estate. Your 14 days off are the perfect window to analyze deals and close.</div><div class="bread">READ MORE →</div></div>
+      <div id="blog4" class="blog blog-prime"><div class="bdate">FEBRUARY 2025</div><div class="btit">Kelly Criterion: The Institutional Edge for Individual Investors</div><div class="bex">How to size positions like a hedge fund and protect capital while maximizing growth in your trading algo.</div><div class="bread">READ MORE →</div></div>
     </div>
 
     <!-- PROFILE -->
     <div id="dt-pf" style="display:none">
-      <div class="tag">YOUR ACCOUNT</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Profile &amp; Settings</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Manage your account and connected services</div>
-
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">👤 ACCOUNT INFO</div>
-        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px">EMAIL</div>
-        <div id="pemail" style="font-size:12px;color:#8A8070;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Loading...</div>
-        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px;margin-top:12px">PLAN</div>
-        <div id="plan-display" style="font-size:12px;color:#C9A84C;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Essential (Free)</div>
-        <button class="btngold" style="margin-top:14px" onclick="go('upgrade')">UPGRADE TO PRIME →</button>
+      <div class="tag">PROFILE</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Account</div>
+      <div id="pf-card1" class="card card-prime">
+        <div class="tag" style="margin-bottom:5px">ACCOUNT INFO</div>
+        <div style="font-size:7px;color:var(--ad);letter-spacing:2px;margin-bottom:3px">EMAIL</div>
+        <div id="pemail" style="font-size:11px;color:#666;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)">Loading...</div>
+        <div style="font-size:7px;color:var(--ad);letter-spacing:2px;margin-bottom:3px;margin-top:10px">PLAN</div>
+        <div id="plan-display" style="font-size:11px;color:var(--a);padding:8px 0">Essential (Free)</div>
+        <button id="pf-upgrade-btn" class="btn btn-prime" style="margin-top:11px" onclick="go('upgrade')">CHANGE PLAN →</button>
+        <div id="downgrade-section" style="display:none;margin-top:8px">
+          <div style="font-size:8px;color:#444;line-height:1.6;margin-bottom:7px">Downgrading removes paid features immediately.</div>
+          <button class="btn-o" onclick="downgradePlan()">DOWNGRADE TO FREE</button>
+        </div>
       </div>
-
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">🏦 BANK CONNECTION</div>
+      <div id="pf-bank-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:5px">BANK CONNECTION</div>
         <div id="bank-disconnected">
-          <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">Connect your bank account to detect paychecks automatically and see your real balance in real time.</div>
-          <button class="btngold" onclick="connectBank()">CONNECT YOUR BANK VIA PLAID</button>
-          <div id="bank-msg" class="msgbox"></div>
+          <div style="font-size:9px;color:#555;line-height:1.7;margin-bottom:11px">Connect your bank to detect paychecks and see your real balance.</div>
+          <div id="bank-prime-lock" class="lock" style="min-height:60px;border-radius:8px"><div class="lovl lovl-prime"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK</button></div></div>
+          <div id="bank-prime-btn" style="display:none"><button id="connect-bank-btn" class="btn btn-prime" onclick="connectBank()">CONNECT BANK VIA PLAID</button><div id="bank-msg" class="mbox"></div></div>
         </div>
         <div id="bank-connected" style="display:none">
-          <div style="font-size:9px;letter-spacing:2px;color:#00ff88;margin-bottom:8px">● CONNECTED</div>
-          <div id="bank-balance" style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#C9A84C;margin-bottom:4px">$0.00</div>
-          <div style="font-size:9px;color:#8A8070;margin-bottom:16px">Current checking balance</div>
-          <div id="bank-transactions"></div>
-          <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">🔍 SCAN FOR PAYCHECKS</button>
-          <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
+          <div style="font-size:7px;letter-spacing:2px;color:#10B981;margin-bottom:5px">● CONNECTED</div>
+          <div id="bank-balance" style="font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--a);margin-bottom:3px">$0.00</div>
+          <div style="font-size:8px;color:#444;margin-bottom:13px">Current balance</div>
+          <div id="bank-txns"></div>
+          <button id="paycheck-btn" class="btn-o" onclick="detectPaycheck()">SCAN FOR PAYCHECKS</button>
+          <div id="paycheck-result" style="margin-top:7px;font-size:9px;color:#555"></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">⚡ AUTO-ALLOCATION ENGINE</div>
-        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">When a paycheck is detected VaultFlow automatically routes every dollar based on your allocator settings — emergency fund, debt, real estate, investing, and liquid savings.</div>
-        <button class="btngold" onclick="triggerAllocation()">▶ SIMULATE AUTO-ALLOCATION</button>
-        <div class="gline" style="margin:16px 0"></div>
-        <div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:8px">LIVE WEBHOOK MONITOR</div>
-        <div id="webhook-log" style="min-height:60px">
-          <div style="color:#8A8070;font-size:10px">Connect your bank to start monitoring payday events.</div>
+      <div id="pf-alloc-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:5px">AUTO-ALLOCATION ENGINE</div>
+        <div style="font-size:9px;color:#555;line-height:1.7;margin-bottom:11px">When a paycheck is detected VaultFlow routes every dollar automatically.</div>
+        <div id="alloc-prime-lock" class="lock" style="min-height:60px;border-radius:8px"><div class="lovl lovl-prime"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK</button></div></div>
+        <div id="alloc-engine" style="display:none">
+          <button id="alloc-sim-btn" class="btn btn-prime" onclick="triggerAlloc()">▶ SIMULATE AUTO-ALLOCATION</button>
+          <div class="gline"></div>
+          <div style="font-size:7px;letter-spacing:2px;color:var(--ad);margin-bottom:7px">LIVE WEBHOOK MONITOR</div>
+          <div id="wh-log" style="min-height:50px"><div style="color:#333;font-size:8px">Connect bank to start monitoring.</div></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">🤝 REFERRAL PROGRAM</div>
-        <div class="rbox">
-          <div style="font-size:11px;color:#8A8070;margin-bottom:6px">Share VaultFlow and earn 1 free month for every friend who upgrades to Prime.</div>
-          <div class="rlink" id="rlink">vaultflow.org?ref=loading...</div>
-          <button class="btngold" onclick="copyRef()">COPY REFERRAL LINK</button>
+      <div id="pf-ref-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:5px">REFERRAL PROGRAM</div>
+        <div id="ref-box" style="border-radius:8px;padding:13px;margin-bottom:10px;background:var(--ab);border:1px solid rgba(255,255,255,0.05)">
+          <div style="font-size:9px;color:#555;margin-bottom:5px">Earn 1 free month for every friend who upgrades.</div>
+          <div class="rlink rlink-prime" id="rlink">vaultflow.org?ref=loading...</div>
+          <button id="ref-btn" class="btn btn-prime" onclick="copyRef()">COPY REFERRAL LINK</button>
         </div>
       </div>
-
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">🔒 AUTO-TRANSFER HISTORY</div>
-        <div class="lock">
-          <div>
-            <div class="titem"><span class="tlbl">Emergency Fund</span><span class="tamt">$2,639</span></div>
-            <div class="titem"><span class="tlbl">Debt Payment</span><span class="tamt">$1,979</span></div>
-            <div class="titem"><span class="tlbl">RE Savings</span><span class="tamt">$3,299</span></div>
-            <div class="titem"><span class="tlbl">Alpaca Algo</span><span class="tamt">$2,000</span></div>
-          </div>
-          <div class="loverlay">
-            <div class="licon">🔒</div>
-            <div class="ltxt2">PRIME FEATURE</div>
-            <button class="lbtn" onclick="go('upgrade')">UNLOCK NOW</button>
-          </div>
+      <div id="pf-hist-card" class="card card-prime">
+        <div class="tag" style="margin-bottom:5px">TRANSFER HISTORY</div>
+        <div class="lock" style="border-radius:8px">
+          <div><div class="titem"><span class="tlbl">Emergency Fund</span><span class="tamt">$2,639</span></div><div class="titem"><span class="tlbl">Debt Payment</span><span class="tamt">$1,979</span></div><div class="titem"><span class="tlbl">RE Savings</span><span class="tamt">$3,299</span></div><div class="titem"><span class="tlbl">Alpaca Algo</span><span class="tamt">$2,000</span></div></div>
+          <div id="transfer-lock" class="lovl lovl-prime" style="border-radius:8px"><div class="licon">🔒</div><div class="ltxt2-prime">PRIME FEATURE</div><button class="lbtn-prime" onclick="go('upgrade')">UNLOCK</button></div>
         </div>
       </div>
-
-      <button class="btnout" onclick="signout()">SIGN OUT</button>
+      <button class="btn-o" onclick="signout()">SIGN OUT</button>
     </div>
+
   </div>
 </div>
 
@@ -1483,6 +1576,185 @@ function activatePrime(plan){
   }
   var lo=document.querySelector('.loverlay');if(lo)lo.style.display='none';
   addWebhook({t:'PRIME_ACTIVATED',m:'VaultFlow '+plan+' features unlocked — bank connection available',c:'#C9A84C'});
+}
+
+// ============ BOTTOM NAV ============
+var tabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
+
+function dtab(t){
+  tabIds.forEach(function(id){
+    var el=document.getElementById('dt-'+id);
+    if(el)el.style.display=id===t?'block':'none';
+  });
+  ['ov','al','tl','pf','nw','gl','pr','bl'].forEach(function(id){
+    var btn=document.getElementById('bt-'+id);
+    if(btn)btn.className='btab'+(id===t?' on':'');
+  });
+  var mb=document.getElementById('bt-more');
+  if(mb)mb.className='btab';
+  closeMore();
+  window.scrollTo(0,0);
+  if(t==='pf')loadProf();
+}
+
+function toggleMore(){
+  var d=document.getElementById('more-drawer');
+  var b=document.getElementById('bt-more');
+  var open=d.classList.contains('on');
+  d.classList.toggle('on',!open);
+  if(b)b.className='btab'+(open?'':' on');
+}
+
+function closeMore(){
+  var d=document.getElementById('more-drawer');
+  var b=document.getElementById('bt-more');
+  if(d)d.classList.remove('on');
+  if(b)b.className='btab';
+}
+
+// ============ ACCORDION ============
+function tacc(id){
+  var acc=document.getElementById('acc-'+id);
+  var body=document.getElementById('body-'+id);
+  if(!acc||!body)return;
+  var open=body.style.display==='block';
+  document.querySelectorAll('.acc').forEach(function(a){a.classList.remove('open');});
+  document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});
+  if(!open){acc.classList.add('open');body.style.display='block';}
+}
+
+// ============ VA LOAN TOGGLE ============
+function toggleVA(){
+  var lt=document.getElementById('t_ltype');
+  var info=document.getElementById('va-info');
+  var rd=document.getElementById('t_rd');
+  if(!lt)return;
+  var v=lt.value;
+  if(info)info.style.display=v==='va'?'block':'none';
+  if(rd){
+    if(v==='va')rd.value='0';
+    else if(v==='fha')rd.value='3.5';
+    else if(v==='conv5')rd.value='5';
+    else if(v==='conv10')rd.value='10';
+    else if(v==='conv')rd.value='20';
+    else if(v==='cash')rd.value='100';
+  }
+}
+
+// ============ PLAN ACTIVATION ============
+function activatePlan(plan){
+  if(sess)sess.plan=plan;
+  var isV=plan==='vault',isP=plan==='prime',isF=plan==='free';
+  document.body.setAttribute('data-plan',plan);
+
+  // Accent color
+  var a=isV?'#B983FF':isP?'#F0C040':'#10B981';
+  var ad=isV?'#6B21A8':isP?'#A07010':'#065F46';
+  var planCls=isV?'vault':isP?'prime':'free';
+  var label=isV?'VAULT':isP?'PRIME':'ESSENTIAL';
+  var hasPaid=isP||isV;
+
+  // Update all plan-colored elements
+  var planEls=['card','ds','acc','goal','blog','prop','rbox','ritem','rlink'];
+  planEls.forEach(function(base){
+    document.querySelectorAll('.'+base+'-free,.'+base+'-prime,.'+base+'-vault').forEach(function(el){
+      el.className=el.className.replace(/('+base+')-(free|prime|vault)/g,'$1-'+planCls);
+    });
+  });
+
+  // Update buttons
+  document.querySelectorAll('.btn-free,.btn-prime,.btn-vault').forEach(function(el){
+    el.className=el.className.replace(/btn-(free|prime|vault)/g,'btn-'+planCls);
+  });
+
+  // Update lock overlays
+  ['prime','vault'].forEach(function(p){
+    document.querySelectorAll('.lovl-'+p).forEach(function(el){
+      // keep as is - lock type stays
+    });
+  });
+
+  // Plan hero
+  var hero=document.getElementById('plan-hero');
+  var heroTag=document.getElementById('plan-hero-tag');
+  var heroTitle=document.getElementById('plan-hero-title');
+  var heroDesc=document.getElementById('plan-hero-desc');
+  if(hero){
+    hero.className='plan-hero plan-hero-'+planCls;
+    if(heroTag)heroTag.textContent=label+' MEMBER';
+    if(heroTitle){
+      heroTitle.textContent=isV?'Full Wealth Command Center':isP?'Automated Wealth Engine':'Financial Foundation';
+    }
+    if(heroDesc){
+      heroDesc.textContent=isV?'All systems active — bank, signals, auto-transfers, RE alerts.':isP?'Bank connected and allocation running on autopilot.':'Run the calculators and plan your payday split.';
+    }
+  }
+
+  // Logo badge
+  var logo=document.getElementById('dash-logo');
+  var ob=document.getElementById('pb');if(ob)ob.remove();
+  if(logo&&!isF){
+    var b=document.createElement('span');b.id='pb';b.className='plan-badge-el plan-badge-'+planCls;
+    b.textContent=label;logo.appendChild(b);
+  }
+
+  // Plan display in profile
+  var pd=document.getElementById('plan-display');
+  if(pd)pd.textContent=isV?'Vault — $24.99/mo':isP?'Prime — $9.99/mo':'Essential (Free)';
+
+  // Stats
+  var ds=['ds1','ds2','ds3','ds4'];
+  ds.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.className='ds ds-'+planCls;
+  });
+
+  // Unlock features
+  // Bank
+  var bl=document.getElementById('bank-prime-lock');if(bl)bl.style.display=hasPaid?'none':'block';
+  var bb=document.getElementById('bank-prime-btn');if(bb)bb.style.display=hasPaid?'block':'none';
+  // Auto-alloc
+  var al=document.getElementById('alloc-prime-lock');if(al)al.style.display=hasPaid?'none':'block';
+  var ae=document.getElementById('alloc-engine');if(ae)ae.style.display=hasPaid?'block':'none';
+  // Tax
+  var tl=document.getElementById('tax-lock');if(tl)tl.style.display=hasPaid?'none':'block';
+  var tc=document.getElementById('tax-content');if(tc)tc.style.display=hasPaid?'block':'none';
+  // Algo signals (vault only)
+  var sl=document.getElementById('sig-lock');if(sl)sl.style.display=isV?'none':'block';
+  var sc=document.getElementById('sig-content');if(sc)sc.style.display=isV?'block':'none';
+  // Net worth
+  var nl=document.getElementById('nw-lock');if(nl)nl.style.display=hasPaid?'none':'block';
+  var nc=document.getElementById('nw-content');if(nc)nc.style.display=hasPaid?'block':'none';
+  // Deals
+  var prl=document.getElementById('pr-lock');if(prl)prl.style.display=hasPaid?'none':'block';
+  var prc=document.getElementById('pr-content');if(prc)prc.style.display=hasPaid?'block':'none';
+  // Transfer history
+  var trl=document.getElementById('transfer-lock');if(trl)trl.style.display=hasPaid?'none':'flex';
+  // MORE drawer tabs dim for free
+  ['bt-nw','bt-pr'].forEach(function(id){
+    var btn=document.getElementById(id);
+    if(btn)btn.className='btab'+(hasPaid?'':' dim');
+  });
+
+  // Upgrade banner
+  var ub=document.getElementById('upgrade-banner');
+  if(ub){
+    if(hasPaid){
+      var ubt=document.getElementById('ub-title');if(ubt)ubt.textContent=label+' Active';
+      var ubd=document.getElementById('ub-desc');if(ubd)ubd.textContent=isV?'All features unlocked.':'Bank and auto-allocation ready in Profile.';
+      var ubtn=document.getElementById('ub-btn');if(ubtn){ubtn.textContent='SET UP BANK →';ubtn.onclick=function(){dtab('pf');};}
+    }
+  }
+
+  // Downgrade option
+  var ds2=document.getElementById('downgrade-section');if(ds2)ds2.style.display=hasPaid?'block':'none';
+}
+
+// ============ DOWNGRADE ============
+function downgradePlan(){
+  if(!confirm('Downgrade to Free? You will lose access to paid features immediately.'))return;
+  if(sess)sess.plan='free';
+  activatePlan('free');
 }
 
 // ============ LEGAL ============
