@@ -183,6 +183,17 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 /* MORE DRAWER TAB */
 #bt-more.on{color:var(--accent,#C9A84C)}
 
+/* TAB EXPERIENCES */
+.tab-header-free{background:linear-gradient(160deg,#020D06,#040A06);border:1px solid rgba(16,185,89,0.1);border-radius:5px;padding:14px;margin-bottom:12px}
+.tab-header-prime{background:linear-gradient(160deg,#0D0900,#080806);border:1px solid rgba(201,168,76,0.1);border-radius:5px;padding:14px;margin-bottom:12px}
+.tab-header-vault{background:linear-gradient(160deg,#060310,#060408);border:1px solid rgba(139,92,246,0.1);border-radius:5px;padding:14px;margin-bottom:12px}
+.th-plan{font-size:6px;letter-spacing:3px;margin-bottom:4px}
+.th-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;margin-bottom:3px}
+.th-desc{font-size:8px;color:#555;line-height:1.6}
+.th-stat{display:inline-block;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:3px;padding:5px 10px;margin-top:7px;margin-right:5px}
+.th-stat-val{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300}
+.th-stat-lbl{font-size:6px;letter-spacing:2px;color:#444}
+
 /* LOCKED */
 .lock{position:relative;overflow:hidden;min-height:80px}
 .lovl{position:absolute;inset:0;background:rgba(6,6,6,0.88);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:5px}
@@ -485,7 +496,24 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
         <div class="acc-body" id="body-inv"><label class="lbl">STARTING BALANCE ($)</label><input class="inp" type="number" id="t_ib" value="0"><label class="lbl">MONTHLY CONTRIBUTION ($)</label><input class="inp" type="number" id="t_ia" placeholder="2000"><label class="lbl">ANNUAL RETURN (%) — S&amp;P avg 10%</label><input class="inp" type="number" id="t_ir" value="10" step="0.1"><label class="lbl">YEARS</label><input class="inp" type="number" id="t_iy" value="10"><button class="btn" onclick="cInv()">CALCULATE</button><div class="rbox" id="r_inv"></div></div></div>
 
       <div class="acc" id="acc-re"><div class="acc-hdr" onclick="tacc('re')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">🏘️</span><div><div class="acc-htit">Real Estate Analyzer</div><div class="acc-hsub">CAP RATE · CASH-ON-CASH</div></div></div><span class="acc-arr" id="arr-re">›</span></div>
-        <div class="acc-body" id="body-re"><label class="lbl">ADDRESS (optional)</label><input class="inp" type="text" id="t_ra" placeholder="123 Main St, Cleveland OH"><label class="lbl">UNITS</label><select class="inp" id="t_ru"><option value="1">1 — Single family</option><option value="2">2 — Duplex</option><option value="3">3 — Triplex</option><option value="4" selected>4 — Quadplex</option><option value="5">5+ Units</option></select><label class="lbl">PURCHASE PRICE ($)</label><input class="inp" type="number" id="t_rp" placeholder="350000"><label class="lbl">TOTAL MONTHLY RENT ($)</label><input class="inp" type="number" id="t_rr" placeholder="3200"><label class="lbl">DOWN PAYMENT (%)</label><select class="inp" id="t_rd"><option value="3.5">3.5% — FHA</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="25">25%</option><option value="100">100% Cash</option></select><label class="lbl">INTEREST RATE (%)</label><input class="inp" type="number" id="t_ri" value="7.25" step="0.05"><label class="lbl">MONTHLY EXPENSES ($)</label><input class="inp" type="number" id="t_re2" placeholder="600"><label class="lbl">VACANCY RATE (%)</label><input class="inp" type="number" id="t_rv" value="5"><button class="btn" onclick="cRE()">ANALYZE DEAL</button><div class="rbox" id="r_re"></div></div></div>
+        <div class="acc-body" id="body-re"><label class="lbl">ADDRESS (optional)</label><input class="inp" type="text" id="t_ra" placeholder="123 Main St, Cleveland OH">
+<label class="lbl">UNITS</label><select class="inp" id="t_ru"><option value="1">1 — Single family</option><option value="2">2 — Duplex</option><option value="3">3 — Triplex</option><option value="4" selected>4 — Quadplex</option><option value="5">5+ Units</option></select>
+<label class="lbl">PURCHASE PRICE ($)</label><input class="inp" type="number" id="t_rp" placeholder="350000">
+<label class="lbl">TOTAL MONTHLY RENT ($)</label><input class="inp" type="number" id="t_rr" placeholder="3200">
+<label class="lbl">LOAN TYPE</label>
+<select class="inp" id="t_ltype" style="cursor:pointer" onchange="toggleVA()">
+  <option value="conv">Conventional — 20% down</option>
+  <option value="fha">FHA — 3.5% down</option>
+  <option value="va">&#127386; VA Home Loan — 0% down (Veterans)</option>
+  <option value="conv5">Conventional — 5% down</option>
+  <option value="conv10">Conventional — 10% down</option>
+  <option value="cash">Cash Purchase — 100%</option>
+</select>
+<div id="va-info" style="display:none;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.12);border-radius:3px;padding:8px;margin-top:6px;font-size:8px;color:#8B6914;line-height:1.7">
+  VA Loan: No down payment required. No PMI. VA Funding Fee 2.15% (waived for 10%+ disability rating). Lower rates available.
+</div>
+<label class="lbl">DOWN PAYMENT (%) — set to 0 for VA</label>
+<select class="inp" id="t_rd"><option value="0">0% — VA / No Down</option><option value="3.5">3.5% — FHA</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20%</option><option value="25">25%</option><option value="100">100% Cash</option></select><label class="lbl">INTEREST RATE (%)</label><input class="inp" type="number" id="t_ri" value="7.25" step="0.05"><label class="lbl">MONTHLY EXPENSES ($)</label><input class="inp" type="number" id="t_re2" placeholder="600"><label class="lbl">VACANCY RATE (%)</label><input class="inp" type="number" id="t_rv" value="5"><button class="btn" onclick="cRE()">ANALYZE DEAL</button><div class="rbox" id="r_re"></div></div></div>
 
       <div class="acc" id="acc-tax"><div class="acc-hdr" onclick="tacc('tax')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">🧾</span><div><div class="acc-htit">Tax Estimator</div><div class="acc-hsub">FEDERAL + QUARTERLY</div></div></div><span class="acc-arr" id="arr-tax">›</span></div>
         <div class="acc-body" id="body-tax"><div style="background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.08);border-radius:2px;padding:7px;margin-bottom:6px;font-size:8px;color:#8B6914">⚠️ VA disability excluded. Estimate only.</div><label class="lbl">MARITIME / W2 INCOME ($)</label><input class="inp" type="number" id="t_tm" placeholder="101360"><label class="lbl">SELF-EMPLOYMENT INCOME ($)</label><input class="inp" type="number" id="t_ts2" value="0"><label class="lbl">OTHER TAXABLE INCOME ($)</label><input class="inp" type="number" id="t_to" value="0"><label class="lbl">FILING STATUS</label><select class="inp" id="t_ts"><option value="single">Single</option><option value="married">Married Filing Jointly</option><option value="hoh">Head of Household</option></select><label class="lbl">PRE-TAX DEDUCTIONS ($)</label><input class="inp" type="number" id="t_td" value="0"><button class="btn" onclick="cTax()">ESTIMATE TAXES</button><div class="rbox" id="r_tax"></div></div></div>
@@ -832,6 +860,7 @@ function go(p){
     // Apply plan theme — default free for new accounts
     var currentPlan=sess.plan||'free';
     activatePlan(currentPlan);
+    injectTabHeaders(currentPlan);
     loadProf();
     alloc();
     dtab('ov');
@@ -972,18 +1001,57 @@ function cInv(){
   showR('r_inv','<div class="rgrid"><div class="ritem"><div class="rlbl">FINAL VALUE</div><div class="rval" style="color:#10B981">'+fmt(fv)+'</div></div><div class="ritem"><div class="rlbl">TOTAL INVESTED</div><div class="rval">'+fmt(contributed)+'</div></div><div class="ritem"><div class="rlbl">GAINS</div><div class="rval" style="color:var(--accent,#C9A84C)">'+fmt(gains)+'</div></div><div class="ritem"><div class="rlbl">RETURN</div><div class="rval" style="color:#0088ff">'+(contributed>0?(fv/contributed).toFixed(1):0)+'x</div></div></div>');
 }
 
+function toggleVA(){
+  var lt=document.getElementById('t_ltype');
+  var vaInfo=document.getElementById('va-info');
+  var rdSel=document.getElementById('t_rd');
+  if(!lt)return;
+  var v=lt.value;
+  if(vaInfo)vaInfo.style.display=v==='va'?'block':'none';
+  if(rdSel){
+    if(v==='va')rdSel.value='0';
+    else if(v==='fha')rdSel.value='3.5';
+    else if(v==='conv5')rdSel.value='5';
+    else if(v==='conv10')rdSel.value='10';
+    else if(v==='conv')rdSel.value='20';
+    else if(v==='cash')rdSel.value='100';
+  }
+}
+
 function cRE(){
-  var price=gv('t_rp'),rent=gv('t_rr'),downPct=parseFloat(document.getElementById('t_rd').value)||20;
-  var intRate=gv('t_ri')||7.25,exp=gv('t_re2'),vac=gv('t_rv')||5,units=parseInt(document.getElementById('t_ru').value)||1;
+  var price=gv('t_rp'),rent=gv('t_rr');
+  var ltEl=document.getElementById('t_ltype');
+  var ltype=ltEl?ltEl.value:'conv';
+  var isVA=ltype==='va';
+  var downPct=isVA?0:parseFloat(document.getElementById('t_rd').value)||20;
+  var intRate=gv('t_ri')||7.25,exp=gv('t_re2'),vac=gv('t_rv')||5;
+  var units=parseInt(document.getElementById('t_ru').value)||1;
   var addr=document.getElementById('t_ra').value;
   if(!price||!rent){alert('Enter price and rent.');return;}
-  var down=price*(downPct/100),loan=price-down,mo=intRate/100/12;
+  var down=price*(downPct/100);
+  var vaFee=isVA?price*0.0215:0; // VA funding fee 2.15%
+  var loan=price-down+(isVA?vaFee:0);
+  var mo=intRate/100/12;
   var mtg=mo>0?loan*(mo*Math.pow(1+mo,360))/(Math.pow(1+mo,360)-1):loan/360;
-  var effRent=rent*(1-vac/100),noi=effRent-exp,cf=noi-mtg;
-  var cap=noi*12/price*100,coc=down>0?cf*12/down*100:0;
+  var pmi=(!isVA&&downPct<20)?price*0.006/12:0; // PMI ~0.6%/yr if <20% down
+  var effRent=rent*(1-vac/100),noi=effRent-exp,cf=noi-mtg-pmi;
+  var cap=noi*12/price*100,coc=down>0?cf*12/down*100:cf>0?999:0;
   var verdict=cf>200?'✅ STRONG DEAL':cf>0?'⚡ MARGINAL':'❌ NEGATIVE CASH FLOW';
   var vc=cf>200?'#10B981':cf>0?'#C9A84C':'#ff4444';
-  showR('r_re',(addr?'<div style="font-size:9px;color:#8B6914;margin-bottom:8px">📍 '+addr+'</div>':'')+'<div class="rgrid"><div class="ritem"><div class="rlbl">CASH FLOW/MO</div><div class="rval" style="color:'+(cf>=0?'#10B981':'#ff4444')+'">'+fmt(cf)+'</div></div><div class="ritem"><div class="rlbl">CAP RATE</div><div class="rval" style="color:'+(cap>6?'#10B981':'#C9A84C')+'">'+cap.toFixed(2)+'%</div></div><div class="ritem"><div class="rlbl">CASH-ON-CASH</div><div class="rval" style="color:'+(coc>8?'#10B981':'#C9A84C')+'">'+coc.toFixed(2)+'%</div></div><div class="ritem"><div class="rlbl">DOWN PAYMENT</div><div class="rval">'+fmt(down)+'</div></div></div><div style="margin-top:9px;text-align:center;font-size:11px;font-weight:700;color:'+vc+'">'+verdict+'</div>'+(units>1?'<div style="font-size:8px;color:#555;margin-top:5px;text-align:center">'+fmt(Math.round(price/units))+' per unit · '+units+' units</div>':''));
+  var vaNote=isVA?'<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:3px;padding:9px;margin-top:8px;font-size:8px;color:#8B6914;line-height:1.7">🎖️ <strong style="color:#C9A84C">VA Loan:</strong> $0 down · No PMI saving '+fmt(pmi*12)+'/yr · VA funding fee: '+fmt(vaFee)+' rolled into loan</div>':'';
+  var pmiNote=pmi>0?'<div style="font-size:8px;color:#ff6b35;margin-top:5px">PMI: '+fmt(pmi)+'/mo (drops when equity hits 20%)</div>':'';
+  showR('r_re',
+    (addr?'<div style="font-size:8px;color:var(--ad,#8B6914);margin-bottom:7px">📍 '+addr+'</div>':'')+
+    '<div class="rgrid">'+
+    '<div class="ritem"><div class="rlbl">CASH FLOW/MO</div><div class="rval" style="color:'+(cf>=0?'#10B981':'#ff4444')+'">'+fmt(cf)+'</div></div>'+
+    '<div class="ritem"><div class="rlbl">CAP RATE</div><div class="rval" style="color:'+(cap>6?'#10B981':'var(--a,#C9A84C)')+'">'+cap.toFixed(2)+'%</div></div>'+
+    '<div class="ritem"><div class="rlbl">CASH-ON-CASH</div><div class="rval" style="color:'+(coc>8||isVA?'#10B981':'var(--a,#C9A84C')+')">'+( isVA&&down===0?'∞':coc.toFixed(2)+'%')+'</div></div>'+
+    '<div class="ritem"><div class="rlbl">DOWN PAYMENT</div><div class="rval" style="color:'+(isVA?'#10B981':'inherit')+'">'+( isVA?'$0 🎖️':fmt(down))+'</div></div>'+
+    '</div>'+
+    '<div style="margin-top:8px;text-align:center;font-size:10px;font-weight:700;color:'+vc+'">'+verdict+'</div>'+
+    (units>1?'<div style="font-size:7px;color:#555;margin-top:4px;text-align:center">'+fmt(Math.round(price/units))+' per unit · '+units+' units</div>':'')+
+    pmiNote+vaNote
+  );
 }
 
 function cTax(){
@@ -1237,6 +1305,8 @@ function activatePlan(plan){
   }
 
   addWh({t:label+'_'+(hasPaid?'ACTIVATED':'DOWNGRADED'),m:hasPaid?'VaultFlow '+label+' features unlocked':'Downgraded to '+label+' — paid features removed',c:accent});
+  // Inject tab headers per plan
+  injectTabHeaders(plan);
 }
 
 
@@ -1340,6 +1410,76 @@ function closeMore(){
   var btn=document.getElementById('bt-more');
   if(d)d.style.display='none';
   if(btn)btn.className='btab';
+}
+
+// TAB HEADER INJECTION
+function injectTabHeaders(plan){
+  var isV=plan==='vault',isP=plan==='prime',isF=plan==='free';
+  var ac=isV?'#8B5CF6':isP?'#C9A84C':'#10B981';
+  var dim=isV?'#4C1D95':isP?'#8B6914':'#065F46';
+  var cls=isV?'tab-header-vault':isP?'tab-header-prime':'tab-header-free';
+  var planLbl=isV?'VAULT MEMBER':isP?'PRIME MEMBER':'ESSENTIAL';
+
+  var headers={
+    'al':{
+      free:{icon:'⟁',title:'Allocation Calculator',desc:'Enter your income and expenses to see exactly how to split each paycheck.',stat1:{v:'5 Buckets',l:'ALLOCATION'},stat2:{v:'Free Tool',l:'TIER'}},
+      prime:{icon:'⚡',title:'Live Allocation Engine',desc:'Your numbers sync with your connected bank. Payday triggers auto-routing.',stat1:{v:'Auto-Sync',l:'BANK SYNC'},stat2:{v:'Payday Alert',l:'DETECTION'}},
+      vault:{icon:'🔮',title:'Predictive Allocation AI',desc:'Full income automation. Auto-transfers execute the moment your paycheck lands.',stat1:{v:'Auto-Transfer',l:'MODE'},stat2:{v:'Instant',l:'EXECUTION'}}
+    },
+    'tl':{
+      free:{icon:'◎',title:'Financial Calculators',desc:'3 professional-grade tools. Debt payoff, investment growth, and RE analysis.',stat1:{v:'3 Tools',l:'AVAILABLE'},stat2:{v:'Free',l:'TIER'}},
+      prime:{icon:'🛠️',title:'Advanced Tool Suite',desc:'5 tools including tax estimator and full RE analyzer with VA loan support.',stat1:{v:'5 Tools',l:'AVAILABLE'},stat2:{v:'Tax + RE',l:'UNLOCKED'}},
+      vault:{icon:'⚙️',title:'Institutional Tool Suite',desc:'All tools plus live algo signals powered by 4-factor SMA/RSI/momentum analysis.',stat1:{v:'6 Tools',l:'ALL UNLOCKED'},stat2:{v:'Live Signals',l:'VAULT ONLY'}}
+    },
+    'nw':{
+      free:{icon:'🔒',title:'Net Worth Tracker',desc:'Upgrade to Prime to track all assets, liabilities, and your path to $1M.',stat1:{v:'Locked',l:'STATUS'},stat2:{v:'Prime+',l:'REQUIRED'}},
+      prime:{icon:'◇',title:'Net Worth Command',desc:'Full asset and liability tracking with 15-year wealth projection.',stat1:{v:'$1M',l:'TARGET'},stat2:{v:'15yr',l:'PROJECTION'}},
+      vault:{icon:'💎',title:'Wealth Intelligence',desc:'Complete net worth tracking with quarterly reports and milestone alerts.',stat1:{v:'Quarterly',l:'REPORTS'},stat2:{v:'Milestone',l:'ALERTS'}}
+    },
+    'gl':{
+      free:{icon:'⬡',title:'Goal Tracker',desc:'Set targets for emergency fund, real estate, investments, and net worth.',stat1:{v:'4 Goals',l:'TRACKED'},stat2:{v:'Free Tool',l:'TIER'}},
+      prime:{icon:'🎯',title:'Smart Goal Engine',desc:'Goals sync with your real bank balance. Auto-progress when transfers complete.',stat1:{v:'Auto-Update',l:'BANK SYNC'},stat2:{v:'Smart',l:'TRACKING'}},
+      vault:{icon:'🏆',title:'Wealth Milestone System',desc:'Dynamic goals with AI-adjusted targets based on your income trajectory.',stat1:{v:'AI-Adjusted',l:'TARGETS'},stat2:{v:'Dynamic',l:'MILESTONES'}}
+    },
+    'pr':{
+      free:{icon:'🔒',title:'Deal Pipeline',desc:'Upgrade to Prime to track properties from analysis through close.',stat1:{v:'Locked',l:'STATUS'},stat2:{v:'Prime+',l:'REQUIRED'}},
+      prime:{icon:'⬢',title:'Property Pipeline',desc:'Track deals from analysis to close. Auto cap-rate and cash flow calc.',stat1:{v:'Auto-Calc',l:'METRICS'},stat2:{v:'Full',l:'PIPELINE'}},
+      vault:{icon:'🏗️',title:'RE Command Center',desc:'Pipeline + live market alerts + deal scoring. Get notified when cap rates shift.',stat1:{v:'Market',l:'ALERTS'},stat2:{v:'Deal',l:'SCORING'}}
+    },
+    'bl':{
+      free:{icon:'▣',title:'Maritime Wealth Blog',desc:'Strategies for mariners, veterans, and high earners building lasting wealth.',stat1:{v:'4 Articles',l:'AVAILABLE'},stat2:{v:'Free',l:'ACCESS'}},
+      prime:{icon:'📰',title:'Prime Wealth Library',desc:'Full article library plus member-only guides on auto-allocation and investing.',stat1:{v:'Unlimited',l:'ACCESS'},stat2:{v:'Member',l:'GUIDES'}},
+      vault:{icon:'📊',title:'Vault Intelligence Feed',desc:'Exclusive market analysis, RE cap rate reports, and quarterly wealth letters.',stat1:{v:'Exclusive',l:'REPORTS'},stat2:{v:'Quarterly',l:'LETTERS'}}
+    },
+    'pf':{
+      free:{icon:'◉',title:'Your Account',desc:'Essential plan. Upgrade to Prime to connect your bank and automate everything.',stat1:{v:'Essential',l:'PLAN'},stat2:{v:'Free',l:'TIER'}},
+      prime:{icon:'🔑',title:'Prime Dashboard',desc:'Bank connected. Auto-allocation active. Track transfers and referral earnings.',stat1:{v:'Bank',l:'CONNECTED'},stat2:{v:'Auto',l:'ALLOCATION'}},
+      vault:{icon:'👑',title:'Vault Control Panel',desc:'Full automation suite. Transfers, signals, RE alerts, and priority support.',stat1:{v:'All Systems',l:'ACTIVE'},stat2:{v:'Priority',l:'SUPPORT'}}
+    }
+  };
+
+  var tabList=Object.keys(headers);
+  var planKey=isV?'vault':isP?'prime':'free';
+
+  tabList.forEach(function(tid){
+    var data=headers[tid][planKey];
+    var existing=document.getElementById('th-'+tid);
+    if(existing)existing.remove();
+    var el=document.getElementById('dt-'+tid);
+    if(!el)return;
+    var div=document.createElement('div');
+    div.id='th-'+tid;
+    div.className=cls;
+    div.innerHTML=
+      '<div class="th-plan" style="color:'+dim+'">'+planLbl+' · '+data.icon+'</div>'+
+      '<div class="th-title" style="color:'+ac+'">'+data.title+'</div>'+
+      '<div class="th-desc">'+data.desc+'</div>'+
+      '<div style="margin-top:7px">'+
+      '<div class="th-stat"><div class="th-stat-val" style="color:'+ac+'">'+data.stat1.v+'</div><div class="th-stat-lbl">'+data.stat1.l+'</div></div>'+
+      '<div class="th-stat"><div class="th-stat-val" style="color:'+ac+'">'+data.stat2.v+'</div><div class="th-stat-lbl">'+data.stat2.l+'</div></div>'+
+      '</div>';
+    el.insertBefore(div,el.firstChild);
+  });
 }
 
 // LEGAL
