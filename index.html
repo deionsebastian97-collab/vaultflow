@@ -88,7 +88,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:13px 22px;display:fl
 .pc-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:2px;padding:3px 12px;font-weight:700;white-space:nowrap;border-radius:0 0 4px 4px}
 
 /* LOGIN */
-#page-login{display:flex;align-items:center;justify-content:center;padding:20px;min-height:100vh}
+#page-login{display:flex;align-items:center;justify-content:center;padding:20px;height:100vh;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
 .lcard{width:100%;max-width:340px;background:linear-gradient(160deg,#0D0D0D,#090909);border:1px solid rgba(201,168,76,0.12);padding:32px 26px;border-radius:5px}
 .llogo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px;text-align:center;margin-bottom:4px;color:#F5F0E8}
 .llogo span{color:#C9A84C}
@@ -253,8 +253,8 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 <nav id="nav-pub">
   <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
   <div class="nav-r">
-    <button class="nbtn" onclick="go('login')">LOGIN</button>
-    <button class="ngold" onclick="go('login')">JOIN FREE</button>
+    <button class="nbtn" onclick="showLogin()">LOGIN</button>
+    <button class="ngold" onclick="showLogin()">JOIN FREE</button>
   </div>
 </nav>
 
@@ -285,7 +285,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
     <div style="text-align:center;margin-bottom:40px"><div class="tag">MEMBERSHIP</div><h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,44px);font-weight:300;letter-spacing:-1px;color:#F5F0E8">Three tiers. <em style="color:#C9A84C;font-style:italic">One mission.</em></h2><p style="font-size:10px;color:#8A8070;margin-top:8px">Every dollar allocated. Every goal tracked. Every deal analyzed.</p></div>
     <div class="pgrid">
 
-      <div class="pc pc-free" onclick="go('login')">
+      <div class="pc pc-free" onclick="showLogin()">
         <div class="pc-tier">ESSENTIAL</div>
         <div class="pc-price" style="color:#10B981">Free</div>
         <div class="pc-per">&nbsp;</div>
@@ -350,7 +350,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 
   <footer style="padding:24px;border-top:1px solid rgba(201,168,76,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
     <div style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#555">VAULT<span style="color:#8B6914">FLOW</span></div>
-    <div style="display:flex;gap:16px"><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="go('login')">Login</a><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="go('upgrade')">Pricing</a><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="go('legal')">Terms</a></div>
+    <div style="display:flex;gap:16px"><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="showLogin()">Login</a><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="go('upgrade')">Pricing</a><a style="font-size:7px;color:#555;text-decoration:none;letter-spacing:2px;cursor:pointer" onclick="go('legal')">Terms</a></div>
     <div style="font-size:7px;color:#444;letter-spacing:1px">2025 VAULTFLOW</div>
   </footer>
 </div>
@@ -377,7 +377,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <button class="btn" onclick="signup()">CREATE ACCOUNT</button>
     </div>
     <div id="lmsg" class="mbox"></div>
-    <span class="backlink" onclick="go('home')">← BACK TO VAULTFLOW</span>
+    <span class="backlink" onclick="closeLogin()">← BACK TO VAULTFLOW</span>
   </div>
 </div>
 
@@ -747,15 +747,63 @@ var RAIL='https://vaultflow-production.up.railway.app';
 var sess=null,stripe=null,cEl=null,sOk=false,props=[],plaidTok=null,whEvts=[],curPlan='prime';
 var tabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
 
+// CLOSE LOGIN OVERLAY
+function closeLogin(){
+  var lp=document.getElementById('page-login');
+  if(lp){lp.style.display='none';lp.style.position='';}
+  // Make sure home is visible
+  if(document.getElementById('page-home').style.display==='none'&&!sess){
+    document.getElementById('page-home').style.display='block';
+    document.getElementById('nav-pub').style.display='flex';
+  }
+}
+
+// SHOW LOGIN OVERLAY (works from any page)
+function showLogin(){
+  var lp=document.getElementById('page-login');
+  if(!lp)return;
+  lp.style.display='flex';
+  lp.style.position='fixed';
+  lp.style.top='0';
+  lp.style.left='0';
+  lp.style.right='0';
+  lp.style.bottom='0';
+  lp.style.zIndex='1000';
+  // Reset form
+  document.getElementById('lmsg').textContent='';
+  document.getElementById('sie').value='';
+  document.getElementById('sip').value='';
+}
+
 // START
 document.getElementById('page-home').style.display='block';
 
 // NAV
 function go(p){
+  // Hide all pages
   document.querySelectorAll('.page').forEach(function(x){x.style.display='none';});
   var el=document.getElementById('page-'+p);
   if(!el)return;
-  el.style.display=(p==='login')?'flex':'block';
+  // Show selected page
+  if(p==='login'){
+    el.style.display='flex';
+    el.style.position='fixed';
+    el.style.top='0';
+    el.style.left='0';
+    el.style.right='0';
+    el.style.bottom='0';
+    el.style.zIndex='1000';
+    document.getElementById('nav-pub').style.display='none';
+  } else {
+    el.style.display='block';
+    el.style.position='';
+    // Show correct nav
+    if(p==='dashboard'){
+      document.getElementById('nav-pub').style.display='none';
+    } else if(p==='home'){
+      document.getElementById('nav-pub').style.display='flex';
+    }
+  }
   window.scrollTo(0,0);
   if(p==='upgrade')setTimeout(iStripe,300);
   if(p==='dashboard'){if(!sess){go('login');return;}loadProf();alloc();dtab('ov');}
@@ -792,7 +840,16 @@ function signin(){
   if(!e||!p){m('lmsg','Please fill in all fields.','#ff4444');return;}
   m('lmsg','Signing in...','#C9A84C');
   sbPost('/auth/v1/token?grant_type=password',{email:e,password:p}).then(function(d){
-    if(d.access_token){sess=d;m('lmsg','Welcome back.','#10B981');setTimeout(function(){go('dashboard');},600);}
+    if(d.access_token){
+      sess=d;
+      m('lmsg','Welcome back.','#10B981');
+      setTimeout(function(){
+        // Close login overlay
+        var lp=document.getElementById('page-login');
+        if(lp){lp.style.display='none';lp.style.position='';}
+        go('dashboard');
+      },600);
+    }
     else m('lmsg',d.error_description||'Login failed.','#ff4444');
   }).catch(function(){m('lmsg','Connection error. Try cellular.','#ff4444');});
 }
@@ -807,7 +864,11 @@ function signup(){
     if(d.id||d.access_token){
       if(d.access_token)sess=d;else sess={user:{email:e,id:d.id||''}};
       m('lmsg','Account created! Welcome.','#10B981');
-      setTimeout(function(){go('dashboard');},700);
+      setTimeout(function(){
+        var lp=document.getElementById('page-login');
+        if(lp){lp.style.display='none';lp.style.position='';}
+        go('dashboard');
+      },700);
     } else m('lmsg',d.error_description||'Signup failed.','#ff4444');
   }).catch(function(){m('lmsg','Connection error.','#ff4444');});
 }
