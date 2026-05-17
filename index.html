@@ -88,7 +88,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:13px 22px;display:fl
 .pc-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:7px;letter-spacing:2px;padding:3px 12px;font-weight:700;white-space:nowrap;border-radius:0 0 4px 4px}
 
 /* LOGIN */
-#page-login{display:none;align-items:center;justify-content:center;padding:20px;height:100vh;overflow:hidden}
+#page-login{display:none;align-items:center;justify-content:center;padding:20px;height:100vh;overflow:hidden;background:rgba(4,4,4,0.97)}
 .lcard{width:100%;max-width:340px;background:linear-gradient(160deg,#0D0D0D,#090909);border:1px solid rgba(201,168,76,0.12);padding:32px 26px;border-radius:5px}
 .llogo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px;text-align:center;margin-bottom:4px;color:#F5F0E8}
 .llogo span{color:#C9A84C}
@@ -109,8 +109,8 @@ body[data-plan="prime"]{background:#080806}
 body[data-plan="vault"]{background:#060408}
 
 /* BOTTOM NAV TABS */
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:998;background:rgba(8,8,8,0.97);border-top:1px solid rgba(201,168,76,0.08);display:none;padding:0 4px 2px}
-.bnav.show{display:flex}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:998;background:rgba(8,8,8,0.97);border-top:1px solid rgba(201,168,76,0.08);display:none!important;padding:0 4px 2px}
+.bnav.active{display:flex!important}
 .btab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 5px;background:none;border:none;color:#555;font-size:6px;letter-spacing:1px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.2s}
 .btab:hover{color:#8A8070}
 .btab.on{color:var(--accent,#C9A84C)}
@@ -356,7 +356,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 </div>
 
 <!-- ===== LOGIN ===== -->
-<div id="page-login">
+<div id="page-login" style="display:none">
   <div class="lcard">
     <div class="llogo">VAULT<span>FLOW</span></div>
     <div class="ltag">INTELLIGENT WEALTH ALLOCATION</div>
@@ -772,10 +772,11 @@ function showLogin(){
   go('login');
 }
 
-// START — show home, hide dashboard nav
+// START
 document.getElementById('page-home').style.display='block';
+document.getElementById('page-login').style.display='none';
 var startBnav=document.getElementById('bnav');
-if(startBnav)startBnav.style.display='none';
+if(startBnav)startBnav.classList.remove('active');
 
 // NAV
 function go(p){
@@ -807,7 +808,7 @@ function go(p){
   if(navPub)navPub.style.display=(p==='home'||p==='upgrade'||p==='legal')?'flex':'none';
 
   var bnav=document.getElementById('bnav');
-  if(bnav)bnav.style.display=(p==='dashboard')?'flex':'none';
+  if(bnav){if(p==='dashboard'){bnav.classList.add('active');}else{bnav.classList.remove('active');}}
 
   if(p==='upgrade')setTimeout(iStripe,300);
   if(p==='dashboard'){
