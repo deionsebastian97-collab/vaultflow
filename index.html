@@ -262,7 +262,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 </nav>
 
 <!-- ===== HOME ===== -->
-<div class="page" id="page-home">
+<div class="page" id="page-home" style="display:block">
   <section class="hero">
     <div class="hero-grid"></div>
     <div style="position:relative;z-index:1">
@@ -665,12 +665,12 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 
 <style>
 /* ── UPGRADE PAGE ONLY ── */
-.up-wrap{min-height:100vh;padding-top:0}
+#page-upgrade .up-wrap{min-height:100vh;padding-top:0}
 .up-back{position:fixed;top:14px;left:16px;z-index:1001;background:rgba(8,8,8,0.9);border:1px solid rgba(255,255,255,0.07);color:#555;padding:6px 12px;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:2px;transition:all 0.3s}
 .up-back:hover{color:#F5F0E8;border-color:rgba(255,255,255,0.15)}
 
 /* PLAN PILL SELECTOR */
-.up-pills{display:flex;justify-content:center;gap:7px;padding:58px 16px 0;position:sticky;top:0;z-index:100;background:transparent;padding-bottom:20px}
+#page-upgrade .up-pills{display:flex;justify-content:center;gap:7px;padding:58px 16px 0;position:sticky;top:0;z-index:100;background:transparent;padding-bottom:20px}
 .up-pill{background:#111;border:1px solid rgba(255,255,255,0.06);border-radius:50px;padding:8px 18px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:7px;letter-spacing:3px;color:#444;transition:all 0.3s}
 .up-pill-free.active{background:linear-gradient(135deg,#065F46,#10B981);color:#fff;border-color:transparent;box-shadow:0 0 18px rgba(16,185,89,0.3)}
 .up-pill-prime.active{background:linear-gradient(135deg,#8B6914,#C9A84C);color:#000;border-color:transparent;box-shadow:0 0 18px rgba(201,168,76,0.3)}
@@ -681,7 +681,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 .up-screen.show{display:block}
 
 /* ── FREE — clean emerald minimal ── */
-.fs-bg{background:#030A06;min-height:100vh}
+#page-upgrade .fs-bg{background:#030A06;min-height:100vh}
 .fs-hero{text-align:center;padding:24px 0 28px}
 .fs-tag{display:inline-block;background:rgba(16,185,89,0.08);border:1px solid rgba(16,185,89,0.2);color:#10B981;font-size:6px;letter-spacing:4px;padding:5px 14px;border-radius:50px;margin-bottom:14px}
 .fs-price{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:#10B981;line-height:1;margin-bottom:4px}
@@ -699,7 +699,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 .fs-lock-icon{font-size:12px;opacity:0.4}
 
 /* ── PRIME — royal gold editorial luxury ── */
-.ps-bg{background:#060504;min-height:100vh;position:relative;overflow:hidden}
+#page-upgrade .ps-bg{background:#060504;min-height:100vh;position:relative;overflow:hidden}
 .ps-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 65%);pointer-events:none}
 .ps-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.025) 1px,transparent 1px);background-size:55px 55px;pointer-events:none}
 .ps-inner{position:relative;z-index:1}
@@ -732,7 +732,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 .ps-cta:hover::after{left:100%}
 
 /* ── VAULT — deep purple command center ── */
-.vs-bg{background:#03020A;min-height:100vh;position:relative;overflow:hidden}
+#page-upgrade .vs-bg{background:#03020A;min-height:100vh;position:relative;overflow:hidden}
 .vs-glow1{position:absolute;top:-120px;right:-80px;width:420px;height:420px;background:radial-gradient(circle,rgba(139,92,246,0.09) 0%,transparent 65%);pointer-events:none}
 .vs-glow2{position:absolute;bottom:-100px;left:-60px;width:360px;height:360px;background:radial-gradient(circle,rgba(76,29,149,0.07) 0%,transparent 65%);pointer-events:none}
 .vs-inner{position:relative;z-index:1}
@@ -831,7 +831,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
   </div>
 
   <!-- ══════════ PRIME SCREEN ══════════ -->
-  <div class="up-screen up-wrap ps-bg show" id="up-prime">
+  <div class="up-screen up-wrap ps-bg" id="up-prime">
     <div class="ps-glow"></div>
     <div class="ps-grid"></div>
     <div class="ps-inner">
@@ -1048,7 +1048,7 @@ function go(p){
   var bnav=document.getElementById('bnav');
   if(bnav){if(p==='dashboard'){bnav.classList.add('active');}else{bnav.classList.remove('active');}}
 
-  if(p==='upgrade'){showUpScreen('prime');setTimeout(initPrimeStripe,400);}
+  if(p==='upgrade'){setTimeout(function(){showUpScreen('prime');initPrimeStripe();},100);}
   if(p==='dashboard'){
     if(!sess){go('login');return;}
     // Apply plan theme — default free for new accounts
@@ -1568,8 +1568,9 @@ function closeMore(){
 var stripeInst=null,primeCard=null,vaultCard=null,primeStripeOk=false,vaultStripeOk=false;
 
 function showUpScreen(plan){
-  document.querySelectorAll('.up-screen').forEach(function(s){s.classList.remove('show');});
-  var el=document.getElementById('up-'+plan);if(el)el.classList.add('show');
+  document.querySelectorAll('.up-screen').forEach(function(s){s.classList.remove('show');s.style.display='none';});
+  var el=document.getElementById('up-'+plan);
+  if(el){el.classList.add('show');el.style.display='block';}
   ['free','prime','vault'].forEach(function(p){
     var pill=document.getElementById('pill-'+p);
     if(pill)pill.className='up-pill up-pill-'+p+(p===plan?' active':'');
