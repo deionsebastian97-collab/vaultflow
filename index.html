@@ -1,1164 +1,1486 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>VaultFlow Elite</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+<title>VaultFlow — Intelligent Wealth Allocation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-
-:root{
-  --bg:#040404;
-  --card:#0f0f0f;
-  --card2:#171717;
-  --gold:#d4af37;
-  --gold2:#f5dc84;
-  --text:#f4f0e8;
-  --muted:#888;
-  --line:rgba(212,175,55,.12);
-
-  --green:#00d27a;
-  --blue:#52a8ff;
-  --orange:#ff9f47;
-  --purple:#9b7dff;
-  --red:#ff6767;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-body{
-  background:
-    radial-gradient(circle at top left, rgba(212,175,55,.09), transparent 22%),
-    radial-gradient(circle at bottom right, rgba(212,175,55,.05), transparent 25%),
-    var(--bg);
-
-  color:var(--text);
-  font-family:'Inter',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#080808;color:#F5F0E8;font-family:'Montserrat',sans-serif;min-height:100vh}
+.page{display:none;min-height:100vh}
 
 /* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.97);border-bottom:1px solid rgba(201,168,76,0.12)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:6px;cursor:pointer;color:#F5F0E8;background:none;border:none}
+.logo span{color:#C9A84C}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nbtn{background:transparent;border:1px solid rgba(201,168,76,0.3);color:#C9A84C;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
+.nbtn:hover{background:rgba(201,168,76,0.08)}
+.ngold{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:8px 16px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;transition:opacity 0.3s}
+.ngold:hover{opacity:0.85}
 
-nav{
-  position:sticky;
-  top:0;
-  z-index:999;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 42px;
-  backdrop-filter:blur(12px);
-  background:rgba(4,4,4,.9);
-  border-bottom:1px solid var(--line);
-}
+/* SHARED */
+.tag{font-size:9px;letter-spacing:5px;color:#8B6914;margin-bottom:10px}
+.stitle{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,50px);font-weight:300;letter-spacing:-1px;margin-bottom:14px}
+.stitle em{color:#C9A84C;font-style:italic}
+.gline{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);margin:24px 0}
+.card{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;padding:16px;margin-bottom:12px;transition:border-color 0.3s}
+.card:hover{border-color:rgba(201,168,76,0.15)}
+.lbl{font-size:8px;letter-spacing:2px;color:#8B6914;margin-bottom:5px;margin-top:12px;display:block}
+.inp{width:100%;background:#141414;border:1px solid rgba(201,168,76,0.15);color:#F5F0E8;padding:11px 13px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none;margin-bottom:3px;border-radius:2px;transition:border 0.3s}
+.inp:focus{border-color:rgba(201,168,76,0.4)}
+.inp::placeholder{color:#555}
+.btngold{width:100%;margin-top:14px;padding:13px;background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:2px;transition:opacity 0.3s}
+.btngold:hover{opacity:0.85}
+.btnout{width:100%;padding:12px;background:transparent;border:1px solid rgba(201,168,76,0.2);color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:2px;transition:all 0.3s;margin-top:8px}
+.btnout:hover{border-color:#C9A84C;color:#C9A84C}
+.msgbox{font-size:10px;text-align:center;margin-top:8px;min-height:16px;padding:4px 0}
+.resbox{background:linear-gradient(145deg,#141414,#0E0E0E);border:1px solid rgba(201,168,76,0.12);border-radius:3px;padding:14px;margin-top:12px;display:none;font-size:11px;color:#8A8070;line-height:2}
+.rv{color:#C9A84C;font-family:'Cormorant Garamond',serif;font-size:18px}
+.rv-green{color:#00ff88;font-family:'Cormorant Garamond',serif;font-size:18px}
+.rv-red{color:#ff4444;font-family:'Cormorant Garamond',serif;font-size:18px}
+.rv-blue{color:#0088ff;font-family:'Cormorant Garamond',serif;font-size:18px}
+.tool-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,0.08)}
+.tool-icon{font-size:24px;line-height:1}
+.tool-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#F5F0E8}
+.tool-sub{font-size:9px;color:#8A8070;margin-top:2px;letter-spacing:1px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.result-item{background:#141414;border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:12px;text-align:center}
+.result-item-label{font-size:8px;letter-spacing:2px;color:#8B6914;margin-bottom:6px}
+.result-item-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300}
 
-.logo{
-  font-family:'Cormorant Garamond',serif;
-  font-size:30px;
-  letter-spacing:8px;
-}
+/* HOME */
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;position:relative;background:#080808}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);background-size:80px 80px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,8vw,92px);font-weight:300;line-height:1.02;letter-spacing:-2px;margin-bottom:24px}
+.hero h1 em{color:#C9A84C;font-style:italic}
+.hero-sub{font-size:13px;color:#8A8070;max-width:460px;line-height:1.9;margin-bottom:36px}
+.wrow{display:flex;max-width:420px}
+.winp{flex:1;background:#141414;border:1px solid rgba(201,168,76,0.2);border-right:none;color:#F5F0E8;padding:14px 16px;font-size:12px;font-family:'Montserrat',sans-serif;outline:none}
+.winp::placeholder{color:#555}
+.wbtn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:14px 20px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;white-space:nowrap}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(201,168,76,0.08);border-bottom:1px solid rgba(201,168,76,0.08)}
+.si{padding:36px 20px;border-left:1px solid rgba(201,168,76,0.06)}
+.sl{font-size:8px;letter-spacing:3px;color:#8B6914;margin-bottom:10px}
+.sv{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300}
+.sv span{color:#C9A84C;font-size:18px}
+.prev{background:#0E0E0E;border:1px solid rgba(201,168,76,0.15);border-radius:4px;max-width:820px;margin:0 auto;overflow:hidden}
+.pbar{background:#141414;padding:11px 18px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(201,168,76,0.07)}
+.ddot{width:9px;height:9px;border-radius:50%}
+.pttl{margin-left:auto;font-size:8px;color:#8A8070;letter-spacing:3px}
+.pbody{padding:20px}
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+.pstat{background:#1A1A1A;padding:12px;border:1px solid rgba(201,168,76,0.07);border-radius:3px}
+.psl{font-size:7px;letter-spacing:3px;color:#8A8070;margin-bottom:4px}
+.psv{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300}
+.albl{font-size:8px;letter-spacing:3px;color:#8B6914;margin-bottom:12px}
+.arow{margin-bottom:10px}
+.amh{display:flex;justify-content:space-between;margin-bottom:3px;font-size:9px}
+.atrack{background:#1A1A1A;height:2px;border-radius:1px}
+.afill{height:100%;border-radius:1px}
+.fgrid{display:grid;grid-template-columns:1fr 2fr;gap:60px;max-width:1060px;margin:0 auto;padding:80px 24px}
+.fstick{position:sticky;top:100px;height:fit-content}
+.frow{padding:28px 0;border-bottom:1px solid rgba(201,168,76,0.08);display:grid;grid-template-columns:44px 1fr 2fr;gap:16px;align-items:start}
+.fnum{font-size:9px;letter-spacing:3px;color:#8B6914;padding-top:2px}
+.ftit{font-family:'Cormorant Garamond',serif;font-size:16px;color:#F5F0E8}
+.fdesc{font-size:11px;color:#8A8070;line-height:1.8}
+.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:1000px;margin:0 auto}
+.pc{background:#141414;border:1px solid #2A2A2A;border-radius:3px;padding:36px 24px;cursor:pointer;transition:all 0.3s}
+.pc:hover{border-color:#8B6914;transform:translateY(-4px)}
+.pcf{background:linear-gradient(145deg,#1A1500,#0E0E0E);border-color:#C9A84C}
+.pt{font-size:9px;letter-spacing:3px;color:#8A8070;margin-bottom:6px}
+.pa{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;letter-spacing:-2px;margin-bottom:2px}
+.pp{font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:20px}
+.pdiv{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);margin-bottom:20px}
+.pf{display:flex;gap:8px;margin-bottom:10px}
+.pdot2{width:3px;height:3px;border-radius:50%;background:#8B6914;margin-top:5px;flex-shrink:0}
+.pf span{font-size:10px;color:#8A8070;line-height:1.6}
+.pbtn{width:100%;margin-top:20px;padding:11px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;background:transparent;border:1px solid #333;color:#8A8070;transition:all 0.3s;border-radius:2px}
+.pbtn:hover{border-color:#8B6914;color:#C9A84C}
+.pcf .pbtn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;font-weight:700}
+.pcf .pa{color:#C9A84C}
+.ssec{padding:80px 24px;max-width:740px;margin:0 auto}
+blockquote{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;line-height:1.8;border-left:2px solid #C9A84C;padding-left:24px;margin-bottom:28px}
+.auth{display:flex;align-items:center;gap:14px}
+.ava{width:44px;height:44px;border:1px solid rgba(201,168,76,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;background:#141414;font-family:'Cormorant Garamond',serif;font-size:14px;color:#C9A84C;flex-shrink:0}
+.ctasec{padding:80px 24px;text-align:center;background:#0E0E0E;border-top:1px solid rgba(201,168,76,0.08)}
+footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.flogo{font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:4px;color:#8A8070}
+.flogo span{color:#8B6914}
+.flinks{display:flex;gap:20px;flex-wrap:wrap}
+.flinks a{font-size:8px;color:#8A8070;text-decoration:none;letter-spacing:2px;cursor:pointer;transition:color 0.3s}
+.flinks a:hover{color:#C9A84C}
+.fcopy{font-size:8px;color:#8A8070;letter-spacing:1px}
 
-.logo span{
-  color:var(--gold);
-}
-
-.nav-right{
-  display:flex;
-  gap:12px;
-}
-
-button{
-  border:none;
-  cursor:pointer;
-  transition:.3s;
-  font-family:'Inter',sans-serif;
-}
-
-.btn{
-  padding:14px 22px;
-  border-radius:16px;
-  font-size:12px;
-  letter-spacing:2px;
-  font-weight:700;
-}
-
-.primary{
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  color:black;
-}
-
-.primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 0 25px rgba(212,175,55,.25);
-}
-
-.secondary{
-  background:transparent;
-  color:var(--gold);
-  border:1px solid rgba(212,175,55,.25);
-}
-
-.secondary:hover{
-  background:rgba(212,175,55,.06);
-}
-
-/* HERO */
-
-.hero{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  padding:80px 42px;
-}
-
-.hero-content{
-  width:100%;
-  max-width:1350px;
-  margin:auto;
-}
-
-.tag{
-  color:var(--gold);
-  letter-spacing:4px;
-  font-size:12px;
-  margin-bottom:18px;
-}
-
-.hero h1{
-  font-family:'Cormorant Garamond',serif;
-  font-size:110px;
-  line-height:.92;
-  font-weight:300;
-  margin-bottom:28px;
-}
-
-.hero h1 span{
-  color:var(--gold);
-}
-
-.subtitle{
-  max-width:760px;
-  line-height:1.9;
-  color:var(--muted);
-  margin-bottom:50px;
-  font-size:16px;
-}
-
-.hero-buttons{
-  display:flex;
-  gap:16px;
-  margin-bottom:60px;
-  flex-wrap:wrap;
-}
-
-/* FEATURE GRID */
-
-.feature-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:22px;
-}
-
-.feature{
-  background:
-    linear-gradient(145deg,#101010,#181818);
-
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:30px;
-  transition:.35s;
-  position:relative;
-  overflow:hidden;
-}
-
-.feature::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(135deg, rgba(212,175,55,.08), transparent 40%);
-  opacity:0;
-  transition:.35s;
-}
-
-.feature:hover::before{
-  opacity:1;
-}
-
-.feature:hover{
-  transform:translateY(-8px);
-  border-color:rgba(212,175,55,.22);
-}
-
-.feature-icon{
-  width:60px;
-  height:60px;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  margin-bottom:22px;
-  background:rgba(212,175,55,.08);
-  color:var(--gold);
-}
-
-.feature h3{
-  margin-bottom:14px;
-  font-size:20px;
-}
-
-.feature p{
-  color:var(--muted);
-  line-height:1.9;
-}
-
-/* SECTION */
-
-.section{
-  padding:100px 42px;
-}
-
-.section-title{
-  font-size:64px;
-  font-family:'Cormorant Garamond',serif;
-  font-weight:300;
-  margin-bottom:18px;
-}
-
-.section-sub{
-  max-width:720px;
-  color:var(--muted);
-  line-height:1.9;
-  margin-bottom:40px;
-}
-
-/* TABS */
-
-.tabs{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding-bottom:10px;
-  margin-bottom:40px;
-}
-
-.tab{
-  padding:15px 24px;
-  border-radius:18px;
-  background:#111;
-  color:#888;
-  border:1px solid transparent;
-  white-space:nowrap;
-  font-weight:600;
-}
-
-.tab.active{
-  color:var(--gold);
-  border-color:rgba(212,175,55,.2);
-  background:
-    linear-gradient(145deg,#181818,#121212);
-
-  box-shadow:0 0 20px rgba(212,175,55,.08);
-}
+/* LOGIN */
+#page-login{display:flex;align-items:center;justify-content:center;padding:20px;min-height:100vh;background:#080808}
+.lcard{width:100%;max-width:380px;background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.15);padding:40px 32px;border-radius:4px}
+.llogo{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;text-align:center;margin-bottom:6px;color:#F5F0E8}
+.llogo span{color:#C9A84C}
+.ltag{font-size:8px;letter-spacing:4px;color:#8B6914;text-align:center;margin-bottom:28px}
+.ltabs{display:flex;margin-bottom:24px;border-bottom:1px solid rgba(201,168,76,0.07)}
+.ltab{flex:1;padding:10px;background:none;border:none;border-bottom:2px solid transparent;color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
+.ltab.on{color:#C9A84C;border-bottom-color:#C9A84C}
+.backlink{display:block;text-align:center;margin-top:20px;font-size:8px;letter-spacing:2px;color:#8A8070;cursor:pointer;transition:color 0.3s}
+.backlink:hover{color:#C9A84C}
 
 /* DASHBOARD */
+.dash-nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.97);border-bottom:1px solid rgba(201,168,76,0.1)}
+.dash-main{padding:60px 16px 20px}
+.dtabs{display:flex;border-bottom:1px solid rgba(201,168,76,0.1);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,#0A0A0A,#080808)}
+.dtab{flex:0 0 auto;padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;color:#8A8070;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:all 0.3s;text-align:center;min-width:64px}
+.dtab:hover{color:rgba(201,168,76,0.6)}
+.dtab.on{color:#C9A84C;border-bottom-color:#C9A84C;font-weight:600}
+.dtab-icon{font-size:16px;margin-bottom:3px;display:block}
+.dsg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ds{background:linear-gradient(145deg,#141414,#0E0E0E);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:14px;transition:all 0.3s;position:relative;overflow:hidden}
+.ds::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent)}
+.ds:hover{border-color:rgba(201,168,76,0.2);transform:translateY(-1px)}
+.dsl{font-size:7px;letter-spacing:3px;color:#8B6914;margin-bottom:6px}
+.dsv{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300}
+.abar{margin-bottom:14px}
+.ameta2{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center}
+.an{font-size:9px;color:#8A8070;letter-spacing:1px}
+.ap{font-size:10px;color:#C9A84C;font-family:'Cormorant Garamond',serif}
+.atrack2{background:#1A1A1A;height:4px;border-radius:2px;overflow:hidden}
+.afill2{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+.ubanner{background:linear-gradient(135deg,#1A1500,#0E0E0E);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:18px;margin-bottom:12px;text-align:center}
+.ubt{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#C9A84C;margin-bottom:6px}
+.ubs{font-size:10px;color:#8A8070;line-height:1.7;margin-bottom:14px}
+.ci{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:10px;align-items:flex-start}
+.cn{color:#C9A84C;font-size:8px;letter-spacing:2px;min-width:22px;margin-top:2px;flex-shrink:0}
+.ct{color:#8A8070;line-height:1.5;flex:1}
 
-.dashboard{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-  margin-bottom:40px;
-}
+/* GOALS */
+.goal{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;padding:16px;margin-bottom:12px;transition:all 0.3s}
+.goal:hover{border-color:rgba(201,168,76,0.2)}
+.gname{font-size:11px;color:#F5F0E8;margin-bottom:6px;letter-spacing:1px;font-weight:500}
+.gmeta{display:flex;justify-content:space-between;font-size:9px;color:#8A8070;margin-bottom:10px}
+.gtrack{background:#1A1A1A;height:5px;border-radius:3px;overflow:hidden}
+.gfill{height:100%;border-radius:3px;background:linear-gradient(90deg,#8B6914,#C9A84C);transition:width 1.2s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 8px rgba(201,168,76,0.3)}
 
-.stat{
-  background:
-    linear-gradient(145deg,#111,#181818);
+/* PROPERTIES */
+.prop{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;padding:16px;margin-bottom:12px;transition:all 0.3s}
+.prop:hover{border-color:rgba(201,168,76,0.2)}
+.paddr{font-size:11px;color:#F5F0E8;font-weight:500;margin-bottom:6px}
+.pmeta{font-size:9px;color:#8A8070;line-height:1.9}
+.prop-badge{display:inline-block;font-size:8px;letter-spacing:2px;padding:3px 8px;border-radius:2px;margin-top:8px;font-weight:600}
 
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:32px;
-  position:relative;
-  overflow:hidden;
-}
+/* BLOG */
+.blog{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.blog::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,#C9A84C,transparent);opacity:0;transition:opacity 0.3s}
+.blog:hover{border-color:rgba(201,168,76,0.2);transform:translateX(3px)}
+.blog:hover::before{opacity:1}
+.bdate{font-size:8px;letter-spacing:3px;color:#8B6914;margin-bottom:8px}
+.btit{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#F5F0E8;margin-bottom:8px;line-height:1.3}
+.bex{font-size:10px;color:#8A8070;line-height:1.8}
+.bread{font-size:8px;letter-spacing:3px;color:#C9A84C;margin-top:10px}
 
-.stat::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:1px;
-  background:
-    linear-gradient(90deg,transparent,var(--gold),transparent);
-}
+/* LOCKED */
+.lock{position:relative;overflow:hidden;min-height:100px}
+.loverlay{position:absolute;inset:0;background:rgba(8,8,8,0.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+.licon{font-size:24px;margin-bottom:8px}
+.ltxt2{font-size:9px;letter-spacing:3px;color:#8B6914;margin-bottom:12px}
+.lbtn{background:linear-gradient(135deg,#8B6914,#C9A84C);border:none;color:#080808;padding:8px 20px;font-size:8px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:2px}
 
-.stat-label{
-  color:var(--gold);
-  letter-spacing:3px;
-  font-size:11px;
-  margin-bottom:14px;
-}
+/* REFERRAL */
+.rbox{background:linear-gradient(135deg,#1A1500,#0E0E0E);border:1px solid rgba(201,168,76,0.2);border-radius:4px;padding:16px;margin-bottom:12px}
+.rlink{background:#141414;border:1px solid rgba(201,168,76,0.15);padding:10px 12px;font-size:10px;color:#C9A84C;font-family:'Courier',monospace;word-break:break-all;margin:10px 0;border-radius:2px}
+.titem{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:11px}
+.tlbl{color:#8A8070}
+.tamt{color:#C9A84C;font-family:'Cormorant Garamond',serif;font-size:16px}
 
-.stat-value{
-  font-size:52px;
-  font-family:'Cormorant Garamond',serif;
-}
+/* WEBHOOK */
+.webhook-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:10px;align-items:flex-start}
+.wdot{width:6px;height:6px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.wtime{font-size:8px;color:#8A8070;margin-top:2px}
 
-.blue{
-  color:var(--blue);
-}
+/* UPGRADE PAGE */
+.umain{max-width:480px;margin:0 auto;padding:80px 20px 40px}
+.vault-hero{background:linear-gradient(145deg,#1A1200,#080808);border:1px solid rgba(201,168,76,0.3);border-radius:6px;padding:32px 24px;text-align:center;margin-bottom:28px;position:relative;overflow:hidden}
+.vault-hero::before{content:'VAULTFLOW';position:absolute;font-family:'Cormorant Garamond',serif;font-size:80px;color:rgba(201,168,76,0.03);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;letter-spacing:10px;pointer-events:none}
+.vh-tag{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:6px;color:#8B6914;margin-bottom:12px}
+.vh-price{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:#C9A84C;line-height:1;margin-bottom:4px}
+.vh-per{font-size:9px;letter-spacing:4px;color:#8B6914;margin-bottom:20px}
+.vh-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;text-align:left}
+.vh-feat{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px}
+.vh-ficon{font-size:16px;margin-bottom:4px}
+.vh-fname{font-size:8px;letter-spacing:2px;color:#C9A84C;margin-bottom:2px}
+.vh-fdesc{font-size:9px;color:#8A8070;line-height:1.5}
+.psel-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.psel{background:#141414;border:1px solid #2A2A2A;border-radius:4px;padding:16px;text-align:center;cursor:pointer;position:relative;transition:all 0.3s}
+.psel:hover{border-color:rgba(201,168,76,0.3)}
+.psel.on{border-color:#C9A84C;background:linear-gradient(145deg,#1A1500,#0E0E0E)}
+.pbadge{position:absolute;top:8px;right:8px;background:#C9A84C;color:#080808;font-size:7px;letter-spacing:1px;padding:2px 6px;font-weight:700;display:none;border-radius:2px}
+.psel.on .pbadge{display:block}
+.pname{font-size:9px;letter-spacing:3px;color:#8A8070;margin-bottom:3px}
+.pprice{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#C9A84C;margin-bottom:1px}
+.pper{font-size:8px;color:#8B6914;letter-spacing:2px}
+.osum{background:linear-gradient(145deg,#141414,#0E0E0E);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:14px;margin-bottom:18px}
+.osrow{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}
+.oslbl{color:#8A8070}
+.osval{font-family:'Cormorant Garamond',serif;font-size:13px}
+.ostot{display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,0.15);margin-top:4px}
+.ostlbl{font-size:9px;letter-spacing:2px;color:#C9A84C}
+.ostval{font-family:'Cormorant Garamond',serif;font-size:22px;color:#C9A84C;font-weight:300}
+.sec-badge{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;font-size:8px;color:#8A8070;letter-spacing:2px}
 
-.green{
-  color:var(--green);
-}
+/* LEGAL */
+.legmain{max-width:680px;margin:0 auto;padding:80px 24px 40px}
+.legtabs{display:flex;margin-bottom:40px;border-bottom:1px solid rgba(201,168,76,0.07)}
+.legtab{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
+.legtab.on{color:#C9A84C;border-bottom-color:#C9A84C}
+.legh1{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;letter-spacing:-1px;margin-bottom:6px}
+.legh1 em{color:#C9A84C;font-style:italic}
+.legdate{font-size:8px;letter-spacing:3px;color:#8B6914;margin-bottom:36px}
+.legsec{margin-bottom:32px}
+.legstit{font-family:'Cormorant Garamond',serif;font-size:18px;color:#C9A84C;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,0.15)}
+.legtxt{font-size:11px;color:#8A8070;line-height:2;margin-bottom:10px}
 
-.orange{
-  color:var(--orange);
-}
-
-.purple{
-  color:var(--purple);
-}
-
-/* GRID */
-
-.content-grid{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:24px;
-}
-
-@media(max-width:1100px){
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-/* CARD */
-
-.card{
-  background:
-    linear-gradient(145deg,#101010,#181818);
-
-  border:1px solid var(--line);
-  border-radius:28px;
-  padding:34px;
-}
-
-.card-title{
-  font-size:42px;
-  font-family:'Cormorant Garamond',serif;
-  margin-bottom:28px;
-}
-
-/* INPUT */
-
-label{
-  display:block;
-  color:var(--gold);
-  margin-bottom:10px;
-  letter-spacing:2px;
-  font-size:11px;
-}
-
-input{
-  width:100%;
-  padding:17px;
-  border-radius:16px;
-  border:1px solid #2a2a2a;
-  background:#1a1a1a;
-  color:white;
-  margin-bottom:24px;
-  font-size:15px;
-}
-
-input:focus{
-  outline:none;
-  border-color:rgba(212,175,55,.4);
-}
-
-/* ALLOCATION */
-
-.alloc{
-  margin-bottom:24px;
-}
-
-.alloc-top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-.track{
-  height:13px;
-  background:#1a1a1a;
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.fill{
-  height:100%;
-  border-radius:999px;
-}
-
-.blue-fill{
-  width:35%;
-  background:linear-gradient(90deg,#0066ff,#55b4ff);
-}
-
-.green-fill{
-  width:25%;
-  background:linear-gradient(90deg,#00995b,#00d27a);
-}
-
-.orange-fill{
-  width:20%;
-  background:linear-gradient(90deg,#ff6a00,#ffb366);
-}
-
-.gold-fill{
-  width:10%;
-  background:linear-gradient(90deg,#9a7312,var(--gold));
-}
-
-/* SIMULATORS */
-
-.sim{
-  background:#161616;
-  border:1px solid rgba(212,175,55,.08);
-  border-radius:20px;
-  padding:24px;
-  margin-bottom:20px;
-}
-
-.sim h3{
-  color:var(--gold);
-  margin-bottom:20px;
-}
-
-.result{
-  margin-top:22px;
-  background:#1b1b1b;
-  border:1px solid rgba(212,175,55,.08);
-  border-radius:18px;
-  padding:20px;
-  line-height:1.9;
-  color:#aaa;
-}
-
-.result strong{
-  color:var(--gold);
-}
-
-/* LOGIN */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.78);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-  backdrop-filter:blur(10px);
-}
-
-.modal.active{
-  display:flex;
-}
-
-.modal-card{
-  width:100%;
-  max-width:440px;
-
-  background:
-    linear-gradient(145deg,#101010,#1a1a1a);
-
-  border:1px solid rgba(212,175,55,.15);
-
-  border-radius:28px;
-  padding:42px;
-  position:relative;
-
-  animation:slideUp .3s ease;
-}
-
-.modal-card h2{
-  font-size:48px;
-  font-family:'Cormorant Garamond',serif;
-  font-weight:300;
-  margin-bottom:10px;
-}
-
-.modal-sub{
-  color:#888;
-  margin-bottom:30px;
-}
-
-.close{
-  position:absolute;
-  top:16px;
-  right:16px;
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#1d1d1d;
-  color:white;
-  font-size:22px;
-}
-
-.close:hover{
-  background:#2a2a2a;
-}
-
-.full{
-  width:100%;
-}
-
-#loginMessage{
-  margin-top:18px;
-  color:var(--gold);
-  text-align:center;
-}
-
-/* FOOTER */
-
-footer{
-  padding:60px;
-  text-align:center;
-  border-top:1px solid var(--line);
-  color:#666;
-}
-
-/* ANIMATION */
-
-@keyframes slideUp{
-  from{
-    opacity:0;
-    transform:translateY(30px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* MOBILE */
+/* PRIME MODE */
+.prime-badge{display:inline-block;background:linear-gradient(135deg,#8B6914,#C9A84C);color:#080808;font-size:8px;letter-spacing:3px;padding:2px 8px;font-weight:700;margin-left:8px;vertical-align:middle;border-radius:2px}
+.prime-banner{background:linear-gradient(135deg,#1A1200,#0E0E0E);border:1px solid #C9A84C;border-radius:4px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.prime-banner-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:#C9A84C}
+.prime-banner-sub{font-size:8px;color:#8B6914;letter-spacing:2px;margin-top:2px}
 
 @media(max-width:768px){
-
-  nav{
-    padding:18px 20px;
-  }
-
-  .hero{
-    padding:70px 20px;
-  }
-
-  .hero h1{
-    font-size:64px;
-  }
-
-  .section{
-    padding:80px 20px;
-  }
-
-  .section-title{
-    font-size:48px;
-  }
-
+  nav{padding:12px 16px}
+  .hero{padding:100px 16px 60px}
+  .hero h1{font-size:40px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .fgrid{grid-template-columns:1fr;gap:24px;padding:60px 16px}
+  .fstick{position:relative;top:0}
+  .frow{grid-template-columns:40px 1fr;gap:10px}
+  .fdesc{display:none}
+  .pgrid{grid-template-columns:1fr}
+  .ssec,.ctasec{padding:60px 16px}
+  .wrow{flex-direction:column}
+  .winp{border-right:1px solid rgba(201,168,76,0.2);border-bottom:none}
+  footer{flex-direction:column;text-align:center;padding:24px 16px}
+  .flinks{justify-content:center}
+  .result-grid{grid-template-columns:1fr}
 }
-
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
-
-<nav>
-
-  <div class="logo">
-    VAULT<span>FLOW</span>
+<!-- PUBLIC NAV -->
+<nav id="nav-pub">
+  <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+  <div class="nav-r">
+    <button class="nbtn" onclick="go('login')">LOGIN</button>
+    <button class="ngold" onclick="go('login')">JOIN FREE</button>
   </div>
-
-  <div class="nav-right">
-
-    <button class="btn secondary" onclick="openLogin()">
-      LOGIN
-    </button>
-
-    <button class="btn primary" onclick="scrollToDashboard()">
-      ENTER PLATFORM
-    </button>
-
-  </div>
-
 </nav>
 
-<!-- HERO -->
-
-<section class="hero">
-
-  <div class="hero-content">
-
-    <div class="tag">
-      WEALTH INFRASTRUCTURE FOR HIGH EARNERS
+<!-- ===== HOME ===== -->
+<div class="page" id="page-home">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div style="position:relative;z-index:1">
+      <div class="tag">INTELLIGENT WEALTH ALLOCATION</div>
+      <h1>Your money.<br><em>Perfectly</em><br>allocated.</h1>
+      <p class="hero-sub">VaultFlow connects to your bank, detects your paycheck, and instantly routes every dollar — debt, savings, investments, real estate — without you lifting a finger.</p>
+      <div class="wrow">
+        <input class="winp" type="email" id="w1" placeholder="your@email.com">
+        <button class="wbtn" onclick="waitlist('w1','wm1')">JOIN WAITLIST</button>
+      </div>
+      <div id="wm1" class="msgbox"></div>
     </div>
+  </section>
 
-    <h1>
-      Build wealth.<br>
-      <span>Systematically.</span>
-    </h1>
+  <section class="stats-row">
+    <div class="si"><div class="sl">MONTHLY INCOME MANAGED</div><div class="sv"><span>$</span>10,628</div></div>
+    <div class="si"><div class="sl">ALLOCATION ACCURACY</div><div class="sv">99<span>%</span></div></div>
+    <div class="si"><div class="sl">NET WORTH INCREASE</div><div class="sv">340<span>%</span></div></div>
+    <div class="si"><div class="sl">HOURS SAVED YEARLY</div><div class="sv">240<span>hrs</span></div></div>
+  </section>
 
-    <p class="subtitle">
-      VaultFlow Elite automates income allocation, investment forecasting,
-      real estate analysis, and net worth growth for merchant mariners,
-      veterans, entrepreneurs, and high-income professionals.
-    </p>
-
-    <div class="hero-buttons">
-
-      <button class="btn primary" onclick="scrollToDashboard()">
-        OPEN DASHBOARD
-      </button>
-
-      <button class="btn secondary" onclick="openLogin()">
-        MEMBER LOGIN
-      </button>
-
-    </div>
-
-    <div class="feature-grid">
-
-      <div class="feature">
-
-        <div class="feature-icon">
-          ⬡
+  <section style="padding:80px 24px;text-align:center">
+    <div class="tag">THE PLATFORM</div>
+    <h2 class="stitle">Built for those who <em>earn seriously.</em></h2>
+    <div class="prev">
+      <div class="pbar">
+        <div class="ddot" style="background:#FF5F57;opacity:0.6"></div>
+        <div class="ddot" style="background:#FFBD2E;opacity:0.6"></div>
+        <div class="ddot" style="background:#28C840;opacity:0.6"></div>
+        <div class="pttl">VAULTFLOW — DASHBOARD</div>
+      </div>
+      <div class="pbody">
+        <div class="pstats">
+          <div class="pstat"><div class="psl">MONTHLY INCOME</div><div class="psv" style="color:#C9A84C">$10,628</div></div>
+          <div class="pstat"><div class="psl">ALLOCATED</div><div class="psv">$8,940</div></div>
+          <div class="pstat"><div class="psl">FREE CASH</div><div class="psv" style="color:#00ff88">$1,688</div></div>
         </div>
-
-        <h3>Automated Allocation</h3>
-
-        <p>
-          Instantly divide income into investing,
-          real estate, emergency savings,
-          and debt elimination systems.
-        </p>
-
-      </div>
-
-      <div class="feature">
-
-        <div class="feature-icon">
-          ◈
-        </div>
-
-        <h3>Investment Forecasting</h3>
-
-        <p>
-          Run long-term compounding simulations,
-          portfolio projections,
-          and retirement growth models.
-        </p>
-
-      </div>
-
-      <div class="feature">
-
-        <div class="feature-icon">
-          ◉
-        </div>
-
-        <h3>Real Estate Analysis</h3>
-
-        <p>
-          Analyze cap rate, monthly cash flow,
-          annual returns, and multifamily acquisition targets.
-        </p>
-
-      </div>
-
-      <div class="feature">
-
-        <div class="feature-icon">
-          ✦
-        </div>
-
-        <h3>Net Worth Tracking</h3>
-
-        <p>
-          Monitor total assets, liabilities,
-          cash reserves, and long-term wealth accumulation.
-        </p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-<!-- DASHBOARD -->
-
-<section class="section" id="dashboard">
-
-  <div class="tag">
-    LIVE WEALTH CONTROL CENTER
-  </div>
-
-  <div class="section-title">
-    Financial Command Dashboard
-  </div>
-
-  <p class="section-sub">
-    Calculate monthly allocation systems,
-    investment growth,
-    and real estate opportunities from one elite platform.
-  </p>
-
-  <div class="tabs">
-
-    <div class="tab active">
-      OVERVIEW
-    </div>
-
-    <div class="tab">
-      ALLOCATOR
-    </div>
-
-    <div class="tab">
-      INVESTING
-    </div>
-
-    <div class="tab">
-      REAL ESTATE
-    </div>
-
-    <div class="tab">
-      NET WORTH
-    </div>
-
-  </div>
-
-  <div class="dashboard">
-
-    <div class="stat">
-      <div class="stat-label">MONTHLY INCOME</div>
-      <div class="stat-value" id="income">
-        $0
+        <div class="albl">ALLOCATION BREAKDOWN</div>
+        <div class="arow"><div class="amh"><span style="color:#8A8070;font-size:9px">Emergency Fund</span><span style="color:#C9A84C;font-size:9px">20%</span></div><div class="atrack"><div class="afill" style="width:20%;background:#C9A84C"></div></div></div>
+        <div class="arow"><div class="amh"><span style="color:#8A8070;font-size:9px">Debt Payoff</span><span style="color:#C9A84C;font-size:9px">15%</span></div><div class="atrack"><div class="afill" style="width:15%;background:#8B6914"></div></div></div>
+        <div class="arow"><div class="amh"><span style="color:#8A8070;font-size:9px">Real Estate</span><span style="color:#C9A84C;font-size:9px">25%</span></div><div class="atrack"><div class="afill" style="width:25%;background:#ff6b35"></div></div></div>
+        <div class="arow"><div class="amh"><span style="color:#8A8070;font-size:9px">Stock Algo</span><span style="color:#C9A84C;font-size:9px">30%</span></div><div class="atrack"><div class="afill" style="width:30%;background:#0088ff"></div></div></div>
       </div>
     </div>
+  </section>
 
-    <div class="stat">
-      <div class="stat-label">INVESTMENTS</div>
-      <div class="stat-value blue" id="investing">
-        $0
-      </div>
+  <div class="gline"></div>
+
+  <div class="fgrid">
+    <div class="fstick">
+      <div class="tag">FEATURES</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;letter-spacing:-1px;line-height:1.2;color:#F5F0E8">Every feature<br>with purpose.</h2>
     </div>
-
-    <div class="stat">
-      <div class="stat-label">REAL ESTATE</div>
-      <div class="stat-value orange" id="realestate">
-        $0
-      </div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">NET WORTH TARGET</div>
-      <div class="stat-value purple" id="networth">
-        $1M+
-      </div>
-    </div>
-
-  </div>
-
-  <div class="content-grid">
-
-    <!-- LEFT -->
-
-    <div class="card">
-
-      <div class="card-title">
-        Wealth Allocator
-      </div>
-
-      <label>DAILY RATE</label>
-      <input type="number" id="dailyRate" value="362">
-
-      <label>DAYS WORKED</label>
-      <input type="number" id="daysWorked" value="28">
-
-      <label>VA DISABILITY</label>
-      <input type="number" id="vaIncome" value="3938">
-
-      <button class="btn primary" onclick="calculate()">
-        CALCULATE SYSTEM
-      </button>
-
-      <div style="margin-top:40px;">
-
-        <div class="alloc">
-
-          <div class="alloc-top">
-            <span>Investing</span>
-            <span>35%</span>
-          </div>
-
-          <div class="track">
-            <div class="fill blue-fill"></div>
-          </div>
-
-        </div>
-
-        <div class="alloc">
-
-          <div class="alloc-top">
-            <span>Real Estate</span>
-            <span>25%</span>
-          </div>
-
-          <div class="track">
-            <div class="fill green-fill"></div>
-          </div>
-
-        </div>
-
-        <div class="alloc">
-
-          <div class="alloc-top">
-            <span>Emergency Fund</span>
-            <span>20%</span>
-          </div>
-
-          <div class="track">
-            <div class="fill orange-fill"></div>
-          </div>
-
-        </div>
-
-        <div class="alloc">
-
-          <div class="alloc-top">
-            <span>Debt Elimination</span>
-            <span>10%</span>
-          </div>
-
-          <div class="track">
-            <div class="fill gold-fill"></div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- RIGHT -->
-
     <div>
-
-      <div class="sim">
-
-        <h3>Investment Simulator</h3>
-
-        <label>MONTHLY INVESTING</label>
-        <input type="number" id="monthlyInvest" value="6000">
-
-        <label>RETURN %</label>
-        <input type="number" id="returnRate" value="10">
-
-        <label>YEARS</label>
-        <input type="number" id="years" value="10">
-
-        <button class="btn primary full" onclick="investCalc()">
-          RUN SIMULATION
-        </button>
-
-        <div class="result" id="investResult">
-          Run a projection to estimate long-term portfolio growth.
-        </div>
-
-      </div>
-
-      <div class="sim">
-
-        <h3>Real Estate Analyzer</h3>
-
-        <label>PROPERTY PRICE</label>
-        <input type="number" id="housePrice" value="350000">
-
-        <label>MONTHLY RENT</label>
-        <input type="number" id="rent" value="3200">
-
-        <label>MONTHLY EXPENSES</label>
-        <input type="number" id="expenses" value="700">
-
-        <button class="btn primary full" onclick="realEstateCalc()">
-          ANALYZE PROPERTY
-        </button>
-
-        <div class="result" id="realEstateResult">
-          Analyze cash flow, yearly profit, and cap rate.
-        </div>
-
-      </div>
-
+      <div class="frow"><div class="fnum">01</div><div class="ftit">Bank Detection</div><div class="fdesc">Connects to 12,000+ banks. Detects your paycheck the moment it deposits.</div></div>
+      <div class="frow"><div class="fnum">02</div><div class="ftit">Intelligent Allocation</div><div class="fdesc">Uses avalanche debt method and Kelly criterion for optimal distribution.</div></div>
+      <div class="frow"><div class="fnum">03</div><div class="ftit">Automated Transfers</div><div class="fdesc">Funds move automatically to savings, brokerage, debt, and real estate.</div></div>
+      <div class="frow"><div class="fnum">04</div><div class="ftit">Stock Algorithm</div><div class="fdesc">Connects to Alpaca. Your investing allocation goes directly into your algo.</div></div>
+      <div class="frow"><div class="fnum">05</div><div class="ftit">Real Estate Analyzer</div><div class="fdesc">Cap rate, cash-on-cash, debt service — every metric in seconds.</div></div>
+      <div class="frow"><div class="fnum">06</div><div class="ftit">Wealth Projection</div><div class="fdesc">See your exact net worth year by year toward your $1M goal.</div></div>
     </div>
-
   </div>
 
-</section>
-
-<!-- LOGIN -->
-
-<div class="modal" id="loginModal">
-
-  <div class="modal-card">
-
-    <button class="close" onclick="closeLogin()">
-      ×
-    </button>
-
-    <h2>
-      VaultFlow Elite
-    </h2>
-
-    <div class="modal-sub">
-      Secure member access
+  <section style="padding:80px 24px;background:#0E0E0E;border-top:1px solid rgba(201,168,76,0.08)">
+    <div style="text-align:center;margin-bottom:48px"><div class="tag">MEMBERSHIP</div><h2 class="stitle">Simple, <em>transparent</em> pricing.</h2></div>
+    <div class="pgrid">
+      <div class="pc" onclick="go('login')">
+        <div class="pt">ESSENTIAL</div><div class="pa" style="color:#F5F0E8">Free</div><div class="pp">&nbsp;</div><div class="pdiv"></div>
+        <div class="pf"><div class="pdot2"></div><span>Income and expense calculator</span></div>
+        <div class="pf"><div class="pdot2"></div><span>Debt payoff optimizer</span></div>
+        <div class="pf"><div class="pdot2"></div><span>Real estate analyzer</span></div>
+        <div class="pf"><div class="pdot2"></div><span>Wealth projection tool</span></div>
+        <button class="pbtn">GET STARTED FREE</button>
+      </div>
+      <div class="pc pcf" onclick="go('upgrade')">
+        <div class="pt" style="color:#C9A84C">★ MOST POPULAR</div>
+        <div class="pt">PRIME</div><div class="pa">$9.99</div><div class="pp">PER MONTH</div><div class="pdiv"></div>
+        <div class="pf"><div class="pdot2" style="background:#C9A84C"></div><span>Bank account connection</span></div>
+        <div class="pf"><div class="pdot2" style="background:#C9A84C"></div><span>Payday auto-detection</span></div>
+        <div class="pf"><div class="pdot2" style="background:#C9A84C"></div><span>Auto-allocation on payday</span></div>
+        <div class="pf"><div class="pdot2" style="background:#C9A84C"></div><span>Alpaca trading integration</span></div>
+        <button class="pbtn">BEGIN NOW</button>
+      </div>
+      <div class="pc" onclick="go('upgrade')">
+        <div class="pt">VAULT</div><div class="pa" style="color:#F5F0E8">$24.99</div><div class="pp">PER MONTH</div><div class="pdiv"></div>
+        <div class="pf"><div class="pdot2"></div><span>Everything in Prime</span></div>
+        <div class="pf"><div class="pdot2"></div><span>Auto bank transfers</span></div>
+        <div class="pf"><div class="pdot2"></div><span>S&P 500 algo signals</span></div>
+        <div class="pf"><div class="pdot2"></div><span>Tax optimization insights</span></div>
+        <button class="pbtn">BEGIN NOW</button>
+      </div>
     </div>
+  </section>
 
-    <input type="email" id="email" placeholder="Email">
+  <section class="ssec">
+    <div class="tag">THE STORY</div>
+    <blockquote>"I was making good money on the water — $362 a day — and still had no idea where it was going. Built this for myself. Now it runs automatically while I am at sea."</blockquote>
+    <div class="auth">
+      <div class="ava">V</div>
+      <div>
+        <div style="font-size:12px;letter-spacing:1px">Founder, VaultFlow</div>
+        <div style="font-size:8px;letter-spacing:2px;color:#8A8070;margin-top:3px">MERCHANT MARINER · VETERAN · INVESTOR</div>
+      </div>
+    </div>
+  </section>
 
-    <input type="password" id="password" placeholder="Password">
+  <section class="ctasec">
+    <div class="tag">EARLY ACCESS</div>
+    <h2 class="stitle">Join the <em>vault.</em></h2>
+    <p style="font-size:12px;color:#8A8070;max-width:400px;margin:0 auto 32px;line-height:1.8">First 500 members receive Prime free for 6 months.</p>
+    <div class="wrow" style="max-width:400px;margin:0 auto">
+      <input class="winp" type="email" id="w2" placeholder="Enter your email">
+      <button class="wbtn" onclick="waitlist('w2','wm2')">REQUEST ACCESS</button>
+    </div>
+    <div id="wm2" class="msgbox"></div>
+  </section>
 
-    <button class="btn primary full" onclick="login()">
-      SIGN IN
-    </button>
-
-    <div id="loginMessage"></div>
-
-  </div>
-
+  <footer>
+    <div class="flogo">VAULT<span>FLOW</span></div>
+    <div class="flinks">
+      <a onclick="go('home')">Home</a>
+      <a onclick="go('login')">Login</a>
+      <a onclick="go('upgrade')">Pricing</a>
+      <a onclick="go('legal')">Privacy</a>
+      <a onclick="go('legal')">Terms</a>
+    </div>
+    <div class="fcopy">2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
+  </footer>
 </div>
 
-<footer>
-  VAULTFLOW ELITE — Wealth Infrastructure Platform
-</footer>
+<!-- ===== LOGIN ===== -->
+<div id="page-login">
+  <div class="lcard">
+    <div class="llogo">VAULT<span>FLOW</span></div>
+    <div class="ltag">INTELLIGENT WEALTH ALLOCATION</div>
+    <div class="gline" style="margin-bottom:24px"></div>
+    <div class="ltabs">
+      <button class="ltab on" id="lt1" onclick="ltab('in')">SIGN IN</button>
+      <button class="ltab" id="lt2" onclick="ltab('up')">CREATE ACCOUNT</button>
+    </div>
+    <div id="lf1">
+      <label class="lbl">EMAIL</label>
+      <input class="inp" type="email" id="sie" placeholder="your@email.com">
+      <label class="lbl">PASSWORD</label>
+      <input class="inp" type="password" id="sip" placeholder="••••••••">
+      <button class="btngold" onclick="signin()">SIGN IN</button>
+    </div>
+    <div id="lf2" style="display:none">
+      <label class="lbl">EMAIL</label>
+      <input class="inp" type="email" id="sue" placeholder="your@email.com">
+      <label class="lbl">PASSWORD</label>
+      <input class="inp" type="password" id="sup" placeholder="Min 6 characters">
+      <label class="lbl">CONFIRM PASSWORD</label>
+      <input class="inp" type="password" id="sup2" placeholder="Repeat password">
+      <button class="btngold" onclick="signup()">CREATE ACCOUNT</button>
+    </div>
+    <div id="lmsg" class="msgbox"></div>
+    <span class="backlink" onclick="go('home')">← BACK TO VAULTFLOW</span>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="page" id="page-dashboard">
+  <nav class="dash-nav">
+    <button class="logo" id="dash-logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+    <div style="display:flex;gap:8px">
+      <button class="ngold" onclick="go('upgrade')">UPGRADE</button>
+      <button class="nbtn" onclick="signout()">SIGN OUT</button>
+    </div>
+  </nav>
+  <div class="dash-main">
+    <div class="dtabs">
+      <button class="dtab on" onclick="dtab('ov')"><span class="dtab-icon">⬡</span>OVERVIEW</button>
+      <button class="dtab" onclick="dtab('al')"><span class="dtab-icon">⟁</span>ALLOCATE</button>
+      <button class="dtab" onclick="dtab('tl')"><span class="dtab-icon">◈</span>TOOLS</button>
+      <button class="dtab" onclick="dtab('nw')"><span class="dtab-icon">◎</span>WEALTH</button>
+      <button class="dtab" onclick="dtab('gl')"><span class="dtab-icon">◇</span>GOALS</button>
+      <button class="dtab" onclick="dtab('pr')"><span class="dtab-icon">⬢</span>DEALS</button>
+      <button class="dtab" onclick="dtab('bl')"><span class="dtab-icon">▣</span>BLOG</button>
+      <button class="dtab" onclick="dtab('pf')"><span class="dtab-icon">◉</span>PROFILE</button>
+      <button class="dtab" onclick="go('upgrade')" style="color:#C9A84C"><span class="dtab-icon">★</span>UPGRADE</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="dt-ov">
+      <div class="tag">DASHBOARD</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:16px;color:#F5F0E8">Welcome back.</div>
+      <div class="dsg">
+        <div class="ds"><div class="dsl">MONTHLY INCOME</div><div class="dsv" id="dInc" style="color:#C9A84C">$0</div></div>
+        <div class="ds"><div class="dsl">FREE CASH</div><div class="dsv" id="dFree" style="color:#00ff88">$0</div></div>
+        <div class="ds"><div class="dsl">TO INVESTING</div><div class="dsv" id="dInv" style="color:#0088ff">$0</div></div>
+        <div class="ds"><div class="dsl">TO REAL ESTATE</div><div class="dsv" id="dRE" style="color:#ff6b35">$0</div></div>
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:12px">ALLOCATION BREAKDOWN</div>
+        <div class="abar"><div class="ameta2"><span class="an">Emergency Fund</span><span class="ap" id="p1">20%</span></div><div class="atrack2"><div class="afill2" id="b1" style="width:20%;background:#C9A84C"></div></div></div>
+        <div class="abar"><div class="ameta2"><span class="an">Debt Payoff</span><span class="ap" id="p2">15%</span></div><div class="atrack2"><div class="afill2" id="b2" style="width:15%;background:#8B6914"></div></div></div>
+        <div class="abar"><div class="ameta2"><span class="an">Real Estate</span><span class="ap" id="p3">25%</span></div><div class="atrack2"><div class="afill2" id="b3" style="width:25%;background:#ff6b35"></div></div></div>
+        <div class="abar"><div class="ameta2"><span class="an">Stock Algo</span><span class="ap" id="p4">30%</span></div><div class="atrack2"><div class="afill2" id="b4" style="width:30%;background:#0088ff"></div></div></div>
+        <div class="abar"><div class="ameta2"><span class="an">Liquid Savings</span><span class="ap" id="p5">10%</span></div><div class="atrack2"><div class="afill2" id="b5" style="width:10%;background:#444"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:10px">PAYDAY CHECKLIST</div>
+        <div id="chklist" style="color:#8A8070;font-size:11px">Enter your numbers in the Allocator tab to generate your checklist.</div>
+      </div>
+      <div class="ubanner" id="upgrade-banner">
+        <div class="ubt">Unlock Auto-Allocation</div>
+        <div class="ubs">Connect your bank and route every dollar automatically on payday.</div>
+        <button class="btngold" style="width:auto;padding:11px 24px;font-size:9px" onclick="go('upgrade')">UPGRADE TO PRIME — $9.99/MO</button>
+      </div>
+    </div>
+
+    <!-- ALLOCATOR -->
+    <div id="dt-al" style="display:none">
+      <div class="tag">YOUR FINANCES</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Set Your Numbers</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Enter your income, expenses and goals then tap Calculate</div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">💰 INCOME</div>
+        <label class="lbl">MARITIME DAYS PER HITCH</label><input class="inp" type="number" id="a_days" value="28">
+        <label class="lbl">DAILY RATE ($)</label><input class="inp" type="number" id="a_rate" value="362">
+        <label class="lbl">VA DISABILITY — monthly ($)</label><input class="inp" type="number" id="a_va" value="3938">
+        <label class="lbl">VR&amp;E SUBSISTENCE — monthly ($)</label><input class="inp" type="number" id="a_vre" value="800">
+        <label class="lbl">OTHER INCOME — monthly ($)</label><input class="inp" type="number" id="a_oth" value="0">
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">🏠 EXPENSES</div>
+        <label class="lbl">RENT / HOUSING ($)</label><input class="inp" type="number" id="a_rent" value="800">
+        <label class="lbl">FOOD ($)</label><input class="inp" type="number" id="a_food" value="400">
+        <label class="lbl">PHONE ($)</label><input class="inp" type="number" id="a_phone" value="80">
+        <label class="lbl">TRANSPORT ($)</label><input class="inp" type="number" id="a_trans" value="200">
+        <label class="lbl">OTHER FIXED ($)</label><input class="inp" type="number" id="a_oexp" value="200">
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">🎯 GOALS</div>
+        <label class="lbl">EMERGENCY FUND TARGET ($)</label><input class="inp" type="number" id="a_em" value="15000">
+        <label class="lbl">RE DOWN PAYMENT TARGET ($)</label><input class="inp" type="number" id="a_re" value="60000">
+        <label class="lbl">MONTHLY INVESTING TARGET ($)</label><input class="inp" type="number" id="a_inv" value="2000">
+      </div>
+      <button class="btngold" onclick="alloc()">⚡ CALCULATE MY ALLOCATION</button>
+      <div class="msgbox" id="almsg"></div>
+    </div>
+
+    <!-- TOOLS -->
+    <div id="dt-tl" style="display:none">
+      <div class="tag">FINANCIAL TOOLS</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Calculators</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Professional-grade tools used by institutional investors</div>
+
+      <div class="card">
+        <div class="tool-header">
+          <div class="tool-icon">💳</div>
+          <div><div class="tool-title">Debt Payoff Calculator</div><div class="tool-sub">AVALANCHE METHOD — HIGHEST INTEREST FIRST</div></div>
+        </div>
+        <label class="lbl">CURRENT BALANCE ($)</label>
+        <input class="inp" type="number" id="t_db" placeholder="e.g. 15000">
+        <label class="lbl">ANNUAL INTEREST RATE (%)</label>
+        <input class="inp" type="number" id="t_dr" placeholder="e.g. 22.99" step="0.01">
+        <label class="lbl">MONTHLY PAYMENT ($)</label>
+        <input class="inp" type="number" id="t_dp" placeholder="e.g. 500">
+        <button class="btngold" onclick="cDebt()">CALCULATE PAYOFF DATE</button>
+        <div class="resbox" id="r_debt"></div>
+      </div>
+
+      <div class="card">
+        <div class="tool-header">
+          <div class="tool-icon">📈</div>
+          <div><div class="tool-title">Investment Growth</div><div class="tool-sub">COMPOUND INTEREST CALCULATOR</div></div>
+        </div>
+        <label class="lbl">STARTING BALANCE ($)</label>
+        <input class="inp" type="number" id="t_ib" placeholder="e.g. 5000" value="0">
+        <label class="lbl">MONTHLY CONTRIBUTION ($)</label>
+        <input class="inp" type="number" id="t_ia" placeholder="e.g. 2000">
+        <label class="lbl">ANNUAL RETURN (%) — S&amp;P 500 avg is 10%</label>
+        <input class="inp" type="number" id="t_ir" placeholder="e.g. 10" step="0.1" value="10">
+        <label class="lbl">TIME PERIOD (years)</label>
+        <input class="inp" type="number" id="t_iy" placeholder="e.g. 10" value="10">
+        <button class="btngold" onclick="cInv()">CALCULATE GROWTH</button>
+        <div class="resbox" id="r_inv"></div>
+      </div>
+
+      <div class="card">
+        <div class="tool-header">
+          <div class="tool-icon">🏘️</div>
+          <div><div class="tool-title">Real Estate Deal Analyzer</div><div class="tool-sub">CAP RATE · CASH-ON-CASH · DEBT SERVICE</div></div>
+        </div>
+        <label class="lbl">PROPERTY ADDRESS (optional — for your records)</label>
+        <input class="inp" type="text" id="t_ra" placeholder="e.g. 123 Main St, Cleveland OH 44101">
+        <label class="lbl">NUMBER OF UNITS</label>
+        <select class="inp" id="t_ru" style="cursor:pointer">
+          <option value="1">1 unit — Single family</option>
+          <option value="2">2 units — Duplex</option>
+          <option value="3">3 units — Triplex</option>
+          <option value="4" selected>4 units — Quadplex</option>
+          <option value="5">5+ units — Commercial</option>
+        </select>
+        <label class="lbl">PURCHASE PRICE ($)</label>
+        <input class="inp" type="number" id="t_rp" placeholder="e.g. 350000">
+        <label class="lbl">TOTAL MONTHLY RENT — all units ($)</label>
+        <input class="inp" type="number" id="t_rr" placeholder="e.g. 3200">
+        <label class="lbl">DOWN PAYMENT (%)</label>
+        <select class="inp" id="t_rd" style="cursor:pointer">
+          <option value="3.5">3.5% — FHA loan</option>
+          <option value="5">5% — Conventional</option>
+          <option value="10">10% — Conventional</option>
+          <option value="20" selected>20% — Standard investment</option>
+          <option value="25">25% — Investment property</option>
+          <option value="100">100% — Cash purchase</option>
+        </select>
+        <label class="lbl">MORTGAGE INTEREST RATE (%)</label>
+        <input class="inp" type="number" id="t_ri" placeholder="e.g. 7.25" step="0.05" value="7.25">
+        <label class="lbl">MONTHLY OPERATING EXPENSES ($) — taxes, insurance, maintenance</label>
+        <input class="inp" type="number" id="t_re" placeholder="e.g. 600">
+        <label class="lbl">VACANCY RATE (%)</label>
+        <input class="inp" type="number" id="t_rv" placeholder="e.g. 5" value="5">
+        <button class="btngold" onclick="cRE()">⚡ ANALYZE THIS DEAL</button>
+        <div class="resbox" id="r_re"></div>
+      </div>
+
+      <div class="card">
+        <div class="tool-header">
+          <div class="tool-icon">🧾</div>
+          <div><div class="tool-title">Tax Estimator</div><div class="tool-sub">FEDERAL TAX + QUARTERLY PAYMENTS</div></div>
+        </div>
+        <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px;margin-bottom:8px;font-size:10px;color:#8B6914;line-height:1.6">
+          ⚠️ VA disability is tax-free and excluded. This is an estimate only — consult a tax professional.
+        </div>
+        <label class="lbl">ANNUAL MARITIME / W2 INCOME ($)</label>
+        <input class="inp" type="number" id="t_tm" placeholder="e.g. 101360">
+        <label class="lbl">SELF-EMPLOYMENT / SIDE INCOME ($)</label>
+        <input class="inp" type="number" id="t_ts2" placeholder="e.g. 0" value="0">
+        <label class="lbl">OTHER TAXABLE INCOME ($)</label>
+        <input class="inp" type="number" id="t_to" placeholder="e.g. 0" value="0">
+        <label class="lbl">FILING STATUS</label>
+        <select class="inp" id="t_ts" style="cursor:pointer">
+          <option value="single">Single</option>
+          <option value="married">Married Filing Jointly</option>
+          <option value="hoh">Head of Household</option>
+        </select>
+        <label class="lbl">PRE-TAX DEDUCTIONS — 401k, HSA, etc ($)</label>
+        <input class="inp" type="number" id="t_td" placeholder="e.g. 6000" value="0">
+        <button class="btngold" onclick="cTax()">ESTIMATE MY TAXES</button>
+        <div class="resbox" id="r_tax"></div>
+      </div>
+
+      <div class="card">
+        <div class="tool-header">
+          <div class="tool-icon">📊</div>
+          <div><div class="tool-title">Stock Algo Signals</div><div class="tool-sub">LIVE BUY/SELL/HOLD — SMA + RSI + MOMENTUM</div></div>
+        </div>
+        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:12px">Institutional-grade signals scanning S&P 500, crypto, and sector ETFs using 4-factor confirmation.</div>
+        <button class="btngold" onclick="cSig()">FETCH LIVE SIGNALS</button>
+        <div class="resbox" id="r_sig"></div>
+      </div>
+    </div>
+
+    <!-- NET WORTH -->
+    <div id="dt-nw" style="display:none">
+      <div class="tag">WEALTH TRACKER</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Net Worth Snapshot</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Your complete financial picture</div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">✅ ASSETS</div>
+        <label class="lbl">CHECKING + SAVINGS ($)</label><input class="inp" type="number" id="n_cash" placeholder="e.g. 5000" value="0">
+        <label class="lbl">INVESTMENT PORTFOLIO — stocks, ETFs ($)</label><input class="inp" type="number" id="n_inv" placeholder="e.g. 0" value="0">
+        <label class="lbl">RETIREMENT — 401k, IRA, TSP ($)</label><input class="inp" type="number" id="n_ret" placeholder="e.g. 0" value="0">
+        <label class="lbl">REAL ESTATE EQUITY ($)</label><input class="inp" type="number" id="n_re" placeholder="e.g. 0" value="0">
+        <label class="lbl">VEHICLE VALUE ($)</label><input class="inp" type="number" id="n_car" placeholder="e.g. 0" value="0">
+        <label class="lbl">OTHER ASSETS ($)</label><input class="inp" type="number" id="n_oth" placeholder="e.g. 0" value="0">
+      </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">❌ LIABILITIES</div>
+        <label class="lbl">CREDIT CARD DEBT ($)</label><input class="inp" type="number" id="n_cc" placeholder="e.g. 0" value="0">
+        <label class="lbl">AUTO LOAN ($)</label><input class="inp" type="number" id="n_auto" placeholder="e.g. 0" value="0">
+        <label class="lbl">STUDENT LOANS ($)</label><input class="inp" type="number" id="n_stud" placeholder="e.g. 0" value="0">
+        <label class="lbl">MORTGAGE BALANCE ($)</label><input class="inp" type="number" id="n_mort" placeholder="e.g. 0" value="0">
+        <label class="lbl">OTHER DEBT ($)</label><input class="inp" type="number" id="n_odbt" placeholder="e.g. 0" value="0">
+      </div>
+      <button class="btngold" onclick="cNW()">CALCULATE NET WORTH</button>
+      <div class="resbox" id="r_nw"></div>
+      <div class="card" style="margin-top:12px">
+        <div class="tag" style="margin-bottom:8px">PATH TO $1M</div>
+        <div id="nw_proj" style="font-size:11px;color:#8A8070;line-height:2">Enter your assets and liabilities above to see your wealth projection.</div>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div id="dt-gl" style="display:none">
+      <div class="tag">FINANCIAL GOALS</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Your Progress</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Track your journey to financial independence</div>
+      <div id="goals_list">
+        <div class="goal"><div class="gname">🛡️ Emergency Fund</div><div class="gmeta"><span>$0 saved</span><span>$15,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal"><div class="gname">🏘️ Real Estate Down Payment</div><div class="gmeta"><span>$0 saved</span><span>$60,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal"><div class="gname">📈 Investment Portfolio</div><div class="gmeta"><span>$0 invested</span><span>$100,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+        <div class="goal"><div class="gname">💰 Net Worth $1M</div><div class="gmeta"><span>$0 current</span><span>$1,000,000 target — 0%</span></div><div class="gtrack"><div class="gfill" style="width:0%"></div></div></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="tag" style="margin-bottom:8px">UPDATE YOUR PROGRESS</div>
+        <label class="lbl">EMERGENCY FUND SAVED ($)</label><input class="inp" type="number" id="g_e" placeholder="0" value="0">
+        <label class="lbl">RE DOWN PAYMENT SAVED ($)</label><input class="inp" type="number" id="g_r" placeholder="0" value="0">
+        <label class="lbl">INVESTMENT PORTFOLIO ($)</label><input class="inp" type="number" id="g_i" placeholder="0" value="0">
+        <label class="lbl">CURRENT NET WORTH ($)</label><input class="inp" type="number" id="g_n" placeholder="0" value="0">
+        <button class="btngold" onclick="cGoals()">UPDATE PROGRESS</button>
+      </div>
+    </div>
+
+    <!-- DEALS / PROPERTIES -->
+    <div id="dt-pr" style="display:none">
+      <div class="tag">REAL ESTATE PIPELINE</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Deal Tracker</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Track every deal from analysis to close</div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">➕ ADD A PROPERTY</div>
+        <label class="lbl">PROPERTY ADDRESS</label>
+        <input class="inp" type="text" id="p_a" placeholder="e.g. 456 Oak Ave, Detroit MI 48201">
+        <label class="lbl">PROPERTY TYPE</label>
+        <select class="inp" id="p_t" style="cursor:pointer">
+          <option>Single Family</option>
+          <option selected>Duplex</option>
+          <option>Triplex</option>
+          <option>Quadplex</option>
+          <option>5+ Units</option>
+          <option>Commercial</option>
+        </select>
+        <label class="lbl">PURCHASE PRICE ($)</label>
+        <input class="inp" type="number" id="p_p" placeholder="e.g. 250000">
+        <label class="lbl">MONTHLY RENT — total all units ($)</label>
+        <input class="inp" type="number" id="p_r" placeholder="e.g. 2400">
+        <label class="lbl">MONTHLY EXPENSES — taxes, insurance, mgmt ($)</label>
+        <input class="inp" type="number" id="p_e" placeholder="e.g. 400">
+        <label class="lbl">STATUS</label>
+        <select class="inp" id="p_s" style="cursor:pointer">
+          <option>🔍 Analyzing</option>
+          <option>📝 Offer Submitted</option>
+          <option>🤝 Under Contract</option>
+          <option>✅ Closed</option>
+          <option>❌ Pass</option>
+        </select>
+        <label class="lbl">NOTES</label>
+        <input class="inp" type="text" id="p_n" placeholder="e.g. Good neighborhood, needs roof in 5 years">
+        <button class="btngold" onclick="addProp()">ADD TO PIPELINE</button>
+      </div>
+      <div id="props_list" style="margin-top:4px"></div>
+    </div>
+
+    <!-- BLOG -->
+    <div id="dt-bl" style="display:none">
+      <div class="tag">MARITIME WEALTH</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">The VaultFlow Blog</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Wealth building for mariners, veterans, and high earners</div>
+      <div class="blog"><div class="bdate">MAY 2025</div><div class="btit">How I Allocate $14,000/Month as a Merchant Mariner</div><div class="bex">Working 28 days on, 14 days off changes everything about how you manage money. Here is the exact system I built to turn irregular maritime income into consistent wealth building — emergency fund, debt payoff, real estate, and stock algo all on autopilot.</div><div class="bread">READ MORE →</div></div>
+      <div class="blog"><div class="bdate">APRIL 2025</div><div class="btit">The VA Disability Wealth Strategy Nobody Talks About</div><div class="bex">Tax-free VA disability income is one of the most powerful wealth-building tools available to veterans. Here is how to stack it with maritime pay to accelerate your path to financial independence — and why most veterans leave money on the table.</div><div class="bread">READ MORE →</div></div>
+      <div class="blog"><div class="bdate">MARCH 2025</div><div class="btit">Buying Your First Multifamily Property on a Maritime Schedule</div><div class="bex">The 28/14 rotation is actually an advantage in real estate investing. Your 14 days off are the perfect window to analyze deals, build relationships with agents, and close on properties while your shipmates spend money instead of building it.</div><div class="bread">READ MORE →</div></div>
+      <div class="blog"><div class="bdate">FEBRUARY 2025</div><div class="btit">Kelly Criterion Position Sizing: The Institutional Edge for Individual Investors</div><div class="bex">Institutional investors use the Kelly Criterion to mathematically size their positions and never blow up their account. Here is how to apply the same formula to your stock algo and protect your capital while maximizing growth.</div><div class="bread">READ MORE →</div></div>
+      <div class="blog"><div class="bdate">JANUARY 2025</div><div class="btit">The 28/14 Wealth Blueprint: $1M Net Worth by 35</div><div class="bex">I mapped out exactly what it takes to hit $1M net worth by 35 starting from scratch as a merchant mariner. The math works if you follow the system — here is the complete blueprint with monthly targets and investment allocation.</div><div class="bread">READ MORE →</div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="dt-pf" style="display:none">
+      <div class="tag">YOUR ACCOUNT</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Profile &amp; Settings</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Manage your account and connected services</div>
+
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">👤 ACCOUNT INFO</div>
+        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px">EMAIL</div>
+        <div id="pemail" style="font-size:12px;color:#8A8070;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Loading...</div>
+        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px;margin-top:12px">PLAN</div>
+        <div id="plan-display" style="font-size:12px;color:#C9A84C;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Essential (Free)</div>
+        <button class="btngold" style="margin-top:14px" onclick="go('upgrade')">UPGRADE TO PRIME →</button>
+      </div>
+
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">🏦 BANK CONNECTION</div>
+        <div id="bank-disconnected">
+          <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">Connect your bank account to detect paychecks automatically and see your real balance in real time.</div>
+          <button class="btngold" onclick="connectBank()">CONNECT YOUR BANK VIA PLAID</button>
+          <div id="bank-msg" class="msgbox"></div>
+        </div>
+        <div id="bank-connected" style="display:none">
+          <div style="font-size:9px;letter-spacing:2px;color:#00ff88;margin-bottom:8px">● CONNECTED</div>
+          <div id="bank-balance" style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#C9A84C;margin-bottom:4px">$0.00</div>
+          <div style="font-size:9px;color:#8A8070;margin-bottom:16px">Current checking balance</div>
+          <div id="bank-transactions"></div>
+          <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">🔍 SCAN FOR PAYCHECKS</button>
+          <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">⚡ AUTO-ALLOCATION ENGINE</div>
+        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">When a paycheck is detected VaultFlow automatically routes every dollar based on your allocator settings — emergency fund, debt, real estate, investing, and liquid savings.</div>
+        <button class="btngold" onclick="triggerAllocation()">▶ SIMULATE AUTO-ALLOCATION</button>
+        <div class="gline" style="margin:16px 0"></div>
+        <div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:8px">LIVE WEBHOOK MONITOR</div>
+        <div id="webhook-log" style="min-height:60px">
+          <div style="color:#8A8070;font-size:10px">Connect your bank to start monitoring payday events.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">🤝 REFERRAL PROGRAM</div>
+        <div class="rbox">
+          <div style="font-size:11px;color:#8A8070;margin-bottom:6px">Share VaultFlow and earn 1 free month for every friend who upgrades to Prime.</div>
+          <div class="rlink" id="rlink">vaultflow.org?ref=loading...</div>
+          <button class="btngold" onclick="copyRef()">COPY REFERRAL LINK</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">🔒 AUTO-TRANSFER HISTORY</div>
+        <div class="lock">
+          <div>
+            <div class="titem"><span class="tlbl">Emergency Fund</span><span class="tamt">$2,639</span></div>
+            <div class="titem"><span class="tlbl">Debt Payment</span><span class="tamt">$1,979</span></div>
+            <div class="titem"><span class="tlbl">RE Savings</span><span class="tamt">$3,299</span></div>
+            <div class="titem"><span class="tlbl">Alpaca Algo</span><span class="tamt">$2,000</span></div>
+          </div>
+          <div class="loverlay">
+            <div class="licon">🔒</div>
+            <div class="ltxt2">PRIME FEATURE</div>
+            <button class="lbtn" onclick="go('upgrade')">UNLOCK NOW</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btnout" onclick="signout()">SIGN OUT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UPGRADE PAGE ===== -->
+<div class="page" id="page-upgrade">
+  <nav style="position:relative;background:#0E0E0E;border-bottom:1px solid rgba(201,168,76,0.1);padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+    <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+    <button class="nbtn" onclick="go('home')">← BACK</button>
+  </nav>
+  <div class="umain">
+    <div class="vault-hero" id="upgrade-hero">
+      <div class="vh-tag" id="vh-tag">VAULTFLOW PRIME</div>
+      <div class="vh-price" id="hero-price">$9.99</div>
+      <div class="vh-per">PER MONTH · CANCEL ANYTIME</div>
+      <div class="gline"></div>
+      <div class="vh-fgrid">
+        <div class="vh-feat"><div class="vh-ficon">🏦</div><div class="vh-fname">BANK CONNECT</div><div class="vh-fdesc">12,000+ banks via Plaid</div></div>
+        <div class="vh-feat"><div class="vh-ficon">⚡</div><div class="vh-fname">AUTO-ALLOCATE</div><div class="vh-fdesc">Routes money on payday</div></div>
+        <div class="vh-feat"><div class="vh-ficon">📈</div><div class="vh-fname">ALGO SIGNALS</div><div class="vh-fdesc">Live BUY/SELL signals</div></div>
+        <div class="vh-feat"><div class="vh-ficon">🏘️</div><div class="vh-fname">RE ALERTS</div><div class="vh-fdesc">Multifamily deal alerts</div></div>
+      </div>
+    </div>
+
+    <div class="psel-row">
+      <div class="psel on" id="ps1" onclick="selPlan('prime')">
+        <div class="pbadge">SELECTED</div>
+        <div class="pname">PRIME</div><div class="pprice">$9.99</div><div class="pper">PER MONTH</div>
+      </div>
+      <div class="psel" id="ps2" onclick="selPlan('vault')">
+        <div class="pbadge">SELECTED</div>
+        <div class="pname">VAULT</div><div class="pprice" style="color:#F5F0E8">$24.99</div><div class="pper">PER MONTH</div>
+      </div>
+    </div>
+
+    <div class="osum">
+      <div class="osrow"><span class="oslbl">Plan</span><span class="osval" id="oplan">Prime</span></div>
+      <div class="osrow"><span class="oslbl">Billing</span><span class="osval">Monthly — cancel anytime</span></div>
+      <div class="ostot"><span class="ostlbl">TOTAL TODAY</span><span class="ostval" id="otot">$9.99</span></div>
+    </div>
+
+    <label class="lbl">YOUR EMAIL</label>
+    <input class="inp" type="email" id="up_e" placeholder="your@email.com">
+    <label class="lbl">NAME ON CARD</label>
+    <input class="inp" type="text" id="up_n" placeholder="Full name as on card">
+    <label class="lbl" style="margin-bottom:8px">CARD DETAILS</label>
+    <div id="cardEl" style="background:#141414;border:1px solid rgba(201,168,76,0.15);padding:14px;margin-bottom:8px;border-radius:2px"></div>
+    <div id="cardErr" style="color:#ff4444;font-size:10px;margin-bottom:8px;min-height:14px"></div>
+    <button class="btngold" id="paybtn" onclick="pay()">🔒 COMPLETE PURCHASE</button>
+    <div class="msgbox" id="paymsg"></div>
+    <div class="sec-badge">🔒 SECURED BY STRIPE · 256-BIT AES ENCRYPTION · PCI COMPLIANT</div>
+
+    <div class="gline" style="margin-top:28px"></div>
+    <div style="font-size:9px;color:#8A8070;text-align:center;line-height:1.8;margin-top:16px">
+      By subscribing you agree to our <span style="color:#C9A84C;cursor:pointer" onclick="go('legal')">Terms of Service</span> and <span style="color:#C9A84C;cursor:pointer" onclick="go('legal')">Privacy Policy</span>.<br>
+      Cancel anytime from your Profile tab. No questions asked.
+    </div>
+  </div>
+</div>
+
+<!-- ===== LEGAL PAGE ===== -->
+<div class="page" id="page-legal">
+  <nav style="position:relative;background:#0E0E0E;border-bottom:1px solid rgba(201,168,76,0.1);padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+    <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+    <button class="nbtn" onclick="go('home')">← HOME</button>
+  </nav>
+  <div class="legmain">
+    <div class="legtabs">
+      <button class="legtab on" id="leg1" onclick="legTab('tos')">TERMS OF SERVICE</button>
+      <button class="legtab" id="leg2" onclick="legTab('priv')">PRIVACY POLICY</button>
+    </div>
+    <div id="lc-tos">
+      <div class="legh1">Terms of <em>Service</em></div>
+      <div class="legdate">LAST UPDATED — MAY 2025</div>
+      <div class="legsec"><div class="legstit">1. Not Financial Advice</div><div class="legtxt">VaultFlow is not a registered investment advisor. All tools and content are for informational purposes only. Nothing constitutes financial, investment, legal, or tax advice. All financial decisions are solely your responsibility.</div></div>
+      <div class="legsec"><div class="legstit">2. Subscriptions</div><div class="legtxt">Paid subscriptions are billed monthly via Stripe. Cancel anytime — access continues through the end of the current billing period. No refunds for partial months.</div></div>
+      <div class="legsec"><div class="legstit">3. Limitation of Liability</div><div class="legtxt">VaultFlow shall not be liable for any indirect, incidental, or consequential damages resulting from use of the Service, including financial losses.</div></div>
+      <div class="legsec"><div class="legstit">4. Contact</div><div class="legtxt">Questions: deionsebastian97@gmail.com</div></div>
+    </div>
+    <div id="lc-priv" style="display:none">
+      <div class="legh1">Privacy <em>Policy</em></div>
+      <div class="legdate">LAST UPDATED — MAY 2025</div>
+      <div class="legsec"><div class="legstit">1. Data We Collect</div><div class="legtxt">We collect your email, name, and financial profile data you enter. Bank connections via Plaid give us read-only access to transaction data. We never store your bank credentials or passwords.</div></div>
+      <div class="legsec"><div class="legstit">2. How We Use It</div><div class="legtxt">We use your data to provide the Service, process payments, and send alerts. We do not sell your personal information to third parties.</div></div>
+      <div class="legsec"><div class="legstit">3. Security</div><div class="legtxt">All data is encrypted at rest and in transit. We use Supabase (database), Stripe (payments), and Plaid (bank connections) — all PCI-compliant and SOC 2 certified services.</div></div>
+      <div class="legsec"><div class="legstit">4. Contact</div><div class="legtxt">Privacy questions or data deletion requests: deionsebastian97@gmail.com</div></div>
+    </div>
+  </div>
+  <footer>
+    <div class="flogo">VAULT<span>FLOW</span></div>
+    <div class="fcopy">2025 VAULTFLOW. ALL RIGHTS RESERVED.</div>
+  </footer>
+</div>
 
 <script>
+// ============ CONFIG ============
+var SB_URL='https://sefxpcatuctgqwflmrdj.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhwY2F0dWN0Z3F3ZmxtcmRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjU5NjEsImV4cCI6MjA5NDI0MTk2MX0.64rTufpnz7YFn_WRP5es2zwpd5sQxP1I24U8Dj_QtgQ';
+var PK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
+var RAIL='https://vaultflow-production.up.railway.app';
 
-function formatMoney(num){
+// ============ STATE ============
+var currentSession=null;
+var selPlanVal='prime';
+var stripe=null,cardEl=null,stripeOk=false;
+var props=[];
+var plaidToken=null;
+var webhookEvents=[];
 
-  return '$' +
-    Math.round(num).toLocaleString();
+// ============ INIT ============
+document.getElementById('page-home').style.display='block';
 
+// ============ NAVIGATION ============
+function go(page){
+  document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
+  var el=document.getElementById('page-'+page);
+  if(!el)return;
+  el.style.display=(page==='login')?'flex':'block';
+  window.scrollTo(0,0);
+  if(page==='upgrade')setTimeout(initStripe,400);
+  if(page==='dashboard'){
+    if(!currentSession){go('login');return;}
+    loadProfile();
+    alloc();
+    dtab('ov');
+  }
 }
 
-/* SCROLL */
+// ============ STRIPE ============
+function initStripe(){
+  if(stripeOk||!window.Stripe)return;
+  try{
+    stripe=Stripe(PK);
+    var els=stripe.elements({appearance:{theme:'night',variables:{colorPrimary:'#C9A84C',colorBackground:'#141414',colorText:'#F5F0E8',borderRadius:'2px',fontFamily:'Montserrat,sans-serif'}}});
+    cardEl=els.create('card',{style:{base:{color:'#F5F0E8',fontFamily:'Montserrat,sans-serif',fontSize:'12px','::placeholder':{color:'#555'}}}});
+    cardEl.mount('#cardEl');
+    cardEl.on('change',function(e){document.getElementById('cardErr').textContent=e.error?e.error.message:'';});
+    stripeOk=true;
+  }catch(e){console.log('Stripe:',e);}
+}
 
-function scrollToDashboard(){
+// ============ AUTH — Direct Supabase REST ============
+function sbFetch(path,body){
+  return fetch(SB_URL+path,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();});
+}
 
-  document
-    .getElementById('dashboard')
-    .scrollIntoView({
-      behavior:'smooth'
+function ltab(t){
+  document.getElementById('lf1').style.display=t==='in'?'block':'none';
+  document.getElementById('lf2').style.display=t==='up'?'block':'none';
+  document.getElementById('lt1').className='ltab'+(t==='in'?' on':'');
+  document.getElementById('lt2').className='ltab'+(t==='up'?' on':'');
+  document.getElementById('lmsg').textContent='';
+}
+
+function msg(id,txt,color){var el=document.getElementById(id);if(!el)return;el.textContent=txt;el.style.color=color||'#C9A84C';}
+
+function signin(){
+  var e=document.getElementById('sie').value,p=document.getElementById('sip').value;
+  if(!e||!p){msg('lmsg','Please fill in all fields.','#ff4444');return;}
+  msg('lmsg','Signing in...','#C9A84C');
+  sbFetch('/auth/v1/token?grant_type=password',{email:e,password:p}).then(function(d){
+    if(d.access_token){
+      currentSession=d;
+      msg('lmsg','Welcome back.','#00ff88');
+      setTimeout(function(){go('dashboard');},700);
+    } else {
+      msg('lmsg',d.error_description||d.msg||'Login failed. Check your credentials.','#ff4444');
+    }
+  }).catch(function(){msg('lmsg','Connection error. Try on cellular.','#ff4444');});
+}
+
+function signup(){
+  var e=document.getElementById('sue').value,p=document.getElementById('sup').value,p2=document.getElementById('sup2').value;
+  if(!e||!p||!p2){msg('lmsg','Please fill in all fields.','#ff4444');return;}
+  if(p!==p2){msg('lmsg','Passwords do not match.','#ff4444');return;}
+  if(p.length<6){msg('lmsg','Password must be at least 6 characters.','#ff4444');return;}
+  msg('lmsg','Creating account...','#C9A84C');
+  sbFetch('/auth/v1/signup',{email:e,password:p}).then(function(d){
+    if(d.id||d.access_token){
+      if(d.access_token)currentSession=d;
+      else currentSession={user:{email:e,id:d.id||''}};
+      msg('lmsg','Account created! Welcome to VaultFlow.','#00ff88');
+      setTimeout(function(){go('dashboard');},800);
+    } else {
+      msg('lmsg',d.error_description||d.msg||'Signup failed. Try a different email.','#ff4444');
+    }
+  }).catch(function(){msg('lmsg','Connection error. Try on cellular.','#ff4444');});
+}
+
+function signout(){currentSession=null;go('home');}
+
+// ============ WAITLIST ============
+function waitlist(inputId,msgId){
+  var e=document.getElementById(inputId).value;
+  if(!e||e.indexOf('@')===-1){msg(msgId,'Please enter a valid email.','#ff4444');return;}
+  msg(msgId,'Submitting...','#C9A84C');
+  fetch('https://formsubmit.co/ajax/deionsebastian97@gmail.com',{
+    method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({email:e,_subject:'New VaultFlow Signup'})
+  }).then(function(){msg(msgId,'You are on the list. Welcome to VaultFlow.','#00ff88');document.getElementById(inputId).value='';})
+  .catch(function(){msg(msgId,'You are on the list. Welcome to VaultFlow.','#00ff88');document.getElementById(inputId).value='';});
+}
+
+// ============ DASHBOARD TABS ============
+var tabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
+function dtab(t){
+  tabIds.forEach(function(id){var el=document.getElementById('dt-'+id);if(el)el.style.display=id===t?'block':'none';});
+  document.querySelectorAll('.dtab').forEach(function(btn,i){
+    btn.className='dtab'+(tabIds.concat(['upgrade'])[i]===t?' on':'');
+  });
+  if(t==='pf')loadProfile();
+}
+
+// ============ ALLOCATOR ============
+function gv(id){var el=document.getElementById(id);return el?(parseFloat(el.value)||0):0;}
+function fmt(n){return '$'+Math.round(n||0).toLocaleString();}
+function fmt2(n){return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function alloc(){
+  var days=gv('a_days')||28,rate=gv('a_rate')||362,va=gv('a_va')||3938,vre=gv('a_vre')||800,oth=gv('a_oth');
+  var rent=gv('a_rent')||800,food=gv('a_food')||400,phone=gv('a_phone')||80,trans=gv('a_trans')||200,oexp=gv('a_oexp')||200;
+  var invTarget=gv('a_inv')||2000;
+  var inc=days*rate+va+vre+oth;
+  var exp=rent+food+phone+trans+oexp;
+  var av=inc-exp;
+  var em=Math.round(av*0.20),debt=Math.round(av*0.15),re=Math.round(av*0.25);
+  var inv=Math.min(Math.round(av*0.30),invTarget);
+  var liq=av-em-debt-re-inv;
+  function se(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+  se('dInc',fmt(inc));se('dFree',fmt(av));se('dInv',fmt(inv));se('dRE',fmt(re));
+  [{p:'p1',b:'b1',v:20,c:'#C9A84C'},{p:'p2',b:'b2',v:15,c:'#8B6914'},{p:'p3',b:'b3',v:25,c:'#ff6b35'},{p:'p4',b:'b4',v:30,c:'#0088ff'},{p:'p5',b:'b5',v:10,c:'#444'}].forEach(function(x){
+    se(x.p,x.v+'%');var el=document.getElementById(x.b);if(el){el.style.width=x.v+'%';el.style.background=x.c;el.style.boxShadow='0 0 8px '+x.c+'66';}
+  });
+  var cl=document.getElementById('chklist');
+  if(cl)cl.innerHTML=
+    '<div class="ci"><span class="cn">01</span><span class="ct">Auto-pay bills: <strong style="color:#F5F0E8">'+fmt(exp)+'</strong>/mo</span></div>'+
+    '<div class="ci"><span class="cn">02</span><span class="ct">→ Emergency Fund: <strong style="color:#C9A84C">'+fmt(em)+'</strong></span></div>'+
+    '<div class="ci"><span class="cn">03</span><span class="ct">→ Debt payoff: <strong style="color:#C9A84C">'+fmt(debt)+'</strong></span></div>'+
+    '<div class="ci"><span class="cn">04</span><span class="ct">→ Real estate savings: <strong style="color:#C9A84C">'+fmt(re)+'</strong></span></div>'+
+    '<div class="ci"><span class="cn">05</span><span class="ct">→ Alpaca algo: <strong style="color:#C9A84C">'+fmt(inv)+'</strong></span></div>'+
+    '<div class="ci"><span class="cn">06</span><span class="ct">→ Park in HYSA: <strong style="color:#C9A84C">'+fmt(liq)+'</strong></span></div>';
+  var m=document.getElementById('almsg');if(m){m.style.color='#00ff88';m.textContent='✓ Allocation calculated. Switching to overview...';}
+  setTimeout(function(){dtab('ov');},600);
+}
+
+// ============ TOOLS ============
+function showResult(id,html){var el=document.getElementById(id);if(el){el.style.display='block';el.innerHTML=html;}}
+
+function cDebt(){
+  var b=gv('t_db'),r=gv('t_dr'),p=gv('t_dp');
+  if(!b||!p){alert('Please enter balance and monthly payment.');return;}
+  if(p<=b*r/100/12){showResult('r_debt','<span class="rv-red">⚠ Payment too low to cover interest. Increase your payment.</span>');return;}
+  var mo=r/100/12,n=r>0?Math.ceil(-Math.log(1-(b*mo/p))/Math.log(1+mo)):Math.ceil(b/p);
+  var tot=p*n,interest=tot-b;
+  var yrs=Math.floor(n/12),mos=n%12;
+  var payoffDate=new Date();payoffDate.setMonth(payoffDate.getMonth()+n);
+  showResult('r_debt',
+    '<div class="result-grid">'+
+    '<div class="result-item"><div class="result-item-label">PAYOFF TIME</div><div class="result-item-val" style="color:#00ff88">'+(yrs>0?yrs+'y ':'')+mos+'mo</div></div>'+
+    '<div class="result-item"><div class="result-item-label">PAYOFF DATE</div><div class="result-item-val" style="color:#C9A84C;font-size:14px">'+payoffDate.toLocaleDateString('en-US',{month:'short',year:'numeric'})+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">TOTAL PAID</div><div class="result-item-val">'+fmt(tot)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">INTEREST COST</div><div class="result-item-val" style="color:#ff4444">'+fmt(interest)+'</div></div>'+
+    '</div>'+
+    '<div style="margin-top:12px;font-size:10px;color:#8A8070">💡 Pay <strong style="color:#C9A84C">'+fmt(p*1.2)+'</strong>/mo instead to pay off '+Math.round(n*0.2)+' months sooner and save <strong style="color:#00ff88">'+fmt(interest*0.2)+'</strong> in interest.</div>'
+  );
+}
+
+function cInv(){
+  var start=gv('t_ib'),contrib=gv('t_ia'),r=gv('t_ir')||10,yrs=gv('t_iy')||10;
+  if(!contrib&&!start){alert('Please enter a contribution amount or starting balance.');return;}
+  var mo=r/100/12,n=yrs*12;
+  var fv=start*Math.pow(1+mo,n)+contrib*(Math.pow(1+mo,n)-1)/mo;
+  var contributed=start+contrib*n;
+  var gains=fv-contributed;
+  var milestone='';
+  if(fv>=1000000)milestone='<div style="margin-top:10px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:3px;padding:10px;font-size:10px;color:#C9A84C;text-align:center">🎯 You reach <strong>$1,000,000</strong> in '+Math.ceil(Math.log((1000000*(mo||0.01)/contrib)+1)/Math.log(1+(mo||0.01))/12)+' years at this rate</div>';
+  showResult('r_inv',
+    '<div class="result-grid">'+
+    '<div class="result-item"><div class="result-item-label">FINAL VALUE</div><div class="result-item-val" style="color:#00ff88">'+fmt(fv)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">TOTAL INVESTED</div><div class="result-item-val">'+fmt(contributed)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">INVESTMENT GAINS</div><div class="result-item-val" style="color:#C9A84C">'+fmt(gains)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">RETURN MULTIPLE</div><div class="result-item-val" style="color:#0088ff">'+(contributed>0?(fv/contributed).toFixed(1):0)+'x</div></div>'+
+    '</div>'+milestone
+  );
+}
+
+function cRE(){
+  var price=gv('t_rp'),rent=gv('t_rr'),downPct=parseFloat(document.getElementById('t_rd').value)||20;
+  var intRate=gv('t_ri')||7.25,exp=gv('t_re'),vac=gv('t_rv')||5,units=gv('t_ru')||1;
+  var addr=document.getElementById('t_ra').value;
+  if(!price||!rent){alert('Please enter purchase price and monthly rent.');return;}
+  var down=price*(downPct/100),loan=price-down;
+  var mo=intRate/100/12;
+  var mortgage=mo>0?loan*(mo*Math.pow(1+mo,360))/(Math.pow(1+mo,360)-1):loan/360;
+  var effRent=rent*(1-vac/100);
+  var noi=effRent-exp;
+  var cashFlow=noi-mortgage;
+  var capRate=noi*12/price*100;
+  var coc=down>0?cashFlow*12/down*100:0;
+  var grm=rent>0?price/(rent*12):0;
+  var pricePerUnit=units>0?price/units:price;
+  var verdict=cashFlow>200?'✅ STRONG DEAL':cashFlow>0?'⚡ MARGINAL — NEGOTIATE':'❌ NEGATIVE CASH FLOW';
+  var verdictColor=cashFlow>200?'#00ff88':cashFlow>0?'#C9A84C':'#ff4444';
+  showResult('r_re',
+    (addr?'<div style="font-size:10px;color:#8B6914;margin-bottom:10px">📍 '+addr+'</div>':'')+'<div class="result-grid">'+
+    '<div class="result-item"><div class="result-item-label">MONTHLY CASH FLOW</div><div class="result-item-val" style="color:'+(cashFlow>0?'#00ff88':'#ff4444')+'">'+fmt(cashFlow)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">CAP RATE</div><div class="result-item-val" style="color:'+(capRate>6?'#00ff88':'#C9A84C')+'">'+capRate.toFixed(2)+'%</div></div>'+
+    '<div class="result-item"><div class="result-item-label">CASH-ON-CASH</div><div class="result-item-val" style="color:'+(coc>8?'#00ff88':'#C9A84C')+'">'+coc.toFixed(2)+'%</div></div>'+
+    '<div class="result-item"><div class="result-item-label">GROSS RENT MULT</div><div class="result-item-val">'+grm.toFixed(1)+'x</div></div>'+
+    '<div class="result-item"><div class="result-item-label">DOWN PAYMENT</div><div class="result-item-val">'+fmt(down)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">MORTGAGE/MO</div><div class="result-item-val">'+fmt(mortgage)+'</div></div>'+
+    '</div>'+
+    '<div style="margin-top:12px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px;text-align:center">'+
+    '<div style="font-size:9px;letter-spacing:2px;color:#8A8070;margin-bottom:4px">DEAL VERDICT</div>'+
+    '<div style="font-size:14px;font-weight:700;color:'+verdictColor+'">'+verdict+'</div>'+
+    (units>1?'<div style="font-size:9px;color:#8A8070;margin-top:6px">Price per unit: '+fmt(pricePerUnit)+' · '+units+' units</div>':'')+
+    '</div>'
+  );
+}
+
+function cTax(){
+  var w2=gv('t_tm'),se=gv('t_ts2'),oth=gv('t_to'),ded=gv('t_td');
+  var status=document.getElementById('t_ts').value;
+  var totalInc=w2+se+oth;
+  var std={single:14600,married:29200,hoh:21900};
+  var taxable=Math.max(0,totalInc-std[status]-ded);
+  var brackets={
+    single:[[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]],
+    married:[[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]],
+    hoh:[[16550,0.10],[63100,0.12],[100500,0.22],[191950,0.24],[243700,0.32],[609350,0.35],[Infinity,0.37]]
+  };
+  var tax=0,prev=0,tx=taxable;
+  brackets[status].forEach(function(b){
+    if(tx<=0)return;
+    var chunk=Math.min(tx,b[0]-prev);
+    tax+=chunk*b[1];tx-=chunk;prev=b[0];
+  });
+  var seTax=Math.min(se,168600)*0.153;
+  var totalTax=tax+(seTax*0.5);
+  var quarterly=totalTax/4;
+  var effective=totalInc>0?(totalTax/totalInc*100):0;
+  var marginal=taxable<11600?10:taxable<47150?12:taxable<100525?22:taxable<191950?24:taxable<243725?32:taxable<609350?35:37;
+  var now=new Date();
+  var quarters=['Apr 15','Jun 16','Sep 15','Jan 15'];
+  showResult('r_tax',
+    '<div class="result-grid">'+
+    '<div class="result-item"><div class="result-item-label">ESTIMATED TAX</div><div class="result-item-val" style="color:#ff6b35">'+fmt(totalTax)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">QUARTERLY PMT</div><div class="result-item-val" style="color:#C9A84C">'+fmt(quarterly)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">EFFECTIVE RATE</div><div class="result-item-val">'+effective.toFixed(1)+'%</div></div>'+
+    '<div class="result-item"><div class="result-item-label">MARGINAL RATE</div><div class="result-item-val">'+marginal+'%</div></div>'+
+    '</div>'+
+    '<div style="margin-top:12px;font-size:9px;color:#8A8070">📅 Quarterly due dates: '+quarters.join(' · ')+'</div>'+
+    (se>0?'<div style="margin-top:8px;font-size:10px;color:#8A8070">Self-employment tax: <span style="color:#ff4444">'+fmt(seTax)+'</span> (half deductible)</div>':'')+
+    '<div style="margin-top:8px;font-size:10px;color:#8A8070">Standard deduction used: <span style="color:#C9A84C">'+fmt(std[status])+'</span></div>'
+  );
+}
+
+function cSig(){
+  var tickers=[
+    {s:'SPY',n:'S&P 500 ETF',sig:'BUY',str:'STRONG',rsi:38,sma:'Above 200MA',mom:'+2.1%',c:'#00ff88'},
+    {s:'QQQ',n:'Nasdaq ETF',sig:'HOLD',str:'NEUTRAL',rsi:52,sma:'At 200MA',mom:'+0.3%',c:'#C9A84C'},
+    {s:'AAPL',n:'Apple Inc',sig:'BUY',str:'MODERATE',rsi:42,sma:'Above 200MA',mom:'+1.4%',c:'#00ff88'},
+    {s:'MSFT',n:'Microsoft',sig:'SELL',str:'WEAK',rsi:71,sma:'Below 200MA',mom:'-1.2%',c:'#ff4444'},
+    {s:'BTC',n:'Bitcoin',sig:'BUY',str:'STRONG',rsi:35,sma:'Above 200MA',mom:'+4.2%',c:'#00ff88'},
+    {s:'XLE',n:'Energy ETF',sig:'HOLD',str:'NEUTRAL',rsi:48,sma:'At 200MA',mom:'-0.2%',c:'#C9A84C'},
+    {s:'GLD',n:'Gold ETF',sig:'BUY',str:'MODERATE',rsi:44,sma:'Above 200MA',mom:'+0.8%',c:'#00ff88'},
+  ];
+  var h='<div style="font-size:8px;letter-spacing:2px;color:#8B6914;margin-bottom:12px">SIGNALS AS OF '+new Date().toLocaleString()+' · SANDBOX DATA</div>';
+  tickers.forEach(function(t){
+    h+='<div style="display:grid;grid-template-columns:60px 1fr 60px 80px;gap:8px;padding:8px 0;border-bottom:1px solid rgba(201,168,76,0.07);align-items:center;font-size:10px">'+
+      '<span style="color:#F5F0E8;font-weight:600;font-size:11px">'+t.s+'</span>'+
+      '<div><div style="color:#8A8070;font-size:9px">'+t.n+'</div><div style="color:#8A8070;font-size:8px">RSI '+t.rsi+' · '+t.sma+'</div></div>'+
+      '<span style="color:'+t.c+';font-weight:700;letter-spacing:1px;font-size:11px">'+t.sig+'</span>'+
+      '<span style="color:'+t.c+';font-size:9px">'+t.mom+'</span>'+
+      '</div>';
+  });
+  h+='<div style="margin-top:10px;font-size:9px;color:#8A8070">Connect Alpaca API in Profile for live portfolio signals</div>';
+  showResult('r_sig',h);
+}
+
+// ============ NET WORTH ============
+function cNW(){
+  var a=gv('n_cash')+gv('n_inv')+gv('n_ret')+gv('n_re')+gv('n_car')+gv('n_oth');
+  var l=gv('n_cc')+gv('n_auto')+gv('n_stud')+gv('n_mort')+gv('n_odbt');
+  var nw=a-l;
+  var el=document.getElementById('r_nw');el.style.display='block';
+  el.innerHTML='<div class="result-grid">'+
+    '<div class="result-item"><div class="result-item-label">TOTAL ASSETS</div><div class="result-item-val" style="color:#00ff88">'+fmt(a)+'</div></div>'+
+    '<div class="result-item"><div class="result-item-label">TOTAL LIABILITIES</div><div class="result-item-val" style="color:#ff4444">'+fmt(l)+'</div></div>'+
+    '<div class="result-item" style="grid-column:span 2;border-top:1px solid rgba(201,168,76,0.2)"><div class="result-item-label">NET WORTH</div><div class="result-item-val" style="color:'+(nw>=0?'#00ff88':'#ff4444');
+  el.innerHTML+=';font-size:28px">'+fmt(nw)+'</div></div></div>';
+  var mo=2000,r=0.10/12,h='<div style="margin-top:12px">';
+  [1,2,3,5,10,15,20].forEach(function(yr){
+    var n=yr*12,fv=mo*(Math.pow(1+r,n)-1)/r+Math.max(0,nw)*Math.pow(1+r,n);
+    var pct=Math.min(100,fv/1000000*100);
+    h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.07)">'+
+      '<span style="color:#8A8070;font-size:9px;min-width:50px">'+yr+' yr'+(yr>1?'s':'')+'</span>'+
+      '<div style="flex:1;background:#1A1A1A;height:4px;border-radius:2px"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#8B6914,#C9A84C);border-radius:2px"></div></div>'+
+      '<span style="color:#C9A84C;font-family:\'Cormorant Garamond\',serif;font-size:16px;min-width:80px;text-align:right">'+fmt(fv)+'</span>'+
+      '</div>';
+  });
+  h+='</div>';
+  document.getElementById('nw_proj').innerHTML=h;
+}
+
+// ============ GOALS ============
+function cGoals(){
+  var gs=[
+    {icon:'🛡️',n:'Emergency Fund',v:gv('g_e'),t:15000},
+    {icon:'🏘️',n:'RE Down Payment',v:gv('g_r'),t:60000},
+    {icon:'📈',n:'Investment Portfolio',v:gv('g_i'),t:100000},
+    {icon:'💰',n:'Net Worth $1M',v:Math.max(0,gv('g_n')),t:1000000}
+  ];
+  var h='';
+  gs.forEach(function(g){
+    var pct=Math.min(100,Math.round(g.v/g.t*100));
+    var left=g.t-g.v;
+    h+='<div class="goal">'+
+      '<div class="gname">'+g.icon+' '+g.n+'</div>'+
+      '<div class="gmeta"><span>'+fmt(g.v)+' saved</span><span>'+fmt(g.t)+' target — <strong style="color:#C9A84C">'+pct+'%</strong></span></div>'+
+      '<div class="gtrack"><div class="gfill" style="width:'+pct+'%"></div></div>'+
+      (pct<100?'<div style="font-size:9px;color:#8A8070;margin-top:6px">'+fmt(left)+' remaining</div>':
+      '<div style="font-size:9px;color:#00ff88;margin-top:6px">✓ GOAL REACHED</div>')+
+      '</div>';
+  });
+  document.getElementById('goals_list').innerHTML=h;
+}
+
+// ============ PROPERTIES ============
+function addProp(){
+  var a=document.getElementById('p_a').value;
+  var p=gv('p_p'),r=gv('p_r'),e=gv('p_e');
+  var t=document.getElementById('p_t').value;
+  var s=document.getElementById('p_s').value;
+  var n=document.getElementById('p_n').value;
+  if(!a||!p){alert('Please enter an address and purchase price.');return;}
+  var down=p*0.20,mo=0.0725/12;
+  var mortgage=p>0?((p-down)*(mo*Math.pow(1+mo,360))/(Math.pow(1+mo,360)-1)):0;
+  var cf=r-e-mortgage;
+  var cap=p>0?(r-e)*12/p*100:0;
+  props.push({a:a,p:p,r:r,e:e,t:t,s:s,n:n,cf:cf,cap:cap.toFixed(2)});
+  renderProps();
+  ['p_a','p_p','p_r','p_e','p_n'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+function renderProps(){
+  var el=document.getElementById('props_list');
+  if(!props.length){el.innerHTML='<div style="font-size:11px;color:#8A8070;text-align:center;padding:24px;border:1px dashed rgba(201,168,76,0.1);border-radius:4px">No properties yet. Add your first deal above.</div>';return;}
+  var h='<div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:12px">'+props.length+' DEAL'+(props.length>1?'S':'')+' IN PIPELINE</div>';
+  props.forEach(function(x,i){
+    var sc=x.s.includes('Closed')?'#00ff88':x.s.includes('Pass')?'#ff4444':x.s.includes('Contract')?'#C9A84C':'#8A8070';
+    h+='<div class="prop">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
+      '<div class="paddr">'+x.a+'</div>'+
+      '<span style="font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;background:rgba(201,168,76,0.1);color:'+sc+'">'+x.s.replace(/[🔍📝🤝✅❌]\s*/,'')+'</span>'+
+      '</div>'+
+      '<div class="pmeta">'+
+      '<span style="color:#8B6914">'+x.t+'</span> · '+
+      'Price: '+fmt(x.p)+' · '+
+      'Rent: '+fmt(x.r)+'/mo · '+
+      'Cap: '+x.cap+'% · '+
+      'Cash flow: <span style="color:'+(x.cf>0?'#00ff88':'#ff4444')+'">'+fmt(x.cf)+'/mo</span>'+
+      '</div>'+
+      (x.n?'<div style="font-size:9px;color:#555;margin-top:6px;font-style:italic">'+x.n+'</div>':'')+
+      '</div>';
+  });
+  el.innerHTML=h;
+}
+
+// ============ PROFILE ============
+function loadProfile(){
+  if(currentSession&&currentSession.user){
+    var el=document.getElementById('pemail');if(el)el.textContent=currentSession.user.email||'';
+    var rl=document.getElementById('rlink');if(rl)rl.textContent='vaultflow.org?ref='+(currentSession.user.id||'').substring(0,8);
+  }
+}
+
+function copyRef(){
+  var t=document.getElementById('rlink').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('Referral link copied to clipboard!');});}
+  else{alert('Your referral link: '+t);}
+}
+
+// ============ PLAID ============
+function connectBank(){
+  msg('bank-msg','Connecting to Plaid...','#C9A84C');
+  var uid=currentSession&&currentSession.user?currentSession.user.id:'user';
+  fetch(RAIL+'/plaid/create-link-token',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id:uid})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.link_token){msg('bank-msg','Error: '+(d.detail||'Could not create link'),'#ff4444');return;}
+    msg('bank-msg','Opening bank selector...','#C9A84C');
+    if(!window.Plaid){msg('bank-msg','Plaid not loaded. Check your internet connection.','#ff4444');return;}
+    var handler=Plaid.create({
+      token:d.link_token,
+      onSuccess:function(public_token,meta){
+        msg('bank-msg','Linked! Loading your data...','#C9A84C');
+        fetch(RAIL+'/plaid/exchange-token',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({public_token:public_token})
+        }).then(function(r){return r.json();}).then(function(d2){
+          if(d2.success&&d2.access_token){
+            plaidToken=d2.access_token;
+            msg('bank-msg','Bank connected!','#00ff88');
+            loadBankData();
+            addWebhook({t:'BANK_CONNECTED',m:'Bank account linked via Plaid — monitoring active',c:'#00ff88'});
+          } else {
+            msg('bank-msg','Exchange failed: '+(d2.detail||'error'),'#ff4444');
+          }
+        }).catch(function(e){msg('bank-msg','Error: '+e.message,'#ff4444');});
+      },
+      onExit:function(err){
+        if(err)msg('bank-msg',err.display_message||err.error_message||'Cancelled','#8A8070');
+        else msg('bank-msg','','');
+      }
     });
-
+    handler.open();
+  }).catch(function(e){msg('bank-msg','Connection error: '+e.message,'#ff4444');});
 }
 
-/* LOGIN */
-
-function openLogin(){
-
-  document
-    .getElementById('loginModal')
-    .classList.add('active');
-
+function loadBankData(){
+  if(!plaidToken)return;
+  fetch(RAIL+'/plaid/transactions',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({access_token:plaidToken})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.success){
+      document.getElementById('bank-disconnected').style.display='none';
+      document.getElementById('bank-connected').style.display='block';
+      document.getElementById('bank-balance').textContent=fmt2(d.balance||0);
+      var h='<div style="font-size:9px;letter-spacing:2px;color:#8B6914;margin-bottom:10px">RECENT TRANSACTIONS</div>';
+      (d.transactions||[]).slice(0,8).forEach(function(t){
+        var dep=t.amount<0,amt=Math.abs(t.amount);
+        h+='<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(201,168,76,0.07);font-size:10px">'+
+          '<div><div style="color:#F5F0E8">'+t.name+'</div><div style="color:#8A8070;font-size:9px">'+t.date+'</div></div>'+
+          '<span style="color:'+(dep?'#00ff88':'#F5F0E8')+';font-weight:'+(dep?'600':'400')+'">'+(dep?'+':'-')+fmt2(amt)+'</span>'+
+          '</div>';
+      });
+      document.getElementById('bank-transactions').innerHTML=h;
+    }
+  }).catch(function(){});
 }
 
-function closeLogin(){
-
-  document
-    .getElementById('loginModal')
-    .classList.remove('active');
-
+function detectPaycheck(){
+  if(!plaidToken){alert('Connect your bank first.');return;}
+  fetch(RAIL+'/plaid/transactions',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({access_token:plaidToken})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.paychecks&&d.paychecks.length){
+      var p=d.paychecks[0],amt=Math.abs(p.amount);
+      document.getElementById('paycheck-result').innerHTML=
+        '<div style="background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.2);border-radius:3px;padding:12px;margin-top:8px">'+
+        '<div style="color:#00ff88;font-size:10px;font-weight:600;margin-bottom:4px">✓ Paycheck detected</div>'+
+        '<div style="color:#F5F0E8;font-size:14px;font-family:\'Cormorant Garamond\',serif">'+fmt2(amt)+'</div>'+
+        '<div style="color:#8A8070;font-size:9px;margin-top:4px">'+p.date+' · '+p.name+'</div>'+
+        '<div style="color:#C9A84C;font-size:9px;margin-top:8px">→ Ready to auto-allocate. Tap Simulate below.</div>'+
+        '</div>';
+    } else {
+      document.getElementById('paycheck-result').innerHTML='<div style="color:#8A8070;font-size:10px;margin-top:8px">No large deposits found in recent transactions. Paychecks appear as deposits over $1,000.</div>';
+    }
+  });
 }
 
-function login(){
+// ============ WEBHOOK ============
+function addWebhook(ev){
+  webhookEvents.unshift({t:ev.t,m:ev.m,c:ev.c,time:new Date().toLocaleTimeString()});
+  if(webhookEvents.length>12)webhookEvents.pop();
+  var el=document.getElementById('webhook-log');
+  if(!el)return;
+  var h='';
+  webhookEvents.forEach(function(e){
+    h+='<div class="webhook-item">'+
+      '<div class="wdot" style="background:'+e.c+'"></div>'+
+      '<div style="flex:1">'+
+      '<div style="color:#F5F0E8;font-size:9px;letter-spacing:1px">'+e.t+'</div>'+
+      '<div style="color:#8A8070;font-size:9px">'+e.m+'</div>'+
+      '<div class="wtime">'+e.time+'</div>'+
+      '</div></div>';
+  });
+  el.innerHTML=h;
+}
 
-  const email =
-    document.getElementById('email').value;
+function triggerAllocation(){
+  var inc=(gv('a_days')||28)*(gv('a_rate')||362)+(gv('a_va')||3938)+(gv('a_vre')||800);
+  var exp=(gv('a_rent')||800)+(gv('a_food')||400)+(gv('a_phone')||80)+(gv('a_trans')||200)+(gv('a_oexp')||200);
+  var av=inc-exp,em=Math.round(av*0.20),debt=Math.round(av*0.15),re=Math.round(av*0.25),inv=Math.round(av*0.30),liq=av-em-debt-re-inv;
+  var steps=[
+    {delay:0,t:'PAYCHECK_DETECTED',m:'Deposit of '+fmt(inc)+' detected — initiating allocation',c:'#C9A84C'},
+    {delay:1200,t:'TRANSFER_QUEUED',m:'Routing '+fmt(em)+' to Emergency Fund',c:'#00ff88'},
+    {delay:2400,t:'TRANSFER_SENT',m:fmt(debt)+' sent to debt payoff account',c:'#00ff88'},
+    {delay:3600,t:'TRANSFER_SENT',m:fmt(re)+' sent to real estate savings',c:'#00ff88'},
+    {delay:4800,t:'ALPACA_FUNDED',m:fmt(inv)+' deposited to Alpaca trading account',c:'#0088ff'},
+    {delay:6000,t:'HYSA_TRANSFER',m:fmt(liq)+' swept to high-yield savings',c:'#00ff88'},
+    {delay:7200,t:'ALLOCATION_COMPLETE',m:'All transfers complete — '+fmt(inc)+' fully allocated',c:'#C9A84C'},
+  ];
+  steps.forEach(function(s){setTimeout(function(){addWebhook(s);},s.delay);});
+}
 
-  const password =
-    document.getElementById('password').value;
+// ============ UPGRADE / STRIPE ============
+function selPlan(p){
+  selPlanVal=p;
+  document.getElementById('ps1').className='psel'+(p==='prime'?' on':'');
+  document.getElementById('ps2').className='psel'+(p==='vault'?' on':'');
+  document.getElementById('oplan').textContent=p==='prime'?'Prime':'Vault';
+  document.getElementById('otot').textContent=p==='prime'?'$9.99':'$24.99';
+  var hp=document.getElementById('hero-price');if(hp)hp.textContent=p==='prime'?'$9.99':'$24.99';
+  var ht=document.getElementById('vh-tag');if(ht)ht.textContent='VAULTFLOW '+(p==='prime'?'PRIME':'VAULT');
+  var hero=document.getElementById('upgrade-hero');if(hero)hero.style.borderColor=p==='vault'?'rgba(201,168,76,0.6)':'rgba(201,168,76,0.3)';
+}
 
-  const msg =
-    document.getElementById('loginMessage');
+function pay(){
+  if(!stripeOk){msg('paymsg','Payment form loading — please wait...','#C9A84C');setTimeout(initStripe,200);return;}
+  var e=document.getElementById('up_e').value,n=document.getElementById('up_n').value;
+  if(!e||!n){document.getElementById('cardErr').textContent='Please fill in your email and name.';return;}
+  document.getElementById('paybtn').disabled=true;document.getElementById('paybtn').textContent='PROCESSING...';
+  document.getElementById('cardErr').textContent='';
+  stripe.createPaymentMethod({type:'card',card:cardEl,billing_details:{name:n,email:e}}).then(function(res){
+    if(res.error){document.getElementById('cardErr').textContent=res.error.message;document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='🔒 COMPLETE PURCHASE';return;}
+    fetch(RAIL+'/create-subscription',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:e,payment_method_id:res.paymentMethod.id,plan:selPlanVal})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.success){
+        msg('paymsg','✓ Payment successful! Welcome to VaultFlow '+selPlanVal.charAt(0).toUpperCase()+selPlanVal.slice(1)+'.','#00ff88');
+        activatePrime(selPlanVal);
+        setTimeout(function(){go('dashboard');dtab('pf');},1800);
+      } else {
+        document.getElementById('cardErr').textContent=d.detail||'Payment failed. Please try again.';
+        document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='🔒 COMPLETE PURCHASE';
+      }
+    }).catch(function(){
+      document.getElementById('cardErr').textContent='Connection error. Please try again.';
+      document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='🔒 COMPLETE PURCHASE';
+    });
+  });
+}
 
-  if(email === '' || password === ''){
-
-    msg.innerHTML =
-      'Please enter email and password';
-
-    return;
-
+// ============ PRIME MODE ============
+function activatePrime(plan){
+  if(currentSession)currentSession.plan=plan;
+  var logo=document.getElementById('dash-logo');
+  if(logo&&!document.getElementById('pb')){
+    var b=document.createElement('span');b.id='pb';b.className='prime-badge';b.textContent=plan.toUpperCase();logo.appendChild(b);
   }
-
-  msg.innerHTML =
-    'Authenticating...';
-
-  setTimeout(() => {
-
-    msg.innerHTML =
-      'Access Granted';
-
-    setTimeout(() => {
-
-      closeLogin();
-
-      msg.innerHTML = '';
-
-    }, 900);
-
-  }, 1200);
-
-}
-
-window.onclick = function(e){
-
-  const modal =
-    document.getElementById('loginModal');
-
-  if(e.target === modal){
-
-    closeLogin();
-
+  var pd=document.getElementById('plan-display');if(pd)pd.textContent=plan==='prime'?'Prime — $9.99/mo ✓':'Vault — $24.99/mo ✓';
+  var ov=document.getElementById('dt-ov');
+  if(ov&&!document.getElementById('prime-banner-el')){
+    var bn=document.createElement('div');bn.id='prime-banner-el';bn.className='prime-banner';
+    bn.innerHTML='<div><div class="prime-banner-title">✓ '+plan.toUpperCase()+' ACTIVE</div><div class="prime-banner-sub">BANK CONNECTION · AUTO-ALLOCATION · ALGO SIGNALS UNLOCKED</div></div><div style="font-size:9px;color:#00ff88;letter-spacing:2px">ACTIVE</div>';
+    ov.insertBefore(bn,ov.firstChild);
   }
-
-}
-
-/* CALCULATOR */
-
-function calculate(){
-
-  const rate =
-    Number(document.getElementById('dailyRate').value);
-
-  const days =
-    Number(document.getElementById('daysWorked').value);
-
-  const va =
-    Number(document.getElementById('vaIncome').value);
-
-  const income =
-    (rate * days) + va;
-
-  const investing =
-    income * .35;
-
-  const realEstate =
-    income * .25;
-
-  document.getElementById('income').innerHTML =
-    formatMoney(income);
-
-  document.getElementById('investing').innerHTML =
-    formatMoney(investing);
-
-  document.getElementById('realestate').innerHTML =
-    formatMoney(realEstate);
-
-}
-
-calculate();
-
-/* INVESTMENT */
-
-function investCalc(){
-
-  const monthly =
-    Number(document.getElementById('monthlyInvest').value);
-
-  const rate =
-    Number(document.getElementById('returnRate').value) / 100 / 12;
-
-  const years =
-    Number(document.getElementById('years').value);
-
-  const months =
-    years * 12;
-
-  let total = 0;
-
-  for(let i = 0; i < months; i++){
-
-    total =
-      (total + monthly) * (1 + rate);
-
+  var ub=document.getElementById('upgrade-banner');
+  if(ub){ub.style.background='linear-gradient(135deg,#1A1200,#0E0E0E)';ub.style.borderColor='#C9A84C';
+    ub.querySelector('.ubt').textContent='✓ '+plan.toUpperCase()+' Active';
+    ub.querySelector('.ubs').textContent='Bank connection and auto-allocation are ready in your Profile tab.';
+    var btn=ub.querySelector('button');if(btn){btn.textContent='SET UP BANK CONNECTION →';btn.onclick=function(){dtab('pf');};}
   }
-
-  document.getElementById('investResult').innerHTML = `
-
-    <strong>Projected Portfolio:</strong><br>
-    ${formatMoney(total)}<br><br>
-
-    <strong>Total Contributions:</strong><br>
-    ${formatMoney(monthly * months)}<br><br>
-
-    <strong>Estimated Passive Growth:</strong><br>
-    ${formatMoney(total - (monthly * months))}
-
-  `;
-
+  var lo=document.querySelector('.loverlay');if(lo)lo.style.display='none';
+  addWebhook({t:'PRIME_ACTIVATED',m:'VaultFlow '+plan+' features unlocked — bank connection available',c:'#C9A84C'});
 }
 
-/* REAL ESTATE */
-
-function realEstateCalc(){
-
-  const price =
-    Number(document.getElementById('housePrice').value);
-
-  const rent =
-    Number(document.getElementById('rent').value);
-
-  const expenses =
-    Number(document.getElementById('expenses').value);
-
-  const monthly =
-    rent - expenses;
-
-  const yearly =
-    monthly * 12;
-
-  const cap =
-    (yearly / price) * 100;
-
-  document.getElementById('realEstateResult').innerHTML = `
-
-    <strong>Monthly Cash Flow:</strong><br>
-    ${formatMoney(monthly)}<br><br>
-
-    <strong>Annual Cash Flow:</strong><br>
-    ${formatMoney(yearly)}<br><br>
-
-    <strong>Estimated Cap Rate:</strong><br>
-    ${cap.toFixed(2)}%
-
-  `;
-
+// ============ LEGAL ============
+function legTab(t){
+  document.getElementById('lc-tos').style.display=t==='tos'?'block':'none';
+  document.getElementById('lc-priv').style.display=t==='priv'?'block':'none';
+  document.getElementById('leg1').className='legtab'+(t==='tos'?' on':'');
+  document.getElementById('leg2').className='legtab'+(t==='priv'?' on':'');
 }
-
 </script>
 
+<script src="https://js.stripe.com/v3/" onload="initStripe()"></script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </body>
 </html>
