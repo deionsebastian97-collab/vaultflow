@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>VaultFlow X</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VaultFlow Elite</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 
 :root{
-  --bg:#050505;
-  --card:#0d0d0d;
-  --card2:#121212;
+  --bg:#040404;
+  --card:#0f0f0f;
+  --card2:#171717;
   --gold:#d4af37;
-  --gold2:#f5d97b;
-  --text:#f5f1e8;
+  --gold2:#f5dc84;
+  --text:#f4f0e8;
   --muted:#888;
   --line:rgba(212,175,55,.12);
+
   --green:#00d27a;
-  --blue:#3ea6ff;
-  --orange:#ff9340;
-  --red:#ff5f5f;
+  --blue:#52a8ff;
+  --orange:#ff9f47;
+  --purple:#9b7dff;
+  --red:#ff6767;
 }
 
 *{
@@ -33,13 +36,15 @@
 
 body{
   background:
-    radial-gradient(circle at top left, rgba(212,175,55,.08), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(212,175,55,.05), transparent 20%),
+    radial-gradient(circle at top left, rgba(212,175,55,.09), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(212,175,55,.05), transparent 25%),
     var(--bg);
 
   color:var(--text);
   font-family:'Inter',sans-serif;
 }
+
+/* NAV */
 
 nav{
   position:sticky;
@@ -48,23 +53,23 @@ nav{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:20px 40px;
-  background:rgba(5,5,5,.92);
+  padding:20px 42px;
   backdrop-filter:blur(12px);
+  background:rgba(4,4,4,.9);
   border-bottom:1px solid var(--line);
 }
 
 .logo{
   font-family:'Cormorant Garamond',serif;
-  font-size:28px;
-  letter-spacing:7px;
+  font-size:30px;
+  letter-spacing:8px;
 }
 
 .logo span{
   color:var(--gold);
 }
 
-.nav-buttons{
+.nav-right{
   display:flex;
   gap:12px;
 }
@@ -77,11 +82,11 @@ button{
 }
 
 .btn{
-  padding:13px 18px;
-  border-radius:12px;
+  padding:14px 22px;
+  border-radius:16px;
   font-size:12px;
   letter-spacing:2px;
-  font-weight:600;
+  font-weight:700;
 }
 
 .primary{
@@ -91,25 +96,31 @@ button{
 
 .primary:hover{
   transform:translateY(-2px);
-  box-shadow:0 0 20px rgba(212,175,55,.25);
+  box-shadow:0 0 25px rgba(212,175,55,.25);
 }
 
 .secondary{
   background:transparent;
-  border:1px solid rgba(212,175,55,.3);
   color:var(--gold);
+  border:1px solid rgba(212,175,55,.25);
 }
+
+.secondary:hover{
+  background:rgba(212,175,55,.06);
+}
+
+/* HERO */
 
 .hero{
   min-height:100vh;
   display:flex;
   align-items:center;
-  padding:80px 40px;
+  padding:80px 42px;
 }
 
 .hero-content{
-  max-width:1200px;
   width:100%;
+  max-width:1350px;
   margin:auto;
 }
 
@@ -122,10 +133,10 @@ button{
 
 .hero h1{
   font-family:'Cormorant Garamond',serif;
-  font-size:95px;
-  line-height:.95;
+  font-size:110px;
+  line-height:.92;
   font-weight:300;
-  margin-bottom:24px;
+  margin-bottom:28px;
 }
 
 .hero h1 span{
@@ -133,90 +144,147 @@ button{
 }
 
 .subtitle{
-  max-width:700px;
+  max-width:760px;
   line-height:1.9;
   color:var(--muted);
-  margin-bottom:40px;
+  margin-bottom:50px;
   font-size:16px;
 }
 
+.hero-buttons{
+  display:flex;
+  gap:16px;
+  margin-bottom:60px;
+  flex-wrap:wrap;
+}
+
+/* FEATURE GRID */
+
 .feature-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:22px;
 }
 
 .feature{
-  background:linear-gradient(145deg,#0f0f0f,#141414);
+  background:
+    linear-gradient(145deg,#101010,#181818);
+
   border:1px solid var(--line);
-  border-radius:20px;
-  padding:28px;
+  border-radius:26px;
+  padding:30px;
+  transition:.35s;
+  position:relative;
+  overflow:hidden;
+}
+
+.feature::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(135deg, rgba(212,175,55,.08), transparent 40%);
+  opacity:0;
   transition:.35s;
 }
 
+.feature:hover::before{
+  opacity:1;
+}
+
 .feature:hover{
-  transform:translateY(-6px);
-  border-color:rgba(212,175,55,.25);
+  transform:translateY(-8px);
+  border-color:rgba(212,175,55,.22);
+}
+
+.feature-icon{
+  width:60px;
+  height:60px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  margin-bottom:22px;
+  background:rgba(212,175,55,.08);
+  color:var(--gold);
 }
 
 .feature h3{
-  color:var(--gold);
-  margin-bottom:12px;
-  font-size:18px;
+  margin-bottom:14px;
+  font-size:20px;
 }
 
 .feature p{
   color:var(--muted);
-  line-height:1.8;
+  line-height:1.9;
 }
 
+/* SECTION */
+
 .section{
-  padding:80px 40px;
+  padding:100px 42px;
 }
 
 .section-title{
+  font-size:64px;
   font-family:'Cormorant Garamond',serif;
-  font-size:58px;
   font-weight:300;
+  margin-bottom:18px;
+}
+
+.section-sub{
+  max-width:720px;
+  color:var(--muted);
+  line-height:1.9;
   margin-bottom:40px;
 }
 
+/* TABS */
+
 .tabs{
   display:flex;
-  gap:10px;
+  gap:12px;
   overflow-x:auto;
-  margin-bottom:30px;
   padding-bottom:10px;
+  margin-bottom:40px;
 }
 
 .tab{
-  padding:14px 20px;
-  border-radius:14px;
+  padding:15px 24px;
+  border-radius:18px;
   background:#111;
-  color:#999;
+  color:#888;
   border:1px solid transparent;
   white-space:nowrap;
+  font-weight:600;
 }
 
 .tab.active{
-  background:linear-gradient(135deg,#1a1606,#151515);
   color:var(--gold);
   border-color:rgba(212,175,55,.2);
+  background:
+    linear-gradient(145deg,#181818,#121212);
+
   box-shadow:0 0 20px rgba(212,175,55,.08);
 }
+
+/* DASHBOARD */
 
 .dashboard{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:20px;
-  margin-bottom:30px;
+  gap:22px;
+  margin-bottom:40px;
 }
 
 .stat{
-  background:linear-gradient(145deg,#101010,#161616);
+  background:
+    linear-gradient(145deg,#111,#181818);
+
   border:1px solid var(--line);
-  border-radius:20px;
-  padding:28px;
+  border-radius:26px;
+  padding:32px;
   position:relative;
   overflow:hidden;
 }
@@ -228,64 +296,87 @@ button{
   left:0;
   right:0;
   height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  background:
+    linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 
-.label{
+.stat-label{
   color:var(--gold);
-  font-size:11px;
   letter-spacing:3px;
-  margin-bottom:12px;
+  font-size:11px;
+  margin-bottom:14px;
 }
 
-.value{
-  font-size:42px;
+.stat-value{
+  font-size:52px;
   font-family:'Cormorant Garamond',serif;
-}
-
-.green{
-  color:var(--green);
 }
 
 .blue{
   color:var(--blue);
 }
 
+.green{
+  color:var(--green);
+}
+
 .orange{
   color:var(--orange);
 }
 
-.form-card{
-  background:linear-gradient(145deg,#0f0f0f,#151515);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:35px;
-  max-width:700px;
+.purple{
+  color:var(--purple);
 }
 
-.form-title{
+/* GRID */
+
+.content-grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:24px;
+}
+
+@media(max-width:1100px){
+  .content-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* CARD */
+
+.card{
+  background:
+    linear-gradient(145deg,#101010,#181818);
+
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:34px;
+}
+
+.card-title{
   font-size:42px;
   font-family:'Cormorant Garamond',serif;
-  font-weight:300;
-  margin-bottom:25px;
+  margin-bottom:28px;
 }
+
+/* INPUT */
 
 label{
   display:block;
   color:var(--gold);
-  margin-bottom:8px;
+  margin-bottom:10px;
   letter-spacing:2px;
   font-size:11px;
 }
 
 input{
   width:100%;
-  background:#191919;
+  padding:17px;
+  border-radius:16px;
   border:1px solid #2a2a2a;
-  border-radius:14px;
-  padding:16px;
+  background:#1a1a1a;
   color:white;
-  margin-bottom:22px;
+  margin-bottom:24px;
   font-size:15px;
 }
 
@@ -294,12 +385,10 @@ input:focus{
   border-color:rgba(212,175,55,.4);
 }
 
-.allocations{
-  margin-top:35px;
-}
+/* ALLOCATION */
 
 .alloc{
-  margin-bottom:22px;
+  margin-bottom:24px;
 }
 
 .alloc-top{
@@ -309,7 +398,7 @@ input:focus{
 }
 
 .track{
-  height:12px;
+  height:13px;
   background:#1a1a1a;
   border-radius:999px;
   overflow:hidden;
@@ -320,49 +409,48 @@ input:focus{
   border-radius:999px;
 }
 
-.gold-fill{
-  background:linear-gradient(90deg,#8f6a12,var(--gold));
-}
-
 .blue-fill{
-  background:linear-gradient(90deg,#0059ff,#4eb5ff);
+  width:35%;
+  background:linear-gradient(90deg,#0066ff,#55b4ff);
 }
 
 .green-fill{
-  background:linear-gradient(90deg,#008f54,#00d27a);
+  width:25%;
+  background:linear-gradient(90deg,#00995b,#00d27a);
 }
 
 .orange-fill{
-  background:linear-gradient(90deg,#ff6a00,#ffb066);
+  width:20%;
+  background:linear-gradient(90deg,#ff6a00,#ffb366);
 }
 
-.sim-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:20px;
-  margin-top:40px;
+.gold-fill{
+  width:10%;
+  background:linear-gradient(90deg,#9a7312,var(--gold));
 }
+
+/* SIMULATORS */
 
 .sim{
-  background:linear-gradient(145deg,#101010,#161616);
-  border:1px solid var(--line);
+  background:#161616;
+  border:1px solid rgba(212,175,55,.08);
   border-radius:20px;
-  padding:25px;
+  padding:24px;
+  margin-bottom:20px;
 }
 
 .sim h3{
-  margin-bottom:20px;
   color:var(--gold);
-  font-size:20px;
+  margin-bottom:20px;
 }
 
 .result{
-  margin-top:20px;
-  padding:20px;
-  border-radius:16px;
-  background:#181818;
+  margin-top:22px;
+  background:#1b1b1b;
   border:1px solid rgba(212,175,55,.08);
-  line-height:1.8;
+  border-radius:18px;
+  padding:20px;
+  line-height:1.9;
   color:#aaa;
 }
 
@@ -370,12 +458,100 @@ input:focus{
   color:var(--gold);
 }
 
+/* LOGIN */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  backdrop-filter:blur(10px);
+}
+
+.modal.active{
+  display:flex;
+}
+
+.modal-card{
+  width:100%;
+  max-width:440px;
+
+  background:
+    linear-gradient(145deg,#101010,#1a1a1a);
+
+  border:1px solid rgba(212,175,55,.15);
+
+  border-radius:28px;
+  padding:42px;
+  position:relative;
+
+  animation:slideUp .3s ease;
+}
+
+.modal-card h2{
+  font-size:48px;
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300;
+  margin-bottom:10px;
+}
+
+.modal-sub{
+  color:#888;
+  margin-bottom:30px;
+}
+
+.close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#1d1d1d;
+  color:white;
+  font-size:22px;
+}
+
+.close:hover{
+  background:#2a2a2a;
+}
+
+.full{
+  width:100%;
+}
+
+#loginMessage{
+  margin-top:18px;
+  color:var(--gold);
+  text-align:center;
+}
+
+/* FOOTER */
+
 footer{
-  padding:50px;
+  padding:60px;
   text-align:center;
   border-top:1px solid var(--line);
   color:#666;
 }
+
+/* ANIMATION */
+
+@keyframes slideUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* MOBILE */
 
 @media(max-width:768px){
 
@@ -384,15 +560,19 @@ footer{
   }
 
   .hero{
-    padding:60px 20px;
+    padding:70px 20px;
   }
 
   .hero h1{
-    font-size:58px;
+    font-size:64px;
   }
 
   .section{
-    padding:60px 20px;
+    padding:80px 20px;
+  }
+
+  .section-title{
+    font-size:48px;
   }
 
 }
@@ -402,57 +582,123 @@ footer{
 
 <body>
 
+<!-- NAV -->
+
 <nav>
 
   <div class="logo">
     VAULT<span>FLOW</span>
   </div>
 
-  <div class="nav-buttons">
-    <button class="btn secondary">LOGIN</button>
-    <button class="btn primary">GET STARTED</button>
+  <div class="nav-right">
+
+    <button class="btn secondary" onclick="openLogin()">
+      LOGIN
+    </button>
+
+    <button class="btn primary" onclick="scrollToDashboard()">
+      ENTER PLATFORM
+    </button>
+
   </div>
 
 </nav>
+
+<!-- HERO -->
 
 <section class="hero">
 
   <div class="hero-content">
 
     <div class="tag">
-      INTELLIGENT WEALTH ALLOCATION
+      WEALTH INFRASTRUCTURE FOR HIGH EARNERS
     </div>
 
     <h1>
-      Your money.<br>
-      <span>Perfectly allocated.</span>
+      Build wealth.<br>
+      <span>Systematically.</span>
     </h1>
 
     <p class="subtitle">
-      Designed for merchant mariners, veterans, and high-income professionals building serious wealth through investing, real estate, and automation.
+      VaultFlow Elite automates income allocation, investment forecasting,
+      real estate analysis, and net worth growth for merchant mariners,
+      veterans, entrepreneurs, and high-income professionals.
     </p>
+
+    <div class="hero-buttons">
+
+      <button class="btn primary" onclick="scrollToDashboard()">
+        OPEN DASHBOARD
+      </button>
+
+      <button class="btn secondary" onclick="openLogin()">
+        MEMBER LOGIN
+      </button>
+
+    </div>
 
     <div class="feature-grid">
 
       <div class="feature">
-        <h3>Auto Allocation</h3>
+
+        <div class="feature-icon">
+          ⬡
+        </div>
+
+        <h3>Automated Allocation</h3>
+
         <p>
-          Automatically divide income into investing, emergency funds, debt payoff, and real estate.
+          Instantly divide income into investing,
+          real estate, emergency savings,
+          and debt elimination systems.
         </p>
+
       </div>
 
       <div class="feature">
-        <h3>Real Estate Tracking</h3>
+
+        <div class="feature-icon">
+          ◈
+        </div>
+
+        <h3>Investment Forecasting</h3>
+
         <p>
-          Analyze multifamily deals, cash flow, and down payment goals from one dashboard.
+          Run long-term compounding simulations,
+          portfolio projections,
+          and retirement growth models.
         </p>
+
       </div>
 
       <div class="feature">
-        <h3>Investment Projections</h3>
+
+        <div class="feature-icon">
+          ◉
+        </div>
+
+        <h3>Real Estate Analysis</h3>
+
         <p>
-          Forecast long-term portfolio growth with compounding calculators and wealth projections.
+          Analyze cap rate, monthly cash flow,
+          annual returns, and multifamily acquisition targets.
         </p>
+
+      </div>
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          ✦
+        </div>
+
+        <h3>Net Worth Tracking</h3>
+
+        <p>
+          Monitor total assets, liabilities,
+          cash reserves, and long-term wealth accumulation.
+        </p>
+
       </div>
 
     </div>
@@ -461,163 +707,209 @@ footer{
 
 </section>
 
-<section class="section">
+<!-- DASHBOARD -->
+
+<section class="section" id="dashboard">
 
   <div class="tag">
-    WEALTH COMMAND CENTER
+    LIVE WEALTH CONTROL CENTER
   </div>
 
   <div class="section-title">
-    Financial Dashboard
+    Financial Command Dashboard
   </div>
+
+  <p class="section-sub">
+    Calculate monthly allocation systems,
+    investment growth,
+    and real estate opportunities from one elite platform.
+  </p>
 
   <div class="tabs">
 
-    <button class="tab active">OVERVIEW</button>
-    <button class="tab">ALLOCATOR</button>
-    <button class="tab">NET WORTH</button>
-    <button class="tab">REAL ESTATE</button>
-    <button class="tab">INVESTING</button>
+    <div class="tab active">
+      OVERVIEW
+    </div>
+
+    <div class="tab">
+      ALLOCATOR
+    </div>
+
+    <div class="tab">
+      INVESTING
+    </div>
+
+    <div class="tab">
+      REAL ESTATE
+    </div>
+
+    <div class="tab">
+      NET WORTH
+    </div>
 
   </div>
 
   <div class="dashboard">
 
     <div class="stat">
-      <div class="label">MONTHLY INCOME</div>
-      <div class="value" id="income">$0</div>
+      <div class="stat-label">MONTHLY INCOME</div>
+      <div class="stat-value" id="income">
+        $0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="label">INVESTING</div>
-      <div class="value blue" id="investing">$0</div>
+      <div class="stat-label">INVESTMENTS</div>
+      <div class="stat-value blue" id="investing">
+        $0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="label">REAL ESTATE</div>
-      <div class="value orange" id="realestate">$0</div>
+      <div class="stat-label">REAL ESTATE</div>
+      <div class="stat-value orange" id="realestate">
+        $0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="label">EMERGENCY FUND</div>
-      <div class="value green" id="emergency">$0</div>
+      <div class="stat-label">NET WORTH TARGET</div>
+      <div class="stat-value purple" id="networth">
+        $1M+
+      </div>
     </div>
 
   </div>
 
-  <div class="form-card">
+  <div class="content-grid">
 
-    <div class="form-title">
-      Income Allocator
-    </div>
+    <!-- LEFT -->
 
-    <label>DAILY RATE</label>
-    <input type="number" id="dailyRate" value="362">
+    <div class="card">
 
-    <label>DAYS WORKED</label>
-    <input type="number" id="daysWorked" value="28">
-
-    <label>VA DISABILITY</label>
-    <input type="number" id="vaIncome" value="3938">
-
-    <button class="btn primary" onclick="calculate()">
-      CALCULATE WEALTH PLAN
-    </button>
-
-    <div class="allocations">
-
-      <div class="alloc">
-        <div class="alloc-top">
-          <span>Investing</span>
-          <span>30%</span>
-        </div>
-
-        <div class="track">
-          <div class="fill blue-fill" style="width:30%"></div>
-        </div>
+      <div class="card-title">
+        Wealth Allocator
       </div>
 
-      <div class="alloc">
-        <div class="alloc-top">
-          <span>Real Estate</span>
-          <span>25%</span>
-        </div>
+      <label>DAILY RATE</label>
+      <input type="number" id="dailyRate" value="362">
 
-        <div class="track">
-          <div class="fill orange-fill" style="width:25%"></div>
-        </div>
-      </div>
+      <label>DAYS WORKED</label>
+      <input type="number" id="daysWorked" value="28">
 
-      <div class="alloc">
-        <div class="alloc-top">
-          <span>Emergency Fund</span>
-          <span>20%</span>
-        </div>
+      <label>VA DISABILITY</label>
+      <input type="number" id="vaIncome" value="3938">
 
-        <div class="track">
-          <div class="fill green-fill" style="width:20%"></div>
-        </div>
-      </div>
-
-      <div class="alloc">
-        <div class="alloc-top">
-          <span>Debt Payoff</span>
-          <span>15%</span>
-        </div>
-
-        <div class="track">
-          <div class="fill gold-fill" style="width:15%"></div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="sim-grid">
-
-    <div class="sim">
-
-      <h3>Investment Simulator</h3>
-
-      <label>MONTHLY INVESTING</label>
-      <input type="number" id="monthlyInvest" value="6000">
-
-      <label>ANNUAL RETURN %</label>
-      <input type="number" id="returnRate" value="10">
-
-      <label>YEARS</label>
-      <input type="number" id="years" value="10">
-
-      <button class="btn primary" onclick="investCalc()">
-        RUN SIMULATION
+      <button class="btn primary" onclick="calculate()">
+        CALCULATE SYSTEM
       </button>
 
-      <div class="result" id="investResult">
-        Enter values to calculate future portfolio value.
+      <div style="margin-top:40px;">
+
+        <div class="alloc">
+
+          <div class="alloc-top">
+            <span>Investing</span>
+            <span>35%</span>
+          </div>
+
+          <div class="track">
+            <div class="fill blue-fill"></div>
+          </div>
+
+        </div>
+
+        <div class="alloc">
+
+          <div class="alloc-top">
+            <span>Real Estate</span>
+            <span>25%</span>
+          </div>
+
+          <div class="track">
+            <div class="fill green-fill"></div>
+          </div>
+
+        </div>
+
+        <div class="alloc">
+
+          <div class="alloc-top">
+            <span>Emergency Fund</span>
+            <span>20%</span>
+          </div>
+
+          <div class="track">
+            <div class="fill orange-fill"></div>
+          </div>
+
+        </div>
+
+        <div class="alloc">
+
+          <div class="alloc-top">
+            <span>Debt Elimination</span>
+            <span>10%</span>
+          </div>
+
+          <div class="track">
+            <div class="fill gold-fill"></div>
+          </div>
+
+        </div>
+
       </div>
 
     </div>
 
-    <div class="sim">
+    <!-- RIGHT -->
 
-      <h3>Real Estate Simulator</h3>
+    <div>
 
-      <label>PROPERTY PRICE</label>
-      <input type="number" id="housePrice" value="350000">
+      <div class="sim">
 
-      <label>MONTHLY RENT</label>
-      <input type="number" id="rent" value="3200">
+        <h3>Investment Simulator</h3>
 
-      <label>MONTHLY EXPENSES</label>
-      <input type="number" id="expenses" value="700">
+        <label>MONTHLY INVESTING</label>
+        <input type="number" id="monthlyInvest" value="6000">
 
-      <button class="btn primary" onclick="realEstateCalc()">
-        ANALYZE DEAL
-      </button>
+        <label>RETURN %</label>
+        <input type="number" id="returnRate" value="10">
 
-      <div class="result" id="realEstateResult">
-        Analyze monthly cash flow and yearly income.
+        <label>YEARS</label>
+        <input type="number" id="years" value="10">
+
+        <button class="btn primary full" onclick="investCalc()">
+          RUN SIMULATION
+        </button>
+
+        <div class="result" id="investResult">
+          Run a projection to estimate long-term portfolio growth.
+        </div>
+
+      </div>
+
+      <div class="sim">
+
+        <h3>Real Estate Analyzer</h3>
+
+        <label>PROPERTY PRICE</label>
+        <input type="number" id="housePrice" value="350000">
+
+        <label>MONTHLY RENT</label>
+        <input type="number" id="rent" value="3200">
+
+        <label>MONTHLY EXPENSES</label>
+        <input type="number" id="expenses" value="700">
+
+        <button class="btn primary full" onclick="realEstateCalc()">
+          ANALYZE PROPERTY
+        </button>
+
+        <div class="result" id="realEstateResult">
+          Analyze cash flow, yearly profit, and cap rate.
+        </div>
+
       </div>
 
     </div>
@@ -626,15 +918,135 @@ footer{
 
 </section>
 
+<!-- LOGIN -->
+
+<div class="modal" id="loginModal">
+
+  <div class="modal-card">
+
+    <button class="close" onclick="closeLogin()">
+      ×
+    </button>
+
+    <h2>
+      VaultFlow Elite
+    </h2>
+
+    <div class="modal-sub">
+      Secure member access
+    </div>
+
+    <input type="email" id="email" placeholder="Email">
+
+    <input type="password" id="password" placeholder="Password">
+
+    <button class="btn primary full" onclick="login()">
+      SIGN IN
+    </button>
+
+    <div id="loginMessage"></div>
+
+  </div>
+
+</div>
+
 <footer>
-  VAULTFLOW X — Wealth Infrastructure for High Earners
+  VAULTFLOW ELITE — Wealth Infrastructure Platform
 </footer>
 
 <script>
 
 function formatMoney(num){
-  return '$' + Math.round(num).toLocaleString();
+
+  return '$' +
+    Math.round(num).toLocaleString();
+
 }
+
+/* SCROLL */
+
+function scrollToDashboard(){
+
+  document
+    .getElementById('dashboard')
+    .scrollIntoView({
+      behavior:'smooth'
+    });
+
+}
+
+/* LOGIN */
+
+function openLogin(){
+
+  document
+    .getElementById('loginModal')
+    .classList.add('active');
+
+}
+
+function closeLogin(){
+
+  document
+    .getElementById('loginModal')
+    .classList.remove('active');
+
+}
+
+function login(){
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  const msg =
+    document.getElementById('loginMessage');
+
+  if(email === '' || password === ''){
+
+    msg.innerHTML =
+      'Please enter email and password';
+
+    return;
+
+  }
+
+  msg.innerHTML =
+    'Authenticating...';
+
+  setTimeout(() => {
+
+    msg.innerHTML =
+      'Access Granted';
+
+    setTimeout(() => {
+
+      closeLogin();
+
+      msg.innerHTML = '';
+
+    }, 900);
+
+  }, 1200);
+
+}
+
+window.onclick = function(e){
+
+  const modal =
+    document.getElementById('loginModal');
+
+  if(e.target === modal){
+
+    closeLogin();
+
+  }
+
+}
+
+/* CALCULATOR */
 
 function calculate(){
 
@@ -651,13 +1063,10 @@ function calculate(){
     (rate * days) + va;
 
   const investing =
-    income * .30;
+    income * .35;
 
   const realEstate =
     income * .25;
-
-  const emergency =
-    income * .20;
 
   document.getElementById('income').innerHTML =
     formatMoney(income);
@@ -668,12 +1077,11 @@ function calculate(){
   document.getElementById('realestate').innerHTML =
     formatMoney(realEstate);
 
-  document.getElementById('emergency').innerHTML =
-    formatMoney(emergency);
-
 }
 
 calculate();
+
+/* INVESTMENT */
 
 function investCalc(){
 
@@ -699,16 +1107,26 @@ function investCalc(){
   }
 
   document.getElementById('investResult').innerHTML = `
+
     <strong>Projected Portfolio:</strong><br>
     ${formatMoney(total)}<br><br>
 
     <strong>Total Contributions:</strong><br>
-    ${formatMoney(monthly * months)}
+    ${formatMoney(monthly * months)}<br><br>
+
+    <strong>Estimated Passive Growth:</strong><br>
+    ${formatMoney(total - (monthly * months))}
+
   `;
 
 }
 
+/* REAL ESTATE */
+
 function realEstateCalc(){
+
+  const price =
+    Number(document.getElementById('housePrice').value);
 
   const rent =
     Number(document.getElementById('rent').value);
@@ -716,27 +1134,26 @@ function realEstateCalc(){
   const expenses =
     Number(document.getElementById('expenses').value);
 
-  const price =
-    Number(document.getElementById('housePrice').value);
-
-  const cashflow =
+  const monthly =
     rent - expenses;
 
-  const annual =
-    cashflow * 12;
+  const yearly =
+    monthly * 12;
 
-  const capRate =
-    (annual / price) * 100;
+  const cap =
+    (yearly / price) * 100;
 
   document.getElementById('realEstateResult').innerHTML = `
+
     <strong>Monthly Cash Flow:</strong><br>
-    ${formatMoney(cashflow)}<br><br>
+    ${formatMoney(monthly)}<br><br>
 
     <strong>Annual Cash Flow:</strong><br>
-    ${formatMoney(annual)}<br><br>
+    ${formatMoney(yearly)}<br><br>
 
     <strong>Estimated Cap Rate:</strong><br>
-    ${capRate.toFixed(2)}%
+    ${cap.toFixed(2)}%
+
   `;
 
 }
