@@ -756,14 +756,8 @@ function sbSignOut(){
 }
 
 function initSB(){
-  // Check localStorage for existing session
-  try{
-    var stored=localStorage.getItem('vf_session');
-    if(stored){
-      var s=JSON.parse(stored);
-      if(s&&s.access_token){currentSession=s;showLoggedIn();}
-    }
-  }catch(e){}
+  // Session is kept in memory - no localStorage needed
+  // currentSession is set when user logs in
 }
 
 // ===== PAGE SHOW =====
@@ -835,7 +829,7 @@ function signin(){
   sbSignIn(e,p).then(function(r){
     if(r.error){msg('lmsg',r.error.message,'#ff4444');}
     else{
-      try{localStorage.setItem('vf_session',JSON.stringify(currentSession));}catch(ex){}
+      
       msg('lmsg','Welcome back.','#00ff88');
       setTimeout(function(){go('dashboard');},800);
     }
@@ -853,7 +847,7 @@ function signup(){
   sbSignUp(e,p).then(function(r){
     if(r.error){msg('lmsg',r.error.message,'#ff4444');}
     else{
-      try{localStorage.setItem('vf_session',JSON.stringify(currentSession));}catch(ex){}
+      
       msg('lmsg','Account created. Welcome to VaultFlow.','#00ff88');
       setTimeout(function(){go('dashboard');},1000);
     }
@@ -862,7 +856,7 @@ function signup(){
 
 function signout(){
   sbSignOut();
-  try{localStorage.removeItem('vf_session');}catch(e){}
+  
   go('home');
 }
 
@@ -921,8 +915,8 @@ function alloc(){
     '<div class="ci"><span class="cn">04</span><span class="ct">RE savings: '+fmt(re)+'</span></div>'+
     '<div class="ci"><span class="cn">05</span><span class="ct">Alpaca algo: '+fmt(inv)+'</span></div>'+
     '<div class="ci"><span class="cn">06</span><span class="ct">HYSA: '+fmt(liq)+'</span></div>';
-  var m=document.getElementById('almsg');if(m){m.style.color='#00ff88';m.textContent='Allocation updated.';}
-  dtab('ov');
+  var m=document.getElementById('almsg');if(m){m.style.color='#00ff88';m.textContent='Allocation updated. Switching to overview...';}
+  setTimeout(function(){dtab('ov');},600);
 }
 
 // ===== TOOLS =====
@@ -1007,10 +1001,7 @@ function loadProfile(){
     var rl=document.getElementById('rlink');if(rl)rl.textContent='vaultflow.org?ref='+(currentSession.user.id||'').substring(0,8);
   }
   // Load saved plaid token
-  try{
-    var saved=localStorage.getItem('vf_plaid_token');
-    if(saved){plaidAccessToken=saved;loadBankData();}
-  }catch(e){}
+
 }
 // ===== PLAID =====
 var plaidAccessToken = null;
@@ -1034,7 +1025,7 @@ function connectBank(){
           }).then(function(r){return r.json();}).then(function(d2){
             if(d2.success){
               plaidAccessToken = d2.access_token;
-              try{localStorage.setItem('vf_plaid_token', plaidAccessToken);}catch(e){}
+              
               loadBankData();
             }
           });
@@ -1054,8 +1045,7 @@ function connectBank(){
 
 function loadBankData(){
   if(!plaidAccessToken){
-    try{plaidAccessToken=localStorage.getItem('vf_plaid_token');}catch(e){}
-  }
+    //}
   if(!plaidAccessToken)return;
   fetch(RAIL+'/plaid/transactions',{
     method:'POST',
@@ -1124,7 +1114,14 @@ function pay(){
     if(res.error){document.getElementById('cardErr').textContent=res.error.message;document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';return;}
     fetch(RAIL+'/create-subscription',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,payment_method_id:res.paymentMethod.id,plan:selPlanVal})})
     .then(function(r){return r.json();}).then(function(d){
-      if(d.success){msg('paymsg','Payment successful! Welcome to VaultFlow.','#00ff88');setTimeout(function(){go('dashboard');},1500);}
+      if(d.success){
+  currentSession.plan = selPlanVal;
+  msg('paymsg','Payment successful! Welcome to VaultFlow.','#00ff88');
+  // Update profile tab to show new plan
+  var planEl = document.querySelector('#dt-pf [style*="Essential"]');
+  if(planEl) planEl.textContent = selPlanVal === 'prime' ? 'Prime ($9.99/mo)' : 'Vault ($24.99/mo)';
+  setTimeout(function(){go('dashboard');dtab('pf');},1500);
+}
       else{document.getElementById('cardErr').textContent=d.detail||'Payment failed.';document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';}
     }).catch(function(){document.getElementById('cardErr').textContent='Connection error. Try again.';document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';});
   });
