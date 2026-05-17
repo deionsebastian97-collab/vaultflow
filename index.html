@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -448,6 +448,34 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
   .flinks{justify-content:center}
   .result-grid{grid-template-columns:1fr}
 }
+
+/* ═══ BUBBLY STYLES ═══ */
+.card{border-radius:18px!important;transition:background .5s,border-color .5s,transform .3s}
+.card:hover{transform:translateY(-2px)}
+.ds{border-radius:16px!important;transition:all .5s}
+.ds:hover{transform:translateY(-2px)}
+.btn{border-radius:50px!important;transition:all .4s!important}
+.btn:hover{transform:translateY(-2px)!important;opacity:.88!important}
+.btn-o{border-radius:50px!important}
+.inp{border-radius:12px!important;transition:border-color .3s}
+.acc{border-radius:16px!important;transition:border-color .4s,box-shadow .4s}
+.acc.open{box-shadow:0 4px 24px rgba(0,0,0,.3)!important}
+.rbox{border-radius:14px!important}
+.ritem{border-radius:12px!important}
+.goal{border-radius:16px!important;transition:all .3s}
+.goal:hover{transform:translateY(-2px)}
+.blog{border-radius:16px!important}
+.prop{border-radius:16px!important}
+.gtrack{border-radius:10px!important;height:6px!important}
+.gfill{border-radius:10px!important}
+.atrack2{border-radius:10px!important;height:6px!important}
+.afill2{border-radius:10px!important}
+.lcard{border-radius:22px!important;transition:border-color .5s}
+.btab{border-radius:12px!important;transition:all .3s}
+.btab.on .btab-icon{transform:scale(1.14)}
+.nbtn{border-radius:50px!important}
+.ngold{border-radius:50px!important}
+
 </style>
 </head>
 <body data-plan="free">
@@ -1631,7 +1659,7 @@ function pay(){
     }).then(function(r){return r.json();}).then(function(d){
       if(d.success){
         msg('paymsg','✓ Payment successful! Welcome to VaultFlow '+selPlanVal.charAt(0).toUpperCase()+selPlanVal.slice(1)+'.','#00ff88');
-        activatePrime(selPlanVal);
+        activatePlan(selPlanVal);
         setTimeout(function(){go('dashboard');dtab('pf');},1800);
       } else {
         document.getElementById('cardErr').textContent=d.detail||'Payment failed. Please try again.';
@@ -1645,28 +1673,7 @@ function pay(){
 }
 
 // ============ PRIME MODE ============
-function activatePrime(plan){
-  if(currentSession)currentSession.plan=plan;
-  var logo=document.getElementById('dash-logo');
-  if(logo&&!document.getElementById('pb')){
-    var b=document.createElement('span');b.id='pb';b.className='prime-badge';b.textContent=plan.toUpperCase();logo.appendChild(b);
-  }
-  var pd=document.getElementById('plan-display');if(pd)pd.textContent=plan==='prime'?'Prime — $9.99/mo ✓':'Vault — $24.99/mo ✓';
-  var ov=document.getElementById('dt-ov');
-  if(ov&&!document.getElementById('prime-banner-el')){
-    var bn=document.createElement('div');bn.id='prime-banner-el';bn.className='prime-banner';
-    bn.innerHTML='<div><div class="prime-banner-title">✓ '+plan.toUpperCase()+' ACTIVE</div><div class="prime-banner-sub">BANK CONNECTION · AUTO-ALLOCATION · ALGO SIGNALS UNLOCKED</div></div><div style="font-size:9px;color:#00ff88;letter-spacing:2px">ACTIVE</div>';
-    ov.insertBefore(bn,ov.firstChild);
-  }
-  var ub=document.getElementById('upgrade-banner');
-  if(ub){ub.style.background='linear-gradient(135deg,#1A1200,#0E0E0E)';ub.style.borderColor='#C9A84C';
-    ub.querySelector('.ubt').textContent='✓ '+plan.toUpperCase()+' Active';
-    ub.querySelector('.ubs').textContent='Bank connection and auto-allocation are ready in your Profile tab.';
-    var btn=ub.querySelector('button');if(btn){btn.textContent='SET UP BANK CONNECTION →';btn.onclick=function(){dtab('pf');};}
-  }
-  var lo=document.querySelector('.loverlay');if(lo)lo.style.display='none';
-  addWebhook({t:'PRIME_ACTIVATED',m:'VaultFlow '+plan+' features unlocked — bank connection available',c:'#C9A84C'});
-}
+
 
 // ============ PLAN ACTIVATION ============
 function activatePlan(plan){
