@@ -8,193 +8,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:#080808;color:#F5F0E8;font-family:'Montserrat',sans-serif;min-height:100vh}
-
-/* ═══ TIER COLOR SYSTEM ═══
-   free  = silver  
-   prime = gold    
-   vault = purple  
-═══════════════════════════ */
-body[data-plan="free"]{
-  --ac:#B8C8D8;
-  --dim:#607880;
-  background:#060810;
-}
-body[data-plan="prime"]{
-  --ac:#D4AF37;
-  --dim:#9A7B10;
-  background:#070601;
-}
-body[data-plan="vault"]{
-  --ac:#B06EFF;
-  --dim:#8030D0;
-  background:#05020C;
-}
-
-/* Glow bubble behind dashboard */
-body[data-plan]::before{
-  content:'';
-  position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(var(--grgb,.5,.5,.5),0.14) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 50% at 90% 85%, rgba(var(--grgb,.5,.5,.5),0.08) 0%, transparent 60%);
-  animation:planpulse 7s ease-in-out infinite alternate;
-}
-@keyframes planpulse{0%{opacity:.7}100%{opacity:1}}
-
-body[data-plan="free"]::before{
-  background:
-    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(184,200,216,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 50% at 90% 85%, rgba(184,200,216,0.07) 0%, transparent 60%);
-}
-body[data-plan="prime"]::before{
-  background:
-    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(212,175,55,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 50% at 90% 85%, rgba(212,175,55,0.09) 0%, transparent 60%);
-}
-body[data-plan="vault"]::before{
-  background:
-    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(176,110,255,0.20) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 50% at 90% 85%, rgba(176,110,255,0.10) 0%, transparent 60%);
-}
-
-/* ═══ TIER-COLORED ELEMENTS ═══ */
-
-/* Cards */
-body[data-plan] .card{
-  border-color:rgba(var(--cgrgb,120,130,140),0.12);
-  transition:border-color .5s,background .5s;
-}
-body[data-plan="free"] .card{
-  background:linear-gradient(145deg,#0A0C16,#070910);
-  border-color:rgba(184,200,216,0.12);
-}
-body[data-plan="prime"] .card{
-  background:linear-gradient(145deg,#120E00,#0C0900);
-  border-color:rgba(212,175,55,0.14);
-}
-body[data-plan="vault"] .card{
-  background:linear-gradient(145deg,#100520,#080210);
-  border-color:rgba(176,110,255,0.14);
-}
-
-/* Stat boxes */
-body[data-plan="free"] .ds{
-  background:linear-gradient(145deg,#0A0C16,#070910);
-  border-color:rgba(184,200,216,0.15);
-}
-body[data-plan="prime"] .ds{
-  background:linear-gradient(145deg,#120E00,#0C0900);
-  border-color:rgba(212,175,55,0.18);
-}
-body[data-plan="vault"] .ds{
-  background:linear-gradient(145deg,#100520,#080210);
-  border-color:rgba(176,110,255,0.18);
-}
-
-/* Accent color on key text */
-body[data-plan="free"] .dsl,
-body[data-plan="free"] .tag,
-body[data-plan="free"] .lbl,
-body[data-plan="free"] .acc-sub{color:#607880}
-
-body[data-plan="prime"] .dsl,
-body[data-plan="prime"] .tag,
-body[data-plan="prime"] .lbl,
-body[data-plan="prime"] .acc-sub{color:#9A7B10}
-
-body[data-plan="vault"] .dsl,
-body[data-plan="vault"] .tag,
-body[data-plan="vault"] .lbl,
-body[data-plan="vault"] .acc-sub{color:#8030D0}
-
-/* Stat values */
-body[data-plan="free"] .dsv{color:#B8C8D8}
-body[data-plan="prime"] .dsv{color:#D4AF37}
-body[data-plan="vault"] .dsv{color:#B06EFF}
-
-/* Alloc bar fills */
-body[data-plan="free"] .afill2.main-bar{background:linear-gradient(90deg,#607880,#B8C8D8)!important;box-shadow:0 0 8px rgba(184,200,216,0.4)!important}
-body[data-plan="prime"] .afill2.main-bar{background:linear-gradient(90deg,#9A7B10,#D4AF37)!important;box-shadow:0 0 8px rgba(212,175,55,0.4)!important}
-body[data-plan="vault"] .afill2.main-bar{background:linear-gradient(90deg,#8030D0,#B06EFF)!important;box-shadow:0 0 8px rgba(176,110,255,0.4)!important}
-
-/* Goal fill bars */
-body[data-plan="free"] .gfill{background:linear-gradient(90deg,#607880,#B8C8D8);box-shadow:0 0 6px rgba(184,200,216,0.3)}
-body[data-plan="prime"] .gfill{background:linear-gradient(90deg,#9A7B10,#D4AF37);box-shadow:0 0 6px rgba(212,175,55,0.3)}
-body[data-plan="vault"] .gfill{background:linear-gradient(90deg,#8030D0,#B06EFF);box-shadow:0 0 6px rgba(176,110,255,0.3)}
-
-/* Bottom nav active tab */
-body[data-plan="free"] .btab.on{color:#B8C8D8;border-top-color:#B8C8D8}
-body[data-plan="prime"] .btab.on{color:#D4AF37;border-top-color:#D4AF37}
-body[data-plan="vault"] .btab.on{color:#B06EFF;border-top-color:#B06EFF}
-
-/* Accordion open */
-body[data-plan="free"] .acc.open{border-color:rgba(184,200,216,0.3)!important}
-body[data-plan="prime"] .acc.open{border-color:rgba(212,175,55,0.3)!important}
-body[data-plan="vault"] .acc.open{border-color:rgba(176,110,255,0.3)!important}
-
-/* Accordion arrow */
-body[data-plan="free"] .acc-arr{color:#B8C8D8}
-body[data-plan="prime"] .acc-arr{color:#D4AF37}
-body[data-plan="vault"] .acc-arr{color:#B06EFF}
-
-/* Buttons */
-body[data-plan="free"] .btn{background:linear-gradient(135deg,#607880,#B8C8D8)!important;color:#040810!important}
-body[data-plan="prime"] .btn{background:linear-gradient(135deg,#9A7B10,#D4AF37)!important;color:#040200!important}
-body[data-plan="vault"] .btn{background:linear-gradient(135deg,#8030D0,#B06EFF)!important;color:#fff!important}
-
-/* Input focus */
-body[data-plan="free"] .inp:focus{border-color:rgba(184,200,216,0.4)!important}
-body[data-plan="prime"] .inp:focus{border-color:rgba(212,175,55,0.4)!important}
-body[data-plan="vault"] .inp:focus{border-color:rgba(176,110,255,0.4)!important}
-
-/* Blog cards */
-body[data-plan="free"] .blog::before{background:linear-gradient(180deg,transparent,#B8C8D8,transparent)}
-body[data-plan="prime"] .blog::before{background:linear-gradient(180deg,transparent,#D4AF37,transparent)}
-body[data-plan="vault"] .blog::before{background:linear-gradient(180deg,transparent,#B06EFF,transparent)}
-
-/* Prop cards */
-body[data-plan="free"] .prop{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,0.12)}
-body[data-plan="prime"] .prop{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,0.12)}
-body[data-plan="vault"] .prop{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,0.12)}
-
-/* Rbox / result box */
-body[data-plan="free"] .rbox{background:#0A0C16;border-color:rgba(184,200,216,0.1)}
-body[data-plan="prime"] .rbox{background:#120E00;border-color:rgba(212,175,55,0.1)}
-body[data-plan="vault"] .rbox{background:#100520;border-color:rgba(176,110,255,0.1)}
-body[data-plan="free"] .ritem{background:#070910;border-color:rgba(184,200,216,0.08)}
-body[data-plan="prime"] .ritem{background:#0C0900;border-color:rgba(212,175,55,0.09)}
-body[data-plan="vault"] .ritem{background:#080210;border-color:rgba(176,110,255,0.09)}
-body[data-plan="free"] .rlbl{color:#607880}
-body[data-plan="prime"] .rlbl{color:#9A7B10}
-body[data-plan="vault"] .rlbl{color:#8030D0}
-body[data-plan="free"] .rval{color:#B8C8D8}
-body[data-plan="prime"] .rval{color:#D4AF37}
-body[data-plan="vault"] .rval{color:#B06EFF}
-
-/* Goal items */
-body[data-plan="free"] .goal{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,0.12)}
-body[data-plan="prime"] .goal{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,0.12)}
-body[data-plan="vault"] .goal{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,0.12)}
-
-/* Gline divider */
-body[data-plan="free"] .gline{background:linear-gradient(90deg,transparent,rgba(184,200,216,0.3),transparent)}
-body[data-plan="prime"] .gline{background:linear-gradient(90deg,transparent,rgba(212,175,55,0.3),transparent)}
-body[data-plan="vault"] .gline{background:linear-gradient(90deg,transparent,rgba(176,110,255,0.3),transparent)}
-
-/* Checklist numbers */
-body[data-plan="free"] .ci-n{color:#B8C8D8}
-body[data-plan="prime"] .ci-n{color:#D4AF37}
-body[data-plan="vault"] .ci-n{color:#B06EFF}
-
-/* Transfer amounts */
-body[data-plan="free"] .tamt{color:#B8C8D8}
-body[data-plan="prime"] .tamt{color:#D4AF37}
-body[data-plan="vault"] .tamt{color:#B06EFF}
-
-/* Referral link */
-body[data-plan="free"] .rlink-box{color:#B8C8D8}
-body[data-plan="prime"] .rlink-box{color:#D4AF37}
-body[data-plan="vault"] .rlink-box{color:#B06EFF}
 .page{display:none;min-height:100vh}
 
 /* NAV */
@@ -449,33 +262,132 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
   .result-grid{grid-template-columns:1fr}
 }
 
-/* ═══ BUBBLY STYLES ═══ */
+/* ═══════════════════════════
+   TIER COLOR SYSTEM
+   free  = silver  #B8C8D8
+   prime = gold    #D4AF37
+   vault = purple  #B06EFF
+═══════════════════════════ */
+
+/* Default = free/silver */
+body{--ac:#B8C8D8;--dim:#607880;--bg:#060810}
+body[data-plan="free"]{--ac:#B8C8D8;--dim:#607880;--bg:#060810;background:#060810}
+body[data-plan="prime"]{--ac:#D4AF37;--dim:#9A7B10;--bg:#070601;background:#070601}
+body[data-plan="vault"]{--ac:#B06EFF;--dim:#8030D0;--bg:#05020C;background:#05020C}
+
+/* Glow bubbles per tier */
+body[data-plan]::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;animation:gbubble 8s ease-in-out infinite alternate}
+@keyframes gbubble{0%{opacity:.6}100%{opacity:1}}
+body[data-plan="free"]::before{background:radial-gradient(ellipse 60% 45% at 15% 20%,rgba(184,200,216,.15) 0%,transparent 60%),radial-gradient(ellipse 50% 55% at 85% 80%,rgba(184,200,216,.07) 0%,transparent 60%)}
+body[data-plan="prime"]::before{background:radial-gradient(ellipse 60% 45% at 15% 20%,rgba(212,175,55,.18) 0%,transparent 60%),radial-gradient(ellipse 50% 55% at 85% 80%,rgba(212,175,55,.09) 0%,transparent 60%)}
+body[data-plan="vault"]::before{background:radial-gradient(ellipse 60% 45% at 15% 20%,rgba(176,110,255,.20) 0%,transparent 60%),radial-gradient(ellipse 50% 55% at 85% 80%,rgba(176,110,255,.10) 0%,transparent 60%)}
+
+/* Cards */
+body[data-plan="free"] .card{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.14)}
+body[data-plan="prime"] .card{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.16)}
+body[data-plan="vault"] .card{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.16)}
+
+/* Stat boxes */
+body[data-plan="free"] .ds{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.18)}
+body[data-plan="prime"] .ds{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.20)}
+body[data-plan="vault"] .ds{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.20)}
+
+/* Stat values */
+body[data-plan="free"] .dsv{color:#B8C8D8}
+body[data-plan="prime"] .dsv{color:#D4AF37}
+body[data-plan="vault"] .dsv{color:#B06EFF}
+
+/* Labels */
+body[data-plan="free"] .dsl,body[data-plan="free"] .tag,body[data-plan="free"] .lbl,body[data-plan="free"] .acc-sub{color:#607880}
+body[data-plan="prime"] .dsl,body[data-plan="prime"] .tag,body[data-plan="prime"] .lbl,body[data-plan="prime"] .acc-sub{color:#9A7B10}
+body[data-plan="vault"] .dsl,body[data-plan="vault"] .tag,body[data-plan="vault"] .lbl,body[data-plan="vault"] .acc-sub{color:#8030D0}
+
+/* Alloc bar main fill */
+body[data-plan="free"] #b1{background:linear-gradient(90deg,#607880,#B8C8D8)!important;box-shadow:0 0 8px rgba(184,200,216,.35)}
+body[data-plan="prime"] #b1{background:linear-gradient(90deg,#9A7B10,#D4AF37)!important;box-shadow:0 0 8px rgba(212,175,55,.4)}
+body[data-plan="vault"] #b1{background:linear-gradient(90deg,#8030D0,#B06EFF)!important;box-shadow:0 0 8px rgba(176,110,255,.4)}
+
+/* Goal fills */
+body[data-plan="free"] .gfill{background:linear-gradient(90deg,#607880,#B8C8D8);box-shadow:0 0 6px rgba(184,200,216,.3)}
+body[data-plan="prime"] .gfill{background:linear-gradient(90deg,#9A7B10,#D4AF37);box-shadow:0 0 6px rgba(212,175,55,.3)}
+body[data-plan="vault"] .gfill{background:linear-gradient(90deg,#8030D0,#B06EFF);box-shadow:0 0 6px rgba(176,110,255,.3)}
+
+/* Buttons */
+body[data-plan="free"] .btn{background:linear-gradient(135deg,#607880,#B8C8D8)!important;color:#040810!important}
+body[data-plan="prime"] .btn{background:linear-gradient(135deg,#9A7B10,#D4AF37)!important;color:#040200!important}
+body[data-plan="vault"] .btn{background:linear-gradient(135deg,#8030D0,#B06EFF)!important;color:#fff!important}
+
+/* Accordion */
+body[data-plan="free"] .acc{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.1)}
+body[data-plan="prime"] .acc{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.1)}
+body[data-plan="vault"] .acc{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.1)}
+body[data-plan="free"] .acc.open{border-color:rgba(184,200,216,.35)!important;box-shadow:0 4px 20px rgba(184,200,216,.07)}
+body[data-plan="prime"] .acc.open{border-color:rgba(212,175,55,.35)!important;box-shadow:0 4px 20px rgba(212,175,55,.09)}
+body[data-plan="vault"] .acc.open{border-color:rgba(176,110,255,.35)!important;box-shadow:0 4px 20px rgba(176,110,255,.09)}
+body[data-plan="free"] .acc-arr{color:#B8C8D8}
+body[data-plan="prime"] .acc-arr{color:#D4AF37}
+body[data-plan="vault"] .acc-arr{color:#B06EFF}
+
+/* Blog */
+body[data-plan="free"] .blog{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.09)}
+body[data-plan="prime"] .blog{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.09)}
+body[data-plan="vault"] .blog{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.09)}
+
+/* Result boxes */
+body[data-plan="free"] .resbox{background:#0A0C16;border-color:rgba(184,200,216,.1)}
+body[data-plan="prime"] .resbox{background:#120E00;border-color:rgba(212,175,55,.1)}
+body[data-plan="vault"] .resbox{background:#100520;border-color:rgba(176,110,255,.1)}
+
+/* Goals */
+body[data-plan="free"] .goal{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.12)}
+body[data-plan="prime"] .goal{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.12)}
+body[data-plan="vault"] .goal{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.12)}
+
+/* Props */
+body[data-plan="free"] .prop{background:linear-gradient(145deg,#0A0C16,#070910);border-color:rgba(184,200,216,.12)}
+body[data-plan="prime"] .prop{background:linear-gradient(145deg,#120E00,#0C0900);border-color:rgba(212,175,55,.12)}
+body[data-plan="vault"] .prop{background:linear-gradient(145deg,#100520,#080210);border-color:rgba(176,110,255,.12)}
+
+/* Nav active tab */
+body[data-plan="free"] .dtab.on{color:#B8C8D8;border-color:rgba(184,200,216,.4)!important;background:rgba(184,200,216,.06)!important}
+body[data-plan="prime"] .dtab.on{color:#D4AF37;border-color:rgba(212,175,55,.4)!important;background:rgba(212,175,55,.06)!important}
+body[data-plan="vault"] .dtab.on{color:#B06EFF;border-color:rgba(176,110,255,.4)!important;background:rgba(176,110,255,.06)!important}
+
+/* Transfer amounts */
+body[data-plan="free"] .tamt{color:#B8C8D8}
+body[data-plan="prime"] .tamt{color:#D4AF37}
+body[data-plan="vault"] .tamt{color:#B06EFF}
+
+/* Gline */
+body[data-plan="free"] .gline{background:linear-gradient(90deg,transparent,rgba(184,200,216,.3),transparent)}
+body[data-plan="prime"] .gline{background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+body[data-plan="vault"] .gline{background:linear-gradient(90deg,transparent,rgba(176,110,255,.3),transparent)}
+
+/* ═══ BUBBLY INTERFACE ═══ */
 .card{border-radius:18px!important;transition:background .5s,border-color .5s,transform .3s}
 .card:hover{transform:translateY(-2px)}
-.ds{border-radius:16px!important;transition:all .5s}
+.ds{border-radius:16px!important;transition:all .4s}
 .ds:hover{transform:translateY(-2px)}
 .btn{border-radius:50px!important;transition:all .4s!important}
-.btn:hover{transform:translateY(-2px)!important;opacity:.88!important}
-.btn-o{border-radius:50px!important}
+.btn:hover{transform:translateY(-2px)!important}
+.btn-o{border-radius:50px!important;transition:all .3s}
 .inp{border-radius:12px!important;transition:border-color .3s}
-.acc{border-radius:16px!important;transition:border-color .4s,box-shadow .4s}
-.acc.open{box-shadow:0 4px 24px rgba(0,0,0,.3)!important}
-.rbox{border-radius:14px!important}
-.ritem{border-radius:12px!important}
+.acc{border-radius:16px!important;transition:all .4s}
 .goal{border-radius:16px!important;transition:all .3s}
 .goal:hover{transform:translateY(-2px)}
 .blog{border-radius:16px!important}
 .prop{border-radius:16px!important}
+.resbox{border-radius:14px!important}
+.ritem{border-radius:12px!important}
 .gtrack{border-radius:10px!important;height:6px!important}
 .gfill{border-radius:10px!important}
 .atrack2{border-radius:10px!important;height:6px!important}
 .afill2{border-radius:10px!important}
-.lcard{border-radius:22px!important;transition:border-color .5s}
-.btab{border-radius:12px!important;transition:all .3s}
-.btab.on .btab-icon{transform:scale(1.14)}
 .nbtn{border-radius:50px!important}
 .ngold{border-radius:50px!important}
-
+.lcard{border-radius:20px!important}
+.dtab{border-radius:12px!important;transition:all .3s}
+.dtab.on .dtab-icon{transform:scale(1.12)}
 </style>
 </head>
 <body data-plan="free">
@@ -484,8 +396,8 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 <nav id="nav-pub">
   <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
   <div class="nav-r">
-    <button class="nbtn" onclick="showLogin()">LOGIN</button>
-    <button class="ngold" onclick="showLogin()">JOIN FREE</button>
+    <button class="nbtn" onclick="go('login')">LOGIN</button>
+    <button class="ngold" onclick="go('login')">JOIN FREE</button>
   </div>
 </nav>
 
@@ -557,7 +469,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
   <section style="padding:80px 24px;background:#0E0E0E;border-top:1px solid rgba(201,168,76,0.08)">
     <div style="text-align:center;margin-bottom:48px"><div class="tag">MEMBERSHIP</div><h2 class="stitle">Simple, <em>transparent</em> pricing.</h2></div>
     <div class="pgrid">
-      <div class="pc" onclick="showLogin()">
+      <div class="pc" onclick="go('login')">
         <div class="pt">ESSENTIAL</div><div class="pa" style="color:#F5F0E8">Free</div><div class="pp">&nbsp;</div><div class="pdiv"></div>
         <div class="pf"><div class="pdot2"></div><span>Income and expense calculator</span></div>
         <div class="pf"><div class="pdot2"></div><span>Debt payoff optimizer</span></div>
@@ -612,7 +524,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
     <div class="flogo">VAULT<span>FLOW</span></div>
     <div class="flinks">
       <a onclick="go('home')">Home</a>
-      <a onclick="showLogin()">Login</a>
+      <a onclick="go('login')">Login</a>
       <a onclick="go('upgrade')">Pricing</a>
       <a onclick="go('legal')">Privacy</a>
       <a onclick="go('legal')">Terms</a>
@@ -1180,15 +1092,6 @@ function ltab(t){
 
 function msg(id,txt,color){var el=document.getElementById(id);if(!el)return;el.textContent=txt;el.style.color=color||'#C9A84C';}
 
-function showLogin(){
-  var lp=document.getElementById('page-login');
-  if(lp){lp.style.display='flex';lp.style.position='fixed';lp.style.top='0';lp.style.left='0';lp.style.right='0';lp.style.bottom='0';lp.style.zIndex='9000';lp.style.background='rgba(4,5,10,0.97)';}
-  var lm=document.getElementById('lmsg');if(lm)lm.textContent='';
-}
-function closeLogin(){
-  var lp=document.getElementById('page-login');
-  if(lp){lp.style.display='none';lp.style.position='';}
-}
 function signin(){
   var e=document.getElementById('sie').value,p=document.getElementById('sip').value;
   if(!e||!p){msg('lmsg','Please fill in all fields.','#ff4444');return;}
@@ -1659,7 +1562,7 @@ function pay(){
     }).then(function(r){return r.json();}).then(function(d){
       if(d.success){
         msg('paymsg','✓ Payment successful! Welcome to VaultFlow '+selPlanVal.charAt(0).toUpperCase()+selPlanVal.slice(1)+'.','#00ff88');
-        activatePlan(selPlanVal);
+        if(currentSession)currentSession.plan=selPlanVal;activatePlan(selPlanVal);
         setTimeout(function(){go('dashboard');dtab('pf');},1800);
       } else {
         document.getElementById('cardErr').textContent=d.detail||'Payment failed. Please try again.';
@@ -1675,56 +1578,51 @@ function pay(){
 // ============ PRIME MODE ============
 
 
-// ============ PLAN ACTIVATION ============
-function activatePlan(plan){
-  if(currentSession)currentSession.plan=plan;
-  document.body.setAttribute('data-plan',plan||'free');
-  var isF=plan==='free',isP=plan==='prime',isV=plan==='vault';
-  var a=isV?'#B06EFF':isP?'#D4AF37':'#B8C8D8';
-  var hasPaid=isP||isV;
 
-  // Plan badge on logo
-  var ob=document.getElementById('pb');if(ob)ob.remove();
+// ═══ PLAN ACTIVATION ═══
+function activatePlan(plan){
+  if(currentSession)currentSession.plan = plan;
+  plan = plan || 'free';
+  document.body.setAttribute('data-plan', plan);
+  var isF=plan==='free', isP=plan==='prime', isV=plan==='vault';
+  var a = isV?'#B06EFF': isP?'#D4AF37':'#B8C8D8';
+  var hasPaid = isP||isV;
+
+  // Logo badge
+  var ob=document.getElementById('pb'); if(ob)ob.remove();
   if(!isF){
     var logo=document.getElementById('dash-logo');
     if(logo){
-      var b=document.createElement('span');b.id='pb';
+      var b=document.createElement('span'); b.id='pb';
       var bg=isV?'linear-gradient(135deg,#8030D0,#B06EFF)':'linear-gradient(135deg,#9A7B10,#D4AF37)';
-      b.style.cssText='display:inline-block;background:'+bg+';color:'+(isV?'#fff':'#040200')+';font-size:6px;letter-spacing:2px;padding:3px 8px;font-weight:700;margin-left:6px;vertical-align:middle;border-radius:50px;font-family:Montserrat,sans-serif';
-      b.textContent=plan.toUpperCase();
-      logo.appendChild(b);
+      b.style.cssText='display:inline-block;background:'+bg+';color:'+(isV?'#fff':'#040200')+';font-size:6px;letter-spacing:2px;padding:3px 8px;font-weight:700;margin-left:6px;vertical-align:middle;border-radius:50px';
+      b.textContent=plan.toUpperCase(); logo.appendChild(b);
     }
   }
 
-  // Plan display text
+  // Plan display
   var pd=document.getElementById('plan-display');
   if(pd){pd.textContent=isV?'Vault — $24.99/mo':isP?'Prime — $9.99/mo':'Essential (Free)';pd.style.color=a;}
 
-  // Upgrade button text
-  var upg=document.getElementById('dash-upg-btn');
-  if(upg&&!hasPaid)upg.textContent='UPGRADE';
-  else if(upg&&hasPaid)upg.textContent=isV?'VAULT':'PRIME';
-
   // Unlock features
   function show(id,vis){var e=document.getElementById(id);if(e)e.style.display=vis;}
-  show('bank-prime-lock',hasPaid?'none':'block');
-  show('bank-prime-btn',hasPaid?'block':'none');
+  show('bank-prime-lock', hasPaid?'none':'block');
+  show('bank-prime-btn',  hasPaid?'block':'none');
   show('alloc-prime-lock',hasPaid?'none':'block');
-  show('alloc-engine',hasPaid?'block':'none');
-  show('sig-locked',isV?'none':'block');
-  show('sig-unlocked',isV?'block':'none');
-  show('nw-lock',hasPaid?'none':'block');
-  show('nw-content',hasPaid?'block':'none');
-  show('pr-lock',hasPaid?'none':'block');
-  show('pr-content',hasPaid?'block':'none');
-  show('transfer-lock',hasPaid?'none':'flex');
+  show('alloc-engine',    hasPaid?'block':'none');
+  show('sig-locked',      isV?'none':'block');
+  show('sig-unlocked',    isV?'block':'none');
+  show('nw-lock',         hasPaid?'none':'block');
+  show('nw-content',      hasPaid?'block':'none');
+  show('pr-lock',         hasPaid?'none':'block');
+  show('pr-content',      hasPaid?'block':'none');
+  show('transfer-lock',   hasPaid?'none':'flex');
   show('downgrade-section',hasPaid?'block':'none');
 
   // Dim locked tabs
   ['bt-nw','bt-pr'].forEach(function(id){
     var bt=document.getElementById(id);
-    if(bt)bt.style.opacity=hasPaid?'1':'0.2';
-    if(bt)bt.style.pointerEvents=hasPaid?'auto':'none';
+    if(bt){bt.style.opacity=hasPaid?'1':'0.2';bt.style.pointerEvents=hasPaid?'auto':'none';}
   });
 
   if(isF){plaidTok=null;show('bank-connected','none');show('bank-disconnected','block');}
