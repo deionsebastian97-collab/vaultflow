@@ -1,7 +1,4 @@
-function closeLogin(){
-  var lp=document.getElementById('page-login');
-  if(lp){lp.style.display='none';}
-}<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,6 +8,19 @@ function closeLogin(){
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:#080808;color:#F5F0E8;font-family:'Montserrat',sans-serif;min-height:100vh}
+/* PLAN THEMES */
+body[data-plan="free"]{--a:#A8B8C8;--ad:#5A6A7A;background:#06080E}
+body[data-plan="prime"]{--a:#D4AF37;--ad:#9A7B10;background:#080700}
+body[data-plan="vault"]{--a:#A855F7;--ad:#7E22CE;background:#06030E}
+/* PLAN GLOW */
+body[data-plan]::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 20%,rgba(var(--glow,201,168,76),0.1) 0%,transparent 55%),
+             radial-gradient(ellipse at 80% 80%,rgba(var(--glow,201,168,76),0.1) 0%,transparent 55%);
+  animation:gbubble 7s ease-in-out infinite alternate}
+@keyframes gbubble{0%{opacity:0.6}100%{opacity:1}}
+body[data-plan="free"]::before{background:radial-gradient(ellipse at 20% 20%,rgba(168,184,200,0.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(168,184,200,0.08) 0%,transparent 55%)}
+body[data-plan="prime"]::before{background:radial-gradient(ellipse at 20% 20%,rgba(212,175,55,0.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(212,175,55,0.08) 0%,transparent 55%)}
+body[data-plan="vault"]::before{background:radial-gradient(ellipse at 20% 20%,rgba(168,85,247,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(168,85,247,0.1) 0%,transparent 55%)}
 .page{display:none;min-height:100vh}
 
 /* NAV */
@@ -117,16 +127,16 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .fcopy{font-size:8px;color:#8A8070;letter-spacing:1px}
 
 /* LOGIN */
-/* login uses inline styles */
-.lcard{width:100%;max-width:380px;background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.15);padding:40px 32px;border-radius:4px}
+#page-login{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;align-items:center;justify-content:center;padding:20px;background:rgba(4,5,10,0.97)}
+.lcard{width:100%;max-width:350px;background:linear-gradient(145deg,#0C0E16,#080A14);border:1px solid rgba(168,184,200,0.2);padding:32px 26px;border-radius:20px;box-shadow:0 32px 80px rgba(0,0,0,0.7),inset 0 1px 0 rgba(168,184,200,0.12)}
 .llogo{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;text-align:center;margin-bottom:6px;color:#F5F0E8}
-.llogo span{color:#C9A84C}
+.llogo span{color:#A8B8C8;text-shadow:0 0 20px rgba(168,184,200,0.5)}
 .ltag{font-size:8px;letter-spacing:4px;color:#8B6914;text-align:center;margin-bottom:28px}
 .ltabs{display:flex;margin-bottom:24px;border-bottom:1px solid rgba(201,168,76,0.07)}
 .ltab{flex:1;padding:10px;background:none;border:none;border-bottom:2px solid transparent;color:#8A8070;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s}
-.ltab.on{color:#C9A84C;border-bottom-color:#C9A84C}
+.ltab.on{background:linear-gradient(135deg,#3D4E5E,#A8B8C8);color:#060810;font-weight:700}
 .backlink{display:block;text-align:center;margin-top:20px;font-size:8px;letter-spacing:2px;color:#8A8070;cursor:pointer;transition:color 0.3s}
-.backlink:hover{color:#C9A84C}
+.backlink:hover{color:#A8B8C8}
 
 /* DASHBOARD */
 .dash-nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.97);border-bottom:1px solid rgba(201,168,76,0.1)}
@@ -266,7 +276,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 }
 </style>
 </head>
-<body>
+<body data-plan="">
 
 <!-- PUBLIC NAV -->
 <nav id="nav-pub">
@@ -282,8 +292,8 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
   <section class="hero">
     <div class="hero-grid"></div>
     <div style="position:relative;z-index:1">
-      <div class="tag">INTELLIGENT WEALTH ALLOCATION</div>
-      <h1>Your money.<br><em>Perfectly</em><br>allocated.</h1>
+      <div class="tag" style="letter-spacing:6px">PRIVATE &middot; BY APPLICATION ONLY</div>
+      <h1>Wealth<br>on <em>autopilot.</em></h1>
       <p class="hero-sub">VaultFlow connects to your bank, detects your paycheck, and instantly routes every dollar — debt, savings, investments, real estate — without you lifting a finger.</p>
       <div class="wrow">
         <input class="winp" type="email" id="w1" placeholder="your@email.com">
@@ -410,34 +420,34 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 </div>
 
 <!-- ===== LOGIN ===== -->
-<div id="page-login" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;background:rgba(4,5,10,0.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:20px">
-  <div style="width:100%;max-width:350px;background:linear-gradient(145deg,#0C0E16,#080A14);border:1px solid rgba(192,200,208,0.2);padding:34px 26px;border-radius:20px;box-shadow:0 32px 80px rgba(0,0,0,0.7),inset 0 1px 0 rgba(192,200,208,0.12)">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:7px;text-align:center;color:#F5F0E8;margin-bottom:4px">VAULT<span style="color:#C0C8D0;text-shadow:0 0 20px rgba(192,200,208,0.5)">FLOW</span></div>
-    <div style="font-size:6px;letter-spacing:5px;color:#4A5568;text-align:center;margin-bottom:14px">PRIVATE WEALTH ALLOCATION PLATFORM</div>
-    <div style="text-align:center;margin-bottom:14px"><span style="display:inline-block;background:rgba(192,200,208,0.06);border:1px solid rgba(192,200,208,0.12);color:#6B7A8D;font-size:6px;letter-spacing:4px;padding:4px 14px;border-radius:50px">MEMBERS ONLY &middot; 13 SPOTS REMAINING</span></div>
-    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(192,200,208,0.12),transparent);margin-bottom:16px"></div>
-    <div style="display:flex;margin-bottom:18px;background:rgba(255,255,255,0.03);border-radius:12px;padding:3px;gap:3px">
-      <button id="lt1" onclick="ltab('in')" style="flex:1;padding:8px;background:linear-gradient(135deg,#4A5568,#9AA5B4);border:none;border-radius:10px;color:#fff;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif">SIGN IN</button>
-      <button id="lt2" onclick="ltab('up')" style="flex:1;padding:8px;background:none;border:none;border-radius:10px;color:#444;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif">JOIN</button>
+<div id="page-login">
+  <div class="lcard">
+    <div class="llogo" style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:7px;text-align:center;color:#F5F0E8;margin-bottom:4px">VAULT<span>FLOW</span></div>
+    <div class="ltag">PRIVATE WEALTH ALLOCATION PLATFORM</div>
+    <div style="text-align:center;margin-bottom:14px"><span style="display:inline-block;background:rgba(168,184,200,0.06);border:1px solid rgba(168,184,200,0.12);color:#5A6A7A;font-size:6px;letter-spacing:4px;padding:4px 14px;border-radius:50px">MEMBERS ONLY &middot; 13 SPOTS REMAINING</span></div>
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(168,184,200,0.12),transparent);margin-bottom:16px"></div>
+    <div class="ltabs">
+      <button class="ltab on" id="lt1" onclick="ltab('in')">SIGN IN</button>
+      <button class="ltab" id="lt2" onclick="ltab('up')">JOIN</button>
     </div>
     <div id="lf1">
-      <div style="font-size:7px;letter-spacing:2px;color:#4A5568;margin-bottom:5px">EMAIL</div>
-      <input id="sie" type="email" placeholder="your@email.com" style="width:100%;background:rgba(192,200,208,0.04);border:1px solid rgba(192,200,208,0.1);color:#F5F0E8;padding:11px 14px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:10px;margin-bottom:10px">
-      <div style="font-size:7px;letter-spacing:2px;color:#4A5568;margin-bottom:5px">PASSWORD</div>
-      <input id="sip" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" style="width:100%;background:rgba(192,200,208,0.04);border:1px solid rgba(192,200,208,0.1);color:#F5F0E8;padding:11px 14px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:10px;margin-bottom:14px">
-      <button onclick="signin()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4A5568,#9AA5B4,#CBD5E1);border:none;color:#0A0C14;font-size:8px;letter-spacing:4px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px;box-shadow:0 6px 20px rgba(192,200,208,0.2)">ENTER THE VAULT</button>
+      <label class="lbl" style="color:#3A4A5A">EMAIL</label>
+      <input class="inp" type="email" id="sie" placeholder="your@email.com">
+      <label class="lbl" style="color:#3A4A5A">PASSWORD</label>
+      <input class="inp" type="password" id="sip" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+      <button class="btn" onclick="signin()" style="background:linear-gradient(135deg,#3D4E5E,#A8B8C8,#D0DCE8);color:#040810;border-radius:50px;letter-spacing:4px;box-shadow:0 6px 20px rgba(168,184,200,0.2)">ENTER THE VAULT</button>
     </div>
     <div id="lf2" style="display:none">
-      <div style="font-size:7px;letter-spacing:2px;color:#4A5568;margin-bottom:5px">EMAIL</div>
-      <input id="sue" type="email" placeholder="your@email.com" style="width:100%;background:rgba(192,200,208,0.04);border:1px solid rgba(192,200,208,0.1);color:#F5F0E8;padding:11px 14px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:10px;margin-bottom:10px">
-      <div style="font-size:7px;letter-spacing:2px;color:#4A5568;margin-bottom:5px">PASSWORD</div>
-      <input id="sup" type="password" placeholder="Min 6 characters" style="width:100%;background:rgba(192,200,208,0.04);border:1px solid rgba(192,200,208,0.1);color:#F5F0E8;padding:11px 14px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:10px;margin-bottom:10px">
-      <div style="font-size:7px;letter-spacing:2px;color:#4A5568;margin-bottom:5px">CONFIRM</div>
-      <input id="sup2" type="password" placeholder="Repeat password" style="width:100%;background:rgba(192,200,208,0.04);border:1px solid rgba(192,200,208,0.1);color:#F5F0E8;padding:11px 14px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;border-radius:10px;margin-bottom:14px">
-      <button onclick="signup()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4A5568,#9AA5B4,#CBD5E1);border:none;color:#0A0C14;font-size:8px;letter-spacing:4px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px;box-shadow:0 6px 20px rgba(192,200,208,0.2)">REQUEST ACCESS</button>
+      <label class="lbl" style="color:#3A4A5A">EMAIL</label>
+      <input class="inp" type="email" id="sue" placeholder="your@email.com">
+      <label class="lbl" style="color:#3A4A5A">PASSWORD</label>
+      <input class="inp" type="password" id="sup" placeholder="Min 6 characters">
+      <label class="lbl" style="color:#3A4A5A">CONFIRM</label>
+      <input class="inp" type="password" id="sup2" placeholder="Repeat password">
+      <button class="btn" onclick="signup()" style="background:linear-gradient(135deg,#3D4E5E,#A8B8C8,#D0DCE8);color:#040810;border-radius:50px;letter-spacing:4px;box-shadow:0 6px 20px rgba(168,184,200,0.2)">REQUEST ACCESS</button>
     </div>
-    <div id="lmsg" style="font-size:9px;text-align:center;margin-top:9px;min-height:14px;color:#9AA5B4"></div>
-    <div onclick="closeLogin()" style="display:block;text-align:center;margin-top:14px;font-size:7px;letter-spacing:3px;color:#2A3040;cursor:pointer">&#8592; RETURN TO VAULTFLOW</div>
+    <div id="lmsg" style="font-size:9px;text-align:center;margin-top:8px;min-height:14px;color:#9AA5B4"></div>
+    <span class="backlink" onclick="closeLogin()">&larr; RETURN TO VAULTFLOW</span>
   </div>
 </div>
 
@@ -924,16 +934,23 @@ document.getElementById('page-home').style.display='block';
 function go(page){
   document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
   var lp=document.getElementById('page-login');
-  if(page==='login'){if(lp)lp.style.display='flex';return;}
+  if(page==='login'){
+    if(lp){lp.style.display='flex';}
+    return;
+  }
   if(lp)lp.style.display='none';
   var el=document.getElementById('page-'+page);
   if(!el)return;
   el.style.display='block';
   document.body.scrollTop=0;
   document.documentElement.scrollTop=0;
+  window.scrollTo({top:0,left:0,behavior:'instant'});
+  var np=document.getElementById('pub-nav');
+  if(np)np.style.display=(page==='dashboard')?'none':'flex';
   if(page==='upgrade')setTimeout(initStripe,300);
   if(page==='dashboard'){
     if(!currentSession){go('login');return;}
+    activatePlan(currentSession.plan||'free');
     loadProfile();
     alloc();
     dtab('ov');
@@ -965,15 +982,27 @@ function sbFetch(path,body){
 function ltab(t){
   document.getElementById('lf1').style.display=t==='in'?'block':'none';
   document.getElementById('lf2').style.display=t==='up'?'block':'none';
-  var b1=document.getElementById('lt1');
-  var b2=document.getElementById('lt2');
-  if(b1){b1.style.background=t==='in'?'linear-gradient(135deg,#4A5568,#9AA5B4)':'none';b1.style.color=t==='in'?'#fff':'#444';}
-  if(b2){b2.style.background=t==='up'?'linear-gradient(135deg,#4A5568,#9AA5B4)':'none';b2.style.color=t==='up'?'#fff':'#444';}
+  var b1=document.getElementById('lt1'),b2=document.getElementById('lt2');
+  if(b1){b1.className='ltab'+(t==='in'?' on':'');
+    b1.style.background=t==='in'?'linear-gradient(135deg,#3D4E5E,#A8B8C8)':'none';
+    b1.style.color=t==='in'?'#060810':'#444';}
+  if(b2){b2.className='ltab'+(t==='up'?' on':'');
+    b2.style.background=t==='up'?'linear-gradient(135deg,#3D4E5E,#A8B8C8)':'none';
+    b2.style.color=t==='up'?'#060810':'#444';}
   var lm=document.getElementById('lmsg');if(lm)lm.textContent='';
 }
 
 function msg(id,txt,color){var el=document.getElementById(id);if(!el)return;el.textContent=txt;el.style.color=color||'#C9A84C';}
 
+function showLogin(){
+  var lp=document.getElementById('page-login');
+  if(lp){lp.style.display='flex';}
+  var lm=document.getElementById('lmsg');if(lm)lm.textContent='';
+}
+function closeLogin(){
+  var lp=document.getElementById('page-login');
+  if(lp)lp.style.display='none';
+}
 function signin(){
   var e=document.getElementById('sie').value,p=document.getElementById('sip').value;
   if(!e||!p){msg('lmsg','Please fill in all fields.','#ff4444');return;}
@@ -1481,6 +1510,58 @@ function activatePrime(plan){
   addWebhook({t:'PRIME_ACTIVATED',m:'VaultFlow '+plan+' features unlocked — bank connection available',c:'#C9A84C'});
 }
 
+// ============ PLAN ACTIVATION ============
+function activatePlan(plan){
+  if(currentSession)currentSession.plan=plan;
+  plan=plan||'free';
+  document.body.setAttribute('data-plan',plan);
+  var isF=plan==='free',isP=plan==='prime',isV=plan==='vault',hasPaid=isP||isV;
+  var a=isV?'#A855F7':isP?'#D4AF37':'#A8B8C8';
+  var ad=isV?'#7E22CE':isP?'#9A7B10':'#5A6A7A';
+
+  // Plan badge on logo
+  var ob=document.getElementById('pb');if(ob)ob.remove();
+  if(!isF){
+    var logo=document.getElementById('dash-logo');
+    if(logo){
+      var b=document.createElement('span');b.id='pb';
+      b.style.cssText='display:inline-block;background:linear-gradient(135deg,'+(isV?'#5B15A8,#A855F7':'#9A7B10,#D4AF37')+');color:'+(isV?'#fff':'#000')+';font-size:6px;letter-spacing:2px;padding:3px 8px;font-weight:700;margin-left:6px;vertical-align:middle;border-radius:50px';
+      b.textContent=plan.toUpperCase();logo.appendChild(b);
+    }
+  }
+
+  // Plan display
+  var pd=document.getElementById('plan-display');
+  if(pd){pd.textContent=isV?'Vault - $24.99/mo':isP?'Prime - $9.99/mo':'Essential (Free)';pd.style.color=a;}
+
+  // Unlock features
+  function show(id,vis){var e=document.getElementById(id);if(e)e.style.display=vis;}
+  show('bank-prime-lock',hasPaid?'none':'block');
+  show('bank-prime-btn',hasPaid?'block':'none');
+  show('alloc-prime-lock',hasPaid?'none':'block');
+  show('alloc-engine',hasPaid?'block':'none');
+  show('nw-lock',hasPaid?'none':'block');
+  show('nw-content',hasPaid?'block':'none');
+  show('pr-lock',hasPaid?'none':'block');
+  show('pr-content',hasPaid?'block':'none');
+  show('sig-locked',isV?'none':'block');
+  show('sig-unlocked',isV?'block':'none');
+  show('transfer-lock',hasPaid?'none':'flex');
+  show('downgrade-section',hasPaid?'block':'none');
+
+  // Dim locked tabs
+  var nwb=document.getElementById('bt-nw'),prb=document.getElementById('bt-pr');
+  if(nwb)nwb.style.opacity=hasPaid?'1':'0.2';if(nwb)nwb.style.pointerEvents=hasPaid?'auto':'none';
+  if(prb)prb.style.opacity=hasPaid?'1':'0.2';if(prb)prb.style.pointerEvents=hasPaid?'auto':'none';
+
+  if(isF){plaidTok=null;show('bank-connected','none');show('bank-disconnected','block');}
+}
+
+function downgradePlan(){
+  if(!confirm('Downgrade to Free? Paid features removed immediately.'))return;
+  activatePlan('free');
+}
+
 // ============ LEGAL ============
 function legTab(t){
   document.getElementById('lc-tos').style.display=t==='tos'?'block':'none';
@@ -1493,4 +1574,8 @@ function legTab(t){
 <script src="https://js.stripe.com/v3/" onload="initStripe()"></script>
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </body>
-</html>
+</html><div style="background:linear-gradient(90deg,transparent,rgba(201,168,76,0.06),transparent);border-top:1px solid rgba(201,168,76,0.07);border-bottom:1px solid rgba(201,168,76,0.07);padding:10px 0;text-align:center;overflow:hidden;white-space:nowrap">
+  <span style="display:inline-block;font-size:7px;letter-spacing:4px;color:#5A4A20;animation:marquee 22s linear infinite">LIMITED TO 500 MEMBERS &nbsp;&bull;&nbsp; BY APPLICATION ONLY &nbsp;&bull;&nbsp; 13 SPOTS REMAINING &nbsp;&bull;&nbsp; PRIVATE WEALTH PLATFORM &nbsp;&bull;&nbsp; LIMITED TO 500 MEMBERS &nbsp;&bull;&nbsp; BY APPLICATION ONLY &nbsp;&bull;&nbsp; 13 SPOTS REMAINING &nbsp;&bull;&nbsp;</span>
+</div>
+<style>@keyframes marquee{0%{transform:translateX(60vw)}100%{transform:translateX(-100%)}}</style>
+
