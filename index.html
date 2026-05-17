@@ -406,9 +406,9 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
   <!-- MORE DRAWER -->
   <div id="more-drawer" style="display:none;position:fixed;bottom:58px;left:0;right:0;z-index:997;background:rgba(8,8,8,0.98);border-top:1px solid rgba(201,168,76,0.1);padding:8px 6px">
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
-      <button class="btab" id="bt-nw" onclick="dtab('nw');closeMore()"><span class="btab-icon">◇</span>WEALTH</button>
+      <button class="btab locked-tab" id="bt-nw" onclick="dtab('nw');closeMore()"><span class="btab-icon">◇</span>WEALTH</button>
       <button class="btab" id="bt-gl" onclick="dtab('gl');closeMore()"><span class="btab-icon">⬡</span>GOALS</button>
-      <button class="btab" id="bt-pr" onclick="dtab('pr');closeMore()"><span class="btab-icon">⬢</span>DEALS</button>
+      <button class="btab locked-tab" id="bt-pr" onclick="dtab('pr');closeMore()"><span class="btab-icon">⬢</span>DEALS</button>
       <button class="btab" id="bt-bl" onclick="dtab('bl');closeMore()"><span class="btab-icon">▣</span>BLOG</button>
     </div>
   </div>
@@ -506,8 +506,8 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <div class="tag">WEALTH</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Net Worth</div>
       <div style="font-size:9px;color:#555;margin-bottom:13px">Your complete financial picture</div>
-      <div id="nw-lock" style="display:none"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
-      <div id="nw-content">
+      <div id="nw-lock" style="display:block"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
+      <div id="nw-content" style="display:none">
       <div class="card"><div class="tag" style="margin-bottom:5px">ASSETS</div>
         <label class="lbl">CHECKING + SAVINGS ($)</label><input class="inp" type="number" id="n_cash" value="0">
         <label class="lbl">INVESTMENTS ($)</label><input class="inp" type="number" id="n_inv" value="0">
@@ -554,8 +554,8 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <div class="tag">DEAL TRACKER</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Properties</div>
       <div style="font-size:9px;color:#555;margin-bottom:13px">Track every deal from analysis to close</div>
-      <div id="pr-lock" style="display:none"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
-      <div id="pr-content">
+      <div id="pr-lock" style="display:block"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
+      <div id="pr-content" style="display:none">
       <div class="card"><div class="tag" style="margin-bottom:5px">ADD PROPERTY</div>
         <label class="lbl">ADDRESS</label><input class="inp" type="text" id="p_a" placeholder="123 Main St, Detroit MI">
         <label class="lbl">TYPE</label><select class="inp" id="p_t"><option>Single Family</option><option selected>Duplex</option><option>Triplex</option><option>Quadplex</option><option>5+ Units</option></select>
@@ -829,10 +829,9 @@ function go(p){
   if(p==='upgrade')setTimeout(iStripe,300);
   if(p==='dashboard'){
     if(!sess){go('login');return;}
-    // New accounts default to free plan unless they have an active subscription
-    if(!sess.plan){
-      document.body.setAttribute('data-plan','free');
-    }
+    // Apply plan theme — default free for new accounts
+    var currentPlan=sess.plan||'free';
+    activatePlan(currentPlan);
     loadProf();
     alloc();
     dtab('ov');
@@ -1219,6 +1218,15 @@ function activatePlan(plan){
   // Deal Tracker (Prime+)
   var prl=document.getElementById('pr-lock');if(prl)prl.style.display=hasPaid?'none':'block';
   var prc=document.getElementById('pr-content');if(prc)prc.style.display=hasPaid?'block':'none';
+
+  // Show/hide locked tabs in MORE drawer based on plan
+  document.querySelectorAll('.locked-tab').forEach(function(btn){
+    btn.style.opacity=hasPaid?'1':'0.35';
+    btn.style.pointerEvents=hasPaid?'auto':'none';
+  });
+  // Hide BLOG tab for free users too (just dim it)
+  var btbl=document.getElementById('bt-bl');
+  if(btbl){btbl.style.opacity='1';btbl.style.pointerEvents='auto';}
 
   // If downgraded to free — lock and clear
   if(isF){
