@@ -128,11 +128,10 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 /* DASHBOARD */
 .dash-nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.97);border-bottom:1px solid rgba(201,168,76,0.1)}
 .dash-main{padding:60px 16px 20px}
-.dtabs{display:flex;border-bottom:1px solid rgba(201,168,76,0.1);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,#0A0A0A,#080808)}
-.dtab{flex:0 0 auto;padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;color:#8A8070;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:all 0.3s;text-align:center;min-width:64px}
-.dtab:hover{color:rgba(201,168,76,0.6)}
-.dtab.on{color:#C9A84C;border-bottom-color:#C9A84C;font-weight:600}
-.dtab-icon{font-size:16px;margin-bottom:3px;display:block}
+.dtab{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;color:#8A8070;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;text-align:center;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.dtab:hover{border-color:rgba(201,168,76,0.25);color:rgba(201,168,76,0.7);transform:translateY(-1px)}
+.dtab.on{color:#C9A84C;border-color:#C9A84C;background:linear-gradient(145deg,#1A1200,#0E0E0E);font-weight:600;box-shadow:0 0 12px rgba(201,168,76,0.1)}
+.dtab-icon{font-size:18px;line-height:1}
 .dsg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .ds{background:linear-gradient(145deg,#141414,#0E0E0E);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:14px;transition:all 0.3s;position:relative;overflow:hidden}
 .ds::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent)}
@@ -176,6 +175,17 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .btit{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#F5F0E8;margin-bottom:8px;line-height:1.3}
 .bex{font-size:10px;color:#8A8070;line-height:1.8}
 .bread{font-size:8px;letter-spacing:3px;color:#C9A84C;margin-top:10px}
+
+/* ACCORDION */
+.acc{background:linear-gradient(145deg,#0E0E0E,#0A0A0A);border:1px solid rgba(201,168,76,0.08);border-radius:4px;margin-bottom:10px;overflow:hidden;transition:border-color 0.3s}
+.acc.open{border-color:rgba(201,168,76,0.3)}
+.acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.acc-hdr:hover{background:rgba(201,168,76,0.03)}
+.acc-htit{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:#F5F0E8}
+.acc-hsub{font-size:8px;letter-spacing:2px;color:#8B6914;margin-top:2px}
+.acc-arr{font-size:18px;color:#C9A84C;transition:transform 0.3s;line-height:1;flex-shrink:0}
+.acc.open .acc-arr{transform:rotate(90deg)}
+.acc-body{padding:0 16px 16px;display:none}
 
 /* LOCKED */
 .lock{position:relative;overflow:hidden;min-height:100px}
@@ -447,7 +457,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
     </div>
   </nav>
   <div class="dash-main">
-    <div class="dtabs">
+    <div id="tab-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px">
       <button class="dtab on" onclick="dtab('ov')"><span class="dtab-icon">⬡</span>OVERVIEW</button>
       <button class="dtab" onclick="dtab('al')"><span class="dtab-icon">⟁</span>ALLOCATE</button>
       <button class="dtab" onclick="dtab('tl')"><span class="dtab-icon">◈</span>TOOLS</button>
@@ -456,7 +466,7 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
       <button class="dtab" onclick="dtab('pr')"><span class="dtab-icon">⬢</span>DEALS</button>
       <button class="dtab" onclick="dtab('bl')"><span class="dtab-icon">▣</span>BLOG</button>
       <button class="dtab" onclick="dtab('pf')"><span class="dtab-icon">◉</span>PROFILE</button>
-      <button class="dtab" onclick="go('upgrade')" style="color:#C9A84C"><span class="dtab-icon">★</span>UPGRADE</button>
+      <button class="dtab" onclick="go('upgrade')" style="color:#C9A84C;border-color:rgba(201,168,76,0.25)"><span class="dtab-icon">★</span>UPGRADE</button>
     </div>
 
     <!-- OVERVIEW -->
@@ -523,113 +533,103 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
     <div id="dt-tl" style="display:none">
       <div class="tag">FINANCIAL TOOLS</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:4px;color:#F5F0E8">Calculators</div>
-      <div style="font-size:10px;color:#8A8070;margin-bottom:20px">Professional-grade tools used by institutional investors</div>
+      <div style="font-size:10px;color:#8A8070;margin-bottom:16px">Tap any tool to expand</div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">💳</div>
-          <div><div class="tool-title">Debt Payoff Calculator</div><div class="tool-sub">AVALANCHE METHOD — HIGHEST INTEREST FIRST</div></div>
+      <div class="acc" id="acc-debt">
+        <div class="acc-hdr" onclick="toggleAcc('debt')">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">💳</span>
+            <div><div class="acc-htit">Debt Payoff Calculator</div><div class="acc-hsub">AVALANCHE METHOD</div></div>
+          </div>
+          <span class="acc-arr" id="arr-debt">›</span>
         </div>
-        <label class="lbl">CURRENT BALANCE ($)</label>
-        <input class="inp" type="number" id="t_db" placeholder="e.g. 15000">
-        <label class="lbl">ANNUAL INTEREST RATE (%)</label>
-        <input class="inp" type="number" id="t_dr" placeholder="e.g. 22.99" step="0.01">
-        <label class="lbl">MONTHLY PAYMENT ($)</label>
-        <input class="inp" type="number" id="t_dp" placeholder="e.g. 500">
-        <button class="btngold" onclick="cDebt()">CALCULATE PAYOFF DATE</button>
-        <div class="resbox" id="r_debt"></div>
+        <div class="acc-body" id="body-debt">
+          <label class="lbl">CURRENT BALANCE ($)</label><input class="inp" type="number" id="t_db" placeholder="e.g. 15000">
+          <label class="lbl">ANNUAL INTEREST RATE (%)</label><input class="inp" type="number" id="t_dr" placeholder="e.g. 22.99" step="0.01">
+          <label class="lbl">MONTHLY PAYMENT ($)</label><input class="inp" type="number" id="t_dp" placeholder="e.g. 500">
+          <button class="btngold" onclick="cDebt()">CALCULATE PAYOFF DATE</button>
+          <div class="resbox" id="r_debt"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">📈</div>
-          <div><div class="tool-title">Investment Growth</div><div class="tool-sub">COMPOUND INTEREST CALCULATOR</div></div>
+      <div class="acc" id="acc-inv">
+        <div class="acc-hdr" onclick="toggleAcc('inv')">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">📈</span>
+            <div><div class="acc-htit">Investment Growth</div><div class="acc-hsub">COMPOUND INTEREST</div></div>
+          </div>
+          <span class="acc-arr" id="arr-inv">›</span>
         </div>
-        <label class="lbl">STARTING BALANCE ($)</label>
-        <input class="inp" type="number" id="t_ib" placeholder="e.g. 5000" value="0">
-        <label class="lbl">MONTHLY CONTRIBUTION ($)</label>
-        <input class="inp" type="number" id="t_ia" placeholder="e.g. 2000">
-        <label class="lbl">ANNUAL RETURN (%) — S&amp;P 500 avg is 10%</label>
-        <input class="inp" type="number" id="t_ir" placeholder="e.g. 10" step="0.1" value="10">
-        <label class="lbl">TIME PERIOD (years)</label>
-        <input class="inp" type="number" id="t_iy" placeholder="e.g. 10" value="10">
-        <button class="btngold" onclick="cInv()">CALCULATE GROWTH</button>
-        <div class="resbox" id="r_inv"></div>
+        <div class="acc-body" id="body-inv">
+          <label class="lbl">STARTING BALANCE ($)</label><input class="inp" type="number" id="t_ib" placeholder="e.g. 5000" value="0">
+          <label class="lbl">MONTHLY CONTRIBUTION ($)</label><input class="inp" type="number" id="t_ia" placeholder="e.g. 2000">
+          <label class="lbl">ANNUAL RETURN (%) — S&amp;P avg is 10%</label><input class="inp" type="number" id="t_ir" placeholder="e.g. 10" value="10" step="0.1">
+          <label class="lbl">TIME PERIOD (years)</label><input class="inp" type="number" id="t_iy" placeholder="e.g. 10" value="10">
+          <button class="btngold" onclick="cInv()">CALCULATE GROWTH</button>
+          <div class="resbox" id="r_inv"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">🏘️</div>
-          <div><div class="tool-title">Real Estate Deal Analyzer</div><div class="tool-sub">CAP RATE · CASH-ON-CASH · DEBT SERVICE</div></div>
+      <div class="acc" id="acc-re">
+        <div class="acc-hdr" onclick="toggleAcc('re')">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">🏘️</span>
+            <div><div class="acc-htit">Real Estate Deal Analyzer</div><div class="acc-hsub">CAP RATE · CASH-ON-CASH</div></div>
+          </div>
+          <span class="acc-arr" id="arr-re">›</span>
         </div>
-        <label class="lbl">PROPERTY ADDRESS (optional — for your records)</label>
-        <input class="inp" type="text" id="t_ra" placeholder="e.g. 123 Main St, Cleveland OH 44101">
-        <label class="lbl">NUMBER OF UNITS</label>
-        <select class="inp" id="t_ru" style="cursor:pointer">
-          <option value="1">1 unit — Single family</option>
-          <option value="2">2 units — Duplex</option>
-          <option value="3">3 units — Triplex</option>
-          <option value="4" selected>4 units — Quadplex</option>
-          <option value="5">5+ units — Commercial</option>
-        </select>
-        <label class="lbl">PURCHASE PRICE ($)</label>
-        <input class="inp" type="number" id="t_rp" placeholder="e.g. 350000">
-        <label class="lbl">TOTAL MONTHLY RENT — all units ($)</label>
-        <input class="inp" type="number" id="t_rr" placeholder="e.g. 3200">
-        <label class="lbl">DOWN PAYMENT (%)</label>
-        <select class="inp" id="t_rd" style="cursor:pointer">
-          <option value="3.5">3.5% — FHA loan</option>
-          <option value="5">5% — Conventional</option>
-          <option value="10">10% — Conventional</option>
-          <option value="20" selected>20% — Standard investment</option>
-          <option value="25">25% — Investment property</option>
-          <option value="100">100% — Cash purchase</option>
-        </select>
-        <label class="lbl">MORTGAGE INTEREST RATE (%)</label>
-        <input class="inp" type="number" id="t_ri" placeholder="e.g. 7.25" step="0.05" value="7.25">
-        <label class="lbl">MONTHLY OPERATING EXPENSES ($) — taxes, insurance, maintenance</label>
-        <input class="inp" type="number" id="t_re" placeholder="e.g. 600">
-        <label class="lbl">VACANCY RATE (%)</label>
-        <input class="inp" type="number" id="t_rv" placeholder="e.g. 5" value="5">
-        <button class="btngold" onclick="cRE()">⚡ ANALYZE THIS DEAL</button>
-        <div class="resbox" id="r_re"></div>
+        <div class="acc-body" id="body-re">
+          <label class="lbl">PROPERTY ADDRESS (optional)</label><input class="inp" type="text" id="t_ra" placeholder="e.g. 123 Main St, Cleveland OH">
+          <label class="lbl">NUMBER OF UNITS</label>
+          <select class="inp" id="t_ru" style="cursor:pointer"><option value="1">1 — Single family</option><option value="2">2 — Duplex</option><option value="3">3 — Triplex</option><option value="4" selected>4 — Quadplex</option><option value="5">5+ — Commercial</option></select>
+          <label class="lbl">PURCHASE PRICE ($)</label><input class="inp" type="number" id="t_rp" placeholder="e.g. 350000">
+          <label class="lbl">TOTAL MONTHLY RENT ($)</label><input class="inp" type="number" id="t_rr" placeholder="e.g. 3200">
+          <label class="lbl">DOWN PAYMENT (%)</label>
+          <select class="inp" id="t_rd" style="cursor:pointer"><option value="3.5">3.5% — FHA</option><option value="5">5%</option><option value="10">10%</option><option value="20" selected>20% — Standard</option><option value="25">25%</option><option value="100">100% — Cash</option></select>
+          <label class="lbl">MORTGAGE INTEREST RATE (%)</label><input class="inp" type="number" id="t_ri" placeholder="e.g. 7.25" step="0.05" value="7.25">
+          <label class="lbl">MONTHLY EXPENSES — taxes, insurance, mgmt ($)</label><input class="inp" type="number" id="t_re2" placeholder="e.g. 600">
+          <label class="lbl">VACANCY RATE (%)</label><input class="inp" type="number" id="t_rv" placeholder="e.g. 5" value="5">
+          <button class="btngold" onclick="cRE()">ANALYZE THIS DEAL</button>
+          <div class="resbox" id="r_re"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">🧾</div>
-          <div><div class="tool-title">Tax Estimator</div><div class="tool-sub">FEDERAL TAX + QUARTERLY PAYMENTS</div></div>
+      <div class="acc" id="acc-tax">
+        <div class="acc-hdr" onclick="toggleAcc('tax')">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">🧾</span>
+            <div><div class="acc-htit">Tax Estimator</div><div class="acc-hsub">FEDERAL + QUARTERLY PAYMENTS</div></div>
+          </div>
+          <span class="acc-arr" id="arr-tax">›</span>
         </div>
-        <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px;margin-bottom:8px;font-size:10px;color:#8B6914;line-height:1.6">
-          ⚠️ VA disability is tax-free and excluded. This is an estimate only — consult a tax professional.
+        <div class="acc-body" id="body-tax">
+          <div style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);border-radius:3px;padding:10px;margin-bottom:8px;font-size:10px;color:#8B6914">⚠️ VA disability excluded. Estimate only — consult a tax professional.</div>
+          <label class="lbl">ANNUAL MARITIME / W2 INCOME ($)</label><input class="inp" type="number" id="t_tm" placeholder="e.g. 101360">
+          <label class="lbl">SELF-EMPLOYMENT INCOME ($)</label><input class="inp" type="number" id="t_ts2" placeholder="e.g. 0" value="0">
+          <label class="lbl">OTHER TAXABLE INCOME ($)</label><input class="inp" type="number" id="t_to" placeholder="e.g. 0" value="0">
+          <label class="lbl">FILING STATUS</label>
+          <select class="inp" id="t_ts" style="cursor:pointer"><option value="single">Single</option><option value="married">Married Filing Jointly</option><option value="hoh">Head of Household</option></select>
+          <label class="lbl">PRE-TAX DEDUCTIONS — 401k, HSA ($)</label><input class="inp" type="number" id="t_td" placeholder="e.g. 6000" value="0">
+          <button class="btngold" onclick="cTax()">ESTIMATE MY TAXES</button>
+          <div class="resbox" id="r_tax"></div>
         </div>
-        <label class="lbl">ANNUAL MARITIME / W2 INCOME ($)</label>
-        <input class="inp" type="number" id="t_tm" placeholder="e.g. 101360">
-        <label class="lbl">SELF-EMPLOYMENT / SIDE INCOME ($)</label>
-        <input class="inp" type="number" id="t_ts2" placeholder="e.g. 0" value="0">
-        <label class="lbl">OTHER TAXABLE INCOME ($)</label>
-        <input class="inp" type="number" id="t_to" placeholder="e.g. 0" value="0">
-        <label class="lbl">FILING STATUS</label>
-        <select class="inp" id="t_ts" style="cursor:pointer">
-          <option value="single">Single</option>
-          <option value="married">Married Filing Jointly</option>
-          <option value="hoh">Head of Household</option>
-        </select>
-        <label class="lbl">PRE-TAX DEDUCTIONS — 401k, HSA, etc ($)</label>
-        <input class="inp" type="number" id="t_td" placeholder="e.g. 6000" value="0">
-        <button class="btngold" onclick="cTax()">ESTIMATE MY TAXES</button>
-        <div class="resbox" id="r_tax"></div>
       </div>
 
-      <div class="card">
-        <div class="tool-header">
-          <div class="tool-icon">📊</div>
-          <div><div class="tool-title">Stock Algo Signals</div><div class="tool-sub">LIVE BUY/SELL/HOLD — SMA + RSI + MOMENTUM</div></div>
+      <div class="acc" id="acc-sig">
+        <div class="acc-hdr" onclick="toggleAcc('sig')">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:22px">📊</span>
+            <div><div class="acc-htit">Stock Algo Signals</div><div class="acc-hsub">SMA + RSI + MOMENTUM</div></div>
+          </div>
+          <span class="acc-arr" id="arr-sig">›</span>
         </div>
-        <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:12px">Institutional-grade signals scanning S&P 500, crypto, and sector ETFs using 4-factor confirmation.</div>
-        <button class="btngold" onclick="cSig()">FETCH LIVE SIGNALS</button>
-        <div class="resbox" id="r_sig"></div>
+        <div class="acc-body" id="body-sig">
+          <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:12px">Institutional signals scanning S&amp;P 500, crypto, and ETFs using 4-factor confirmation.</div>
+          <button class="btngold" onclick="cSig()">FETCH LIVE SIGNALS</button>
+          <div class="resbox" id="r_sig"></div>
+        </div>
       </div>
+
     </div>
 
     <!-- NET WORTH -->
@@ -1015,8 +1015,11 @@ function waitlist(inputId,msgId){
 var tabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
 function dtab(t){
   tabIds.forEach(function(id){var el=document.getElementById('dt-'+id);if(el)el.style.display=id===t?'block':'none';});
-  document.querySelectorAll('.dtab').forEach(function(btn,i){
-    btn.className='dtab'+(tabIds.concat(['upgrade'])[i]===t?' on':'');
+  var btns=document.querySelectorAll('#tab-grid .dtab');
+  var names=tabIds.concat(['upgrade']);
+  btns.forEach(function(btn,i){
+    if(names[i]==='upgrade'){btn.className='dtab';btn.style.color='#C9A84C';}
+    else{btn.className='dtab'+(names[i]===t?' on':'');btn.style.color='';}
   });
   if(t==='pf')loadProfile();
 }
@@ -1096,7 +1099,7 @@ function cInv(){
 
 function cRE(){
   var price=gv('t_rp'),rent=gv('t_rr'),downPct=parseFloat(document.getElementById('t_rd').value)||20;
-  var intRate=gv('t_ri')||7.25,exp=gv('t_re'),vac=gv('t_rv')||5,units=gv('t_ru')||1;
+  var intRate=gv('t_ri')||7.25,exp=gv('t_re2'),vac=gv('t_rv')||5,units=gv('t_ru')||1;
   var addr=document.getElementById('t_ra').value;
   if(!price||!rent){alert('Please enter purchase price and monthly rent.');return;}
   var down=price*(downPct/100),loan=price-down;
@@ -1450,25 +1453,57 @@ function pay(){
 // ============ PRIME MODE ============
 function activatePrime(plan){
   if(currentSession)currentSession.plan=plan;
+  var isVault=plan==='vault';
+  var accent=isVault?'#9D4EDD':'#C9A84C';
+  var bg=isVault?'#0D0720':'#1A1200';
+  var label=isVault?'VAULT':'PRIME';
+
+  if(isVault&&!document.getElementById('vault-css')){
+    var s=document.createElement('style');s.id='vault-css';
+    s.textContent='body{background:#050508!important}.dtab.on{color:#9D4EDD!important;border-color:#9D4EDD!important;background:linear-gradient(145deg,#0D0720,#0E0E0E)!important}.afill2{box-shadow:0 0 8px rgba(157,78,221,0.5)!important}.gfill{background:linear-gradient(90deg,#1a0a2e,#9D4EDD)!important}';
+    document.head.appendChild(s);
+  }
+
   var logo=document.getElementById('dash-logo');
   if(logo&&!document.getElementById('pb')){
-    var b=document.createElement('span');b.id='pb';b.className='prime-badge';b.textContent=plan.toUpperCase();logo.appendChild(b);
+    var b=document.createElement('span');b.id='pb';
+    b.style.cssText='display:inline-block;background:linear-gradient(135deg,'+(isVault?'#1a0a2e,#9D4EDD':'#8B6914,#C9A84C')+');color:'+(isVault?'#E0AAFF':'#080808')+';font-size:8px;letter-spacing:3px;padding:2px 8px;font-weight:700;margin-left:8px;vertical-align:middle;border-radius:2px';
+    b.textContent=label;logo.appendChild(b);
   }
-  var pd=document.getElementById('plan-display');if(pd)pd.textContent=plan==='prime'?'Prime — $9.99/mo ✓':'Vault — $24.99/mo ✓';
+
+  var pd=document.getElementById('plan-display');
+  if(pd){pd.textContent=isVault?'Vault — $24.99/mo':'Prime — $9.99/mo';pd.style.color=accent;}
+
   var ov=document.getElementById('dt-ov');
-  if(ov&&!document.getElementById('prime-banner-el')){
-    var bn=document.createElement('div');bn.id='prime-banner-el';bn.className='prime-banner';
-    bn.innerHTML='<div><div class="prime-banner-title">✓ '+plan.toUpperCase()+' ACTIVE</div><div class="prime-banner-sub">BANK CONNECTION · AUTO-ALLOCATION · ALGO SIGNALS UNLOCKED</div></div><div style="font-size:9px;color:#00ff88;letter-spacing:2px">ACTIVE</div>';
+  if(ov&&!document.getElementById('pb2')){
+    var bn=document.createElement('div');bn.id='pb2';
+    bn.style.cssText='background:linear-gradient(135deg,'+bg+',#0E0E0E);border:1px solid '+accent+';border-radius:4px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between';
+    bn.innerHTML='<div><div style="font-family:Cormorant Garamond,serif;font-size:16px;color:'+accent+'">'+label+' ACTIVE</div><div style="font-size:8px;color:'+(isVault?'#9D4EDD':'#8B6914')+';letter-spacing:2px;margin-top:2px">'+(isVault?'ALL FEATURES UNLOCKED':'BANK + AUTO-ALLOCATE + SIGNALS')+'</div></div><div style="font-size:9px;color:#00ff88;letter-spacing:2px">LIVE</div>';
     ov.insertBefore(bn,ov.firstChild);
   }
+
   var ub=document.getElementById('upgrade-banner');
-  if(ub){ub.style.background='linear-gradient(135deg,#1A1200,#0E0E0E)';ub.style.borderColor='#C9A84C';
-    ub.querySelector('.ubt').textContent='✓ '+plan.toUpperCase()+' Active';
-    ub.querySelector('.ubs').textContent='Bank connection and auto-allocation are ready in your Profile tab.';
-    var btn=ub.querySelector('button');if(btn){btn.textContent='SET UP BANK CONNECTION →';btn.onclick=function(){dtab('pf');};}
+  if(ub){
+    ub.style.background='linear-gradient(135deg,'+bg+',#0E0E0E)';
+    ub.style.borderColor=accent;
+    ub.querySelector('.ubt').textContent=label+' Active';
+    ub.querySelector('.ubs').textContent=isVault?'All features unlocked — bank, auto-transfers, signals, RE alerts.':'Bank and auto-allocation ready in your Profile tab.';
+    var btn=ub.querySelector('button');
+    if(btn){btn.textContent='SET UP BANK';btn.onclick=function(){dtab('pf');};}
   }
+
   var lo=document.querySelector('.loverlay');if(lo)lo.style.display='none';
-  addWebhook({t:'PRIME_ACTIVATED',m:'VaultFlow '+plan+' features unlocked — bank connection available',c:'#C9A84C'});
+  addWebhook({t:label+'_ACTIVATED',m:'VaultFlow '+label+' features unlocked',c:accent});
+}
+// ============ ACCORDION ============
+function toggleAcc(id){
+  var acc=document.getElementById('acc-'+id);
+  var body=document.getElementById('body-'+id);
+  if(!acc||!body)return;
+  var isOpen=body.style.display==='block';
+  document.querySelectorAll('.acc').forEach(function(a){a.classList.remove('open');});
+  document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});
+  if(!isOpen){acc.classList.add('open');body.style.display='block';}
 }
 
 // ============ LEGAL ============
