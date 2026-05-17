@@ -1044,8 +1044,6 @@ function connectBank(){
 }
 
 function loadBankData(){
-  if(!plaidAccessToken){
-    //}
   if(!plaidAccessToken)return;
   fetch(RAIL+'/plaid/transactions',{
     method:'POST',
