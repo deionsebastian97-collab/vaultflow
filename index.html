@@ -180,6 +180,9 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
 .bex{font-size:9px;color:#8A8070;line-height:1.7}
 .bread{font-size:7px;letter-spacing:3px;color:var(--accent,#C9A84C);margin-top:7px}
 
+/* MORE DRAWER TAB */
+#bt-more.on{color:var(--accent,#C9A84C)}
+
 /* LOCKED */
 .lock{position:relative;overflow:hidden;min-height:80px}
 .lovl{position:absolute;inset:0;background:rgba(6,6,6,0.88);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:5px}
@@ -290,12 +293,12 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
         <div class="pc-price" style="color:#10B981">Free</div>
         <div class="pc-per">&nbsp;</div>
         <div class="pc-div" style="background:linear-gradient(90deg,transparent,#10B981,transparent)"></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Income & expense calculator</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Debt payoff optimizer</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Real estate deal analyzer</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>Debt payoff calculator</span></div>
         <div class="pc-feat"><div class="pc-dot"></div><span>Investment growth calculator</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Net worth tracker</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Goal progress bars</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>Real estate deal analyzer</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>Goal progress tracker</span></div>
+        <div class="pc-feat"><div class="pc-dot" style="background:#333"></div><span style="color:#444;text-decoration:line-through">Net worth tracker</span></div>
+        <div class="pc-feat"><div class="pc-dot" style="background:#333"></div><span style="color:#444;text-decoration:line-through">Deal pipeline</span></div>
         <button class="pc-btn">GET STARTED FREE</button>
       </div>
 
@@ -321,10 +324,10 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
         <div class="pc-div" style="background:linear-gradient(90deg,transparent,#8B5CF6,transparent)"></div>
         <div class="pc-feat"><div class="pc-dot"></div><span>Everything in Prime</span></div>
         <div class="pc-feat"><div class="pc-dot"></div><span>Auto bank transfers</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Full S&P 500 algo signals</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>S&P 500 algo signals</span></div>
         <div class="pc-feat"><div class="pc-dot"></div><span>Real estate deal alerts</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Tax optimization insights</span></div>
-        <div class="pc-feat"><div class="pc-dot"></div><span>Priority support</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>Tax optimization</span></div>
+        <div class="pc-feat"><div class="pc-dot"></div><span>Priority support + RE reports</span></div>
         <button class="pc-btn">BEGIN NOW</button>
       </div>
 
@@ -392,15 +395,22 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
   </nav>
 
   <!-- BOTTOM NAV -->
-  <div class="bnav show" id="bnav">
+  <!-- BOTTOM NAV — 5 primary + MORE dropdown -->
+  <div class="bnav" id="bnav">
     <button class="btab on" id="bt-ov" onclick="dtab('ov')"><span class="btab-icon">◈</span>HOME</button>
     <button class="btab" id="bt-al" onclick="dtab('al')"><span class="btab-icon">⟁</span>ALLOCATE</button>
     <button class="btab" id="bt-tl" onclick="dtab('tl')"><span class="btab-icon">◎</span>TOOLS</button>
-    <button class="btab" id="bt-nw" onclick="dtab('nw')"><span class="btab-icon">◇</span>WEALTH</button>
-    <button class="btab" id="bt-gl" onclick="dtab('gl')"><span class="btab-icon">⬡</span>GOALS</button>
-    <button class="btab" id="bt-pr" onclick="dtab('pr')"><span class="btab-icon">⬢</span>DEALS</button>
-    <button class="btab" id="bt-bl" onclick="dtab('bl')"><span class="btab-icon">▣</span>BLOG</button>
     <button class="btab" id="bt-pf" onclick="dtab('pf')"><span class="btab-icon">◉</span>ME</button>
+    <button class="btab" id="bt-more" onclick="toggleMore()"><span class="btab-icon">⋯</span>MORE</button>
+  </div>
+  <!-- MORE DRAWER -->
+  <div id="more-drawer" style="display:none;position:fixed;bottom:58px;left:0;right:0;z-index:997;background:rgba(8,8,8,0.98);border-top:1px solid rgba(201,168,76,0.1);padding:8px 6px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
+      <button class="btab" id="bt-nw" onclick="dtab('nw');closeMore()"><span class="btab-icon">◇</span>WEALTH</button>
+      <button class="btab" id="bt-gl" onclick="dtab('gl');closeMore()"><span class="btab-icon">⬡</span>GOALS</button>
+      <button class="btab" id="bt-pr" onclick="dtab('pr');closeMore()"><span class="btab-icon">⬢</span>DEALS</button>
+      <button class="btab" id="bt-bl" onclick="dtab('bl');closeMore()"><span class="btab-icon">▣</span>BLOG</button>
+    </div>
   </div>
 
   <div class="dmain has-bnav">
@@ -483,10 +493,10 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <div class="acc" id="acc-sig"><div class="acc-hdr" onclick="tacc('sig')"><div style="display:flex;align-items:center;gap:9px"><span style="font-size:18px">📊</span><div><div class="acc-htit">Algo Signals</div><div class="acc-hsub">SMA + RSI + MOMENTUM</div></div></div><span class="acc-arr" id="arr-sig">›</span></div>
         <div class="acc-body" id="body-sig">
           <div id="sig-locked" style="display:block">
-            <div style="font-size:10px;color:#8A8070;margin-bottom:10px">Live institutional signals — Prime and Vault only.</div>
-            <div class="lock" style="min-height:60px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK</button></div></div>
+            <div style="font-size:10px;color:#8A8070;margin-bottom:10px">Live institutional-grade signals — Vault tier only.</div>
+            <div class="lock" style="min-height:60px"><div class="lovl" style="background:linear-gradient(135deg,rgba(76,29,149,0.7),rgba(6,6,6,0.9))"><div class="licon">🔒</div><div class="ltxt2" style="color:#8B5CF6">VAULT EXCLUSIVE</div><button class="lbtn" style="background:linear-gradient(135deg,#4C1D95,#8B5CF6);color:#fff" onclick="go('upgrade')">UNLOCK VAULT</button></div></div>
           </div>
-          <div id="sig-unlocked" style="display:none"><div style="font-size:10px;color:#8A8070;line-height:1.8;margin-bottom:10px">4-factor signals across S&amp;P 500, crypto, and ETFs.</div><button class="btn" onclick="cSig()">FETCH SIGNALS</button><div class="rbox" id="r_sig"></div></div>
+          <div id="sig-unlocked" style="display:none"><div style="font-size:10px;color:#8A8070;line-height:1.8;margin-bottom:10px">4-factor institutional signals across S&amp;P 500, crypto, and ETFs.</div><button class="btn" onclick="cSig()">FETCH SIGNALS</button><div class="rbox" id="r_sig"></div></div>
         </div>
       </div>
     </div>
@@ -496,6 +506,8 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <div class="tag">WEALTH</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Net Worth</div>
       <div style="font-size:9px;color:#555;margin-bottom:13px">Your complete financial picture</div>
+      <div id="nw-lock" style="display:none"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
+      <div id="nw-content">
       <div class="card"><div class="tag" style="margin-bottom:5px">ASSETS</div>
         <label class="lbl">CHECKING + SAVINGS ($)</label><input class="inp" type="number" id="n_cash" value="0">
         <label class="lbl">INVESTMENTS ($)</label><input class="inp" type="number" id="n_inv" value="0">
@@ -514,6 +526,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <button class="btn" onclick="cNW()">CALCULATE NET WORTH</button>
       <div class="rbox" id="r_nw"></div>
       <div class="card" style="margin-top:10px"><div class="tag" style="margin-bottom:5px">PATH TO $1M</div><div id="nw_proj" style="font-size:10px;color:#555">Enter assets and liabilities above.</div></div>
+      </div><!-- end nw-content -->
     </div>
 
     <!-- GOALS -->
@@ -541,6 +554,8 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
       <div class="tag">DEAL TRACKER</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:3px;color:#F5F0E8">Properties</div>
       <div style="font-size:9px;color:#555;margin-bottom:13px">Track every deal from analysis to close</div>
+      <div id="pr-lock" style="display:none"><div class="lock" style="min-height:100px"><div class="lovl"><div class="licon">🔒</div><div class="ltxt2">PRIME FEATURE</div><button class="lbtn" onclick="go('upgrade')">UNLOCK PRIME</button></div></div></div>
+      <div id="pr-content">
       <div class="card"><div class="tag" style="margin-bottom:5px">ADD PROPERTY</div>
         <label class="lbl">ADDRESS</label><input class="inp" type="text" id="p_a" placeholder="123 Main St, Detroit MI">
         <label class="lbl">TYPE</label><select class="inp" id="p_t"><option>Single Family</option><option selected>Duplex</option><option>Triplex</option><option>Quadplex</option><option>5+ Units</option></select>
@@ -552,6 +567,7 @@ body[data-plan=""]{--accent:#C9A84C;--accent-dim:#8B6914;--accent-bg:rgba(201,16
         <button class="btn" onclick="addProp()">ADD TO PIPELINE</button>
       </div>
       <div id="props_list" style="margin-top:6px"></div>
+      </div><!-- end pr-content -->
     </div>
 
     <!-- BLOG -->
@@ -892,11 +908,17 @@ function wl(inp,msg){
 // DASHBOARD TABS — BOTTOM NAV
 function dtab(t){
   tabIds.forEach(function(id){var el=document.getElementById('dt-'+id);if(el)el.style.display=id===t?'block':'none';});
-  document.querySelectorAll('#bnav .btab').forEach(function(btn){
-    var id=btn.id.replace('bt-','');
-    btn.className='btab'+(id===t?' on':'');
+  // Update all btab buttons (bnav + drawer)
+  ['ov','al','tl','pf','nw','gl','pr','bl'].forEach(function(id){
+    var btn=document.getElementById('bt-'+id);
+    if(btn)btn.className='btab'+(id===t?' on':'');
   });
+  var moreBtn=document.getElementById('bt-more');
+  if(moreBtn)moreBtn.className='btab';
   if(t==='pf')loadProf();
+  // Close drawer
+  closeMore();
+  window.scrollTo(0,0);
 }
 
 // FORMATTERS
@@ -1168,25 +1190,37 @@ function activatePlan(plan){
     }
   }
 
-  // UNLOCK or LOCK features based on plan
+  // UNLOCK or LOCK features per tier
   var hasPaid=isP||isV;
 
-  // Bank connect
+  // FREE = basic tools only
+  // PRIME = bank, auto-alloc, net worth, deals, transfer history
+  // VAULT = everything + algo signals, RE alerts, tax optimization
+
+  // Bank connect (Prime+)
   var bl=document.getElementById('bank-prime-lock');if(bl)bl.style.display=hasPaid?'none':'block';
   var bb=document.getElementById('bank-prime-btn');if(bb)bb.style.display=hasPaid?'block':'none';
 
-  // Auto-allocation engine
+  // Auto-allocation (Prime+)
   var al=document.getElementById('alloc-prime-lock');if(al)al.style.display=hasPaid?'none':'block';
   var ae=document.getElementById('alloc-engine');if(ae)ae.style.display=hasPaid?'block':'none';
 
-  // Algo signals
-  var sl=document.getElementById('sig-locked');if(sl)sl.style.display=hasPaid?'none':'block';
-  var su=document.getElementById('sig-unlocked');if(su)su.style.display=hasPaid?'block':'none';
+  // Algo signals (Vault only)
+  var sl=document.getElementById('sig-locked');if(sl)sl.style.display=isV?'none':'block';
+  var su=document.getElementById('sig-unlocked');if(su)su.style.display=isV?'block':'none';
 
-  // Transfer history
+  // Transfer history (Prime+)
   var tl=document.getElementById('transfer-lock');if(tl)tl.style.display=hasPaid?'none':'flex';
 
-  // If downgraded to free - disconnect bank and clear data
+  // Net Worth tracker (Prime+)
+  var nwl=document.getElementById('nw-lock');if(nwl)nwl.style.display=hasPaid?'none':'block';
+  var nwc=document.getElementById('nw-content');if(nwc)nwc.style.display=hasPaid?'block':'none';
+
+  // Deal Tracker (Prime+)
+  var prl=document.getElementById('pr-lock');if(prl)prl.style.display=hasPaid?'none':'block';
+  var prc=document.getElementById('pr-content');if(prc)prc.style.display=hasPaid?'block':'none';
+
+  // If downgraded to free — lock and clear
   if(isF){
     plaidTok=null;
     var bc=document.getElementById('bank-connected');if(bc)bc.style.display='none';
@@ -1221,6 +1255,29 @@ function selPlan(p){
   }
   var ht=document.getElementById('uh-tag');if(ht){ht.textContent='VAULTFLOW '+p.toUpperCase();ht.style.color=accent;}
   var hp=document.getElementById('uh-price');if(hp){hp.textContent=p==='prime'?'$9.99':p==='vault'?'$24.99':'Free';hp.style.color=accent;}
+  // Update hero feature grid
+  var feats=p==='vault'?[
+    {icon:'💸',name:'AUTO-TRANSFERS',desc:'Moves money automatically'},
+    {icon:'📊',name:'ALGO SIGNALS',desc:'S&P 500 live signals'},
+    {icon:'🏘️',name:'RE ALERTS',desc:'Multifamily deal alerts'},
+    {icon:'🧾',name:'TAX OPTIMIZER',desc:'Quarterly tax insights'}
+  ]:p==='prime'?[
+    {icon:'🏦',name:'BANK CONNECT',desc:'12,000+ banks'},
+    {icon:'⚡',name:'AUTO-ALLOCATE',desc:'Routes on payday'},
+    {icon:'📈',name:'NET WORTH',desc:'Full wealth tracker'},
+    {icon:'⬢',name:'DEAL TRACKER',desc:'Property pipeline'}
+  ]:[
+    {icon:'💳',name:'DEBT PAYOFF',desc:'Avalanche calculator'},
+    {icon:'📈',name:'INVESTMENTS',desc:'Compound calculator'},
+    {icon:'🏘️',name:'RE ANALYZER',desc:'Cap rate & cash flow'},
+    {icon:'🎯',name:'GOALS',desc:'Progress tracking'}
+  ];
+  var fgrid=document.getElementById('uh-feats');
+  if(fgrid){
+    fgrid.innerHTML=feats.map(function(f){
+      return '<div style="background:'+accent+'11;border:1px solid '+accent+'33;border-radius:3px;padding:8px"><div style="font-size:13px;margin-bottom:3px">'+f.icon+'</div><div style="font-size:6px;letter-spacing:2px;color:'+accent+';margin-bottom:2px">'+f.name+'</div><div style="font-size:8px;color:#8A8070">'+f.desc+'</div></div>';
+    }).join('');
+  }
 }
 
 function pay(){
@@ -1260,6 +1317,21 @@ function downgradePlan(){
   m('plan-display','Downgraded to Essential (Free)','#10B981');
   // Hide downgrade section
   var ds=document.getElementById('downgrade-section');if(ds)ds.style.display='none';
+}
+
+// MORE DRAWER
+function toggleMore(){
+  var d=document.getElementById('more-drawer');
+  var btn=document.getElementById('bt-more');
+  var open=d.style.display==='block';
+  d.style.display=open?'none':'block';
+  btn.className='btab'+(open?'':' on');
+}
+function closeMore(){
+  var d=document.getElementById('more-drawer');
+  var btn=document.getElementById('bt-more');
+  if(d)d.style.display='none';
+  if(btn)btn.className='btab';
 }
 
 // LEGAL
