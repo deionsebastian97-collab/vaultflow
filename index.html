@@ -1031,39 +1031,42 @@ var plaidAccessToken = null;
 
 function connectBank(){
   msg('bank-msg','Connecting to bank...','#C9A84C');
+  var uid = 'user';
+  if(currentSession && currentSession.user && currentSession.user.id) uid = currentSession.user.id;
+  
   fetch(RAIL+'/plaid/create-link-token',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({user_id: currentSession ? currentSession.user.id : 'user'})
+    body:JSON.stringify({user_id: uid})
   }).then(function(r){return r.json();}).then(function(d){
-    if(d.link_token){
-      var handler = Plaid.create({
-        token: d.link_token,
-        onSuccess: function(public_token, metadata){
-          msg('bank-msg','Exchanging token...','#C9A84C');
-          fetch(RAIL+'/plaid/exchange-token',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({public_token: public_token})
-          }).then(function(r){return r.json();}).then(function(d2){
-            if(d2.success){
-              plaidAccessToken = d2.access_token;
-              
-              loadBankData();
-            }
-          });
-        },
-        onExit: function(){
-          msg('bank-msg','','');
-        }
-      });
-      handler.open();
-    } else {
-      msg('bank-msg','Could not connect. Try again.','#ff4444');
-    }
-  }).catch(function(){
-    msg('bank-msg','Connection error. Check your internet.','#ff4444');
-  });
+    if(!d.link_token){msg('bank-msg','Error: '+(d.detail||'Could not create link'),'#ff4444');return;}
+    msg('bank-msg','Opening bank selector...','#C9A84C');
+    var handler = Plaid.create({
+      token: d.link_token,
+      onSuccess: function(public_token, metadata){
+        msg('bank-msg','Bank connected! Loading data...','#C9A84C');
+        fetch(RAIL+'/plaid/exchange-token',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({public_token: public_token})
+        }).then(function(r){return r.json();}).then(function(d2){
+          if(d2.success && d2.access_token){
+            plaidAccessToken = d2.access_token;
+            msg('bank-msg','Connected!','#00ff88');
+            loadBankData();
+            addWebhookEvent({type:'BANK_CONNECTED',msg:'Bank account linked — monitoring active',color:'#00ff88'});
+          } else {
+            msg('bank-msg','Exchange failed: '+(d2.detail||'error'),'#ff4444');
+          }
+        }).catch(function(err){msg('bank-msg','Error: '+err.message,'#ff4444');});
+      },
+      onExit: function(err){
+        if(err) msg('bank-msg',err.display_message||err.error_message||'Cancelled','#8A8070');
+        else msg('bank-msg','','');
+      }
+    });
+    handler.open();
+  }).catch(function(err){msg('bank-msg','Connection error: '+err.message,'#ff4444');});
 }
 
 function loadBankData(){
