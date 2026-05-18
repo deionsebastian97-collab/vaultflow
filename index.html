@@ -203,8 +203,10 @@ body[data-plan="vault"] .dash-upg-btn{color:#fff}
 .btab:hover{color:rgba(255,255,255,.5);background:rgba(255,255,255,.03)}
 .btab.on{color:var(--c,#C9A84C);background:var(--ca,rgba(201,168,76,.07))}
 .btab.on::after{content:'';position:absolute;bottom:2px;left:35%;right:35%;height:2px;background:var(--c,#C9A84C);border-radius:2px;box-shadow:0 0 8px var(--c,#C9A84C)}
-.btab-icon{font-size:19px;line-height:1;transition:transform .3s}
-.btab.on .btab-icon{transform:scale(1.12)}
+.btab-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;transition:transform .3s;opacity:.5}
+.btab.on .btab-icon{transform:scale(1.14);opacity:1}
+.btab:hover .btab-icon{opacity:.75}
+.btab-icon svg{width:22px;height:22px}
 .btab.locked-tab{opacity:.18;pointer-events:none}
 .more-drawer{display:none;position:fixed;bottom:62px;left:10px;right:10px;z-index:997;background:rgba(8,8,12,.98);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:10px;backdrop-filter:blur(28px);box-shadow:0 -8px 40px rgba(0,0,0,.6)}
 .more-drawer.show{display:block}
@@ -418,13 +420,14 @@ body[data-plan="vault"] .dash-upg-btn{color:#fff}
     </div>
     <div id="lmsg" style="font-size:9px;text-align:center;margin-top:10px;min-height:14px;color:rgba(255,255,255,.4)"></div>
     <div onclick="closel()" style="text-align:center;margin-top:16px;font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.18);cursor:pointer">&#8592; RETURN</div>
+    <div onclick="openAdminLogin()" style="text-align:center;margin-top:8px;font-size:6px;letter-spacing:2px;color:rgba(255,255,255,.06);cursor:pointer" title="Owner Access">&#9670;</div>
   </div>
 </div>
 
 <!-- ═══ HOME ═══ -->
 <div class="page" id="pg-home" style="display:block">
   <nav class="pub-nav" id="pub-nav">
-    <button class="pub-logo" onclick="go('home')">VAULT<span>FLOW</span></button>
+    <button class="pub-logo" onclick="go('home')" ondblclick="openAdminLogin()" title="">VAULT<span>FLOW</span></button>
     <div class="pub-nav-r">
       <button class="pub-login" onclick="openl()">LOGIN</button>
       <button class="pub-join" onclick="openl()">JOIN FREE</button>
@@ -527,18 +530,36 @@ body[data-plan="vault"] .dash-upg-btn{color:#fff}
     </div>
   </nav>
   <div class="bnav" id="bnav">
-    <button class="btab on" id="bt-ov" onclick="dtab('ov')"><span class="btab-icon">&#9672;</span>HOME</button>
-    <button class="btab" id="bt-al" onclick="dtab('al')"><span class="btab-icon">&#9654;</span>ALLOCATE</button>
-    <button class="btab" id="bt-tl" onclick="dtab('tl')"><span class="btab-icon">&#9711;</span>TOOLS</button>
-    <button class="btab" id="bt-pf" onclick="dtab('pf')"><span class="btab-icon">&#9673;</span>ME</button>
-    <button class="btab" id="bt-more" onclick="toggleMore()"><span class="btab-icon">&#8943;</span>MORE</button>
+    <button class="btab on" id="bt-ov" onclick="dtab('ov')">
+      <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>HOME
+    </button>
+    <button class="btab" id="bt-al" onclick="dtab('al')">
+      <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>ALLOCATE
+    </button>
+    <button class="btab" id="bt-tl" onclick="dtab('tl')">
+      <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M21 12h-2M5 12H3M19.07 19.07l-1.41-1.41M5.34 5.34L3.93 3.93"/><circle cx="12" cy="12" r="7" stroke-opacity=".25"/></svg></span>TOOLS
+    </button>
+    <button class="btab" id="bt-pf" onclick="dtab('pf')">
+      <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>ME
+    </button>
+    <button class="btab" id="bt-more" onclick="toggleMore()">
+      <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></span>MORE
+    </button>
   </div>
   <div class="more-drawer" id="more-drawer">
     <div class="more-grid">
-      <button class="btab locked-tab" id="bt-nw" onclick="dtab('nw');closeMore()"><span class="btab-icon">&#9671;</span>WEALTH</button>
-      <button class="btab" id="bt-gl" onclick="dtab('gl');closeMore()"><span class="btab-icon">&#11041;</span>GOALS</button>
-      <button class="btab locked-tab" id="bt-pr" onclick="dtab('pr');closeMore()"><span class="btab-icon">&#127968;</span>DEALS</button>
-      <button class="btab" id="bt-bl" onclick="dtab('bl');closeMore()"><span class="btab-icon">&#9635;</span>BLOG</button>
+      <button class="btab locked-tab" id="bt-nw" onclick="dtab('nw');closeMore()">
+        <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>WEALTH
+      </button>
+      <button class="btab" id="bt-gl" onclick="dtab('gl');closeMore()">
+        <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>GOALS
+      </button>
+      <button class="btab locked-tab" id="bt-pr" onclick="dtab('pr');closeMore()">
+        <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/><circle cx="19" cy="6" r="3" stroke-opacity=".6"/><line x1="19" y1="3" x2="19" y2="9" stroke-opacity=".6"/><line x1="16" y1="6" x2="22" y2="6" stroke-opacity=".6"/></svg></span>DEALS
+      </button>
+      <button class="btab" id="bt-bl" onclick="dtab('bl');closeMore()">
+        <span class="btab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>BLOG
+      </button>
     </div>
   </div>
   <div class="dash-main">
@@ -1256,20 +1277,45 @@ function cTax(){
 }
 function cSig(){
   var tickers=[
-    {s:'SPY',n:'S&P 500',sig:'BUY',rsi:38,c:'#10C070'},
-    {s:'QQQ',n:'Nasdaq 100',sig:'HOLD',rsi:52,c:'#D4AF37'},
-    {s:'AAPL',n:'Apple',sig:'BUY',rsi:41,c:'#10C070'},
-    {s:'BTC',n:'Bitcoin',sig:'BUY',rsi:36,c:'#10C070'},
-    {s:'GLD',n:'Gold ETF',sig:'BUY',rsi:44,c:'#10C070'},
-    {s:'XLE',n:'Energy ETF',sig:'HOLD',rsi:49,c:'#D4AF37'},
-    {s:'MSFT',n:'Microsoft',sig:'SELL',rsi:72,c:'#FF6B6B'}
+    {cat:'INDEXES', s:'SPY',  n:'S&P 500 ETF',       sig:'BUY', rsi:42,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'INDEXES', s:'QQQ',  n:'Nasdaq 100 ETF',     sig:'BUY', rsi:44,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'INDEXES', s:'DIA',  n:'Dow Jones ETF',      sig:'HOLD',rsi:51,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'INDEXES', s:'IWM',  n:'Russell 2000',       sig:'HOLD',rsi:48,sma:'BELOW',mo:'→',c:'#D4AF37'},
+    {cat:'FAANG',   s:'META', n:'Meta Platforms',     sig:'BUY', rsi:39,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'FAANG',   s:'AMZN', n:'Amazon',             sig:'BUY', rsi:41,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'FAANG',   s:'AAPL', n:'Apple',              sig:'HOLD',rsi:53,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'FAANG',   s:'NFLX', n:'Netflix',            sig:'BUY', rsi:37,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'FAANG',   s:'GOOGL',n:'Alphabet',           sig:'BUY', rsi:40,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'FAANG',   s:'MSFT', n:'Microsoft',          sig:'HOLD',rsi:56,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'FAANG',   s:'NVDA', n:'NVIDIA',             sig:'HOLD',rsi:62,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'FAANG',   s:'TSLA', n:'Tesla',              sig:'SELL',rsi:71,sma:'BELOW',mo:'↓',c:'#FF6B6B'},
+    {cat:'CRYPTO',  s:'BTC',  n:'Bitcoin',            sig:'BUY', rsi:36,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'CRYPTO',  s:'ETH',  n:'Ethereum',           sig:'BUY', rsi:38,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'CRYPTO',  s:'SOL',  n:'Solana',             sig:'HOLD',rsi:54,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'SECTORS', s:'GLD',  n:'Gold ETF',           sig:'BUY', rsi:44,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'SECTORS', s:'XLE',  n:'Energy (XLE)',       sig:'HOLD',rsi:50,sma:'BELOW',mo:'→',c:'#D4AF37'},
+    {cat:'SECTORS', s:'XLF',  n:'Financials (XLF)',   sig:'BUY', rsi:43,sma:'ABOVE',mo:'↑',c:'#10C070'},
+    {cat:'SECTORS', s:'XLV',  n:'Healthcare (XLV)',   sig:'HOLD',rsi:49,sma:'ABOVE',mo:'→',c:'#D4AF37'},
+    {cat:'SECTORS', s:'VNQ',  n:'Real Estate (VNQ)',  sig:'BUY', rsi:41,sma:'ABOVE',mo:'↑',c:'#10C070'}
   ];
-  var h='<div style="font-size:6px;letter-spacing:3px;color:#8030D0;margin-bottom:10px">LIVE SIGNALS · '+new Date().toLocaleString()+'</div>';
-  tickers.forEach(function(t){
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)">'+
-      '<div><div style="font-size:11px;color:#EEEAF5;font-weight:500">'+t.s+'</div><div style="font-size:7px;color:rgba(255,255,255,.3)">'+t.n+'</div></div>'+
-      '<div style="text-align:right"><div style="color:'+t.c+';font-weight:700;font-size:12px">'+t.sig+'</div><div style="font-size:7px;color:rgba(255,255,255,.3)">RSI '+t.rsi+'</div></div>'+
-      '</div>';
+  var catLabels={INDEXES:'📊 INDEXES',FAANG:'💻 FAANG + BIG TECH',CRYPTO:'₿ CRYPTO',SECTORS:'🏭 SECTORS'};
+  var h='<div style="font-size:6px;letter-spacing:3px;color:var(--cd,#8030D0);margin-bottom:12px;display:flex;justify-content:space-between"><span>VAULT SIGNALS · '+new Date().toLocaleString()+'</span><span style="color:#10C070">&#9679; LIVE</span></div>';
+  ['INDEXES','FAANG','CRYPTO','SECTORS'].forEach(function(cat){
+    h+='<div style="font-size:6px;letter-spacing:4px;color:var(--cd,#8030D0);padding:10px 0 6px;border-top:1px solid rgba(255,255,255,.05);margin-top:2px">'+catLabels[cat]+'</div>';
+    tickers.filter(function(t){return t.cat===cat;}).forEach(function(t){
+      var bg=t.sig==='BUY'?'rgba(16,192,112,.07)':t.sig==='SELL'?'rgba(255,107,107,.07)':'rgba(212,175,55,.05)';
+      var bd=t.sig==='BUY'?'rgba(16,192,112,.18)':t.sig==='SELL'?'rgba(255,107,107,.18)':'rgba(212,175,55,.14)';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-bottom:5px;background:'+bg+';border:1px solid '+bd+';border-radius:12px">'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:4px 8px;font-size:10px;font-weight:700;color:#EEEAF5;min-width:48px;text-align:center;letter-spacing:0">'+t.s+'</div>'+
+          '<div><div style="font-size:8px;color:rgba(255,255,255,.6)">'+t.n+'</div>'+
+          '<div style="font-size:6px;color:rgba(255,255,255,.25);margin-top:2px">SMA: '+t.sma+' &middot; MO: '+t.mo+'</div></div>'+
+        '</div>'+
+        '<div style="text-align:right">'+
+          '<div style="color:'+t.c+';font-weight:700;font-size:11px;letter-spacing:1px">'+t.sig+'</div>'+
+          '<div style="font-size:7px;color:rgba(255,255,255,.25)">RSI '+t.rsi+'</div>'+
+        '</div></div>';
+    });
   });
   sh('r_sig',h);show('r_sig','block');
 }
@@ -1561,11 +1607,226 @@ function legTab(t){
 }
 
 /* ── FLOAT ANIMATION ── */
+
+/* ═══ ADMIN PANEL ═══ */
+var ADMIN_EMAIL='deionsebastian97@gmail.com';
+var ADMIN_PASS='VaultFlow2025!Owner';
+var adminPreviewTier='free';
+var adminLog=[];
+
+function addAdminLog(msg){
+  adminLog.unshift('> '+msg);
+  if(adminLog.length>20)adminLog.pop();
+  var el=document.getElementById('admin-log');
+  if(el)el.innerHTML=adminLog.join('<br>');
+}
+
+function openAdminLogin(){
+  var email=prompt('Admin Email:');
+  if(!email)return;
+  var pass=prompt('Admin Password:');
+  if(!pass)return;
+  if(email.toLowerCase()===ADMIN_EMAIL.toLowerCase()&&pass===ADMIN_PASS){
+    sess={user:{email:ADMIN_EMAIL,id:'admin-owner'},plan:'vault',isAdmin:true};
+    addAdminLog('Admin authenticated: '+ADMIN_EMAIL);
+    addAdminLog('Session started '+new Date().toLocaleTimeString());
+    adminSetTier('free');
+    go('admin');
+    adminLoadUsers();
+  } else {
+    alert('Invalid admin credentials.');
+  }
+}
+
+function adminSetTier(tier){
+  adminPreviewTier=tier;
+  var colors={free:'#B8C8D8',prime:'#D4AF37',vault:'#B06EFF'};
+  var badge=document.getElementById('admin-tier-badge');
+  if(badge){badge.textContent='VIEWING: '+tier.toUpperCase();badge.style.color=colors[tier];badge.style.borderColor=colors[tier]+'44';}
+  ['free','prime','vault'].forEach(function(t){
+    var btn=document.getElementById('atb-'+t);
+    if(btn)btn.style.borderColor=t===tier?colors[t]:'transparent';
+  });
+  addAdminLog('Preview tier set to: '+tier.toUpperCase());
+}
+
+function adminGoDash(){
+  if(!sess)sess={user:{email:ADMIN_EMAIL,id:'admin'},plan:adminPreviewTier,isAdmin:true};
+  activatePlan(adminPreviewTier);
+  addAdminLog('Entering dashboard as '+adminPreviewTier.toUpperCase());
+  go('dashboard');
+  dtab('ov');
+}
+
+function exitAdmin(){
+  go('admin');
+  activatePlan(adminPreviewTier);
+  addAdminLog('Returned to admin panel');
+}
+
+function adminLoadUsers(){
+  addAdminLog('Fetching member accounts from Supabase...');
+  fetch(SB_URL+'/rest/v1/auth/users',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d&&d.users){
+      renderAdminUsers(d.users);
+      addAdminLog('Loaded '+d.users.length+' members');
+    } else {
+      renderAdminUsers([]);
+      addAdminLog('Note: Admin REST access requires service key. Showing mock data.');
+      renderMockUsers();
+    }
+  }).catch(function(){
+    addAdminLog('DB fetch error — showing demo data');
+    renderMockUsers();
+  });
+}
+
+function renderMockUsers(){
+  var mock=[
+    {email:'test@vaultflow.org',plan:'vault',created:'2025-01-14',last:'2025-05-17'},
+    {email:'mariner@gmail.com',plan:'prime',created:'2025-02-01',last:'2025-05-16'},
+    {email:'veteran@proton.me',plan:'prime',created:'2025-02-18',last:'2025-05-15'},
+    {email:'investor@yahoo.com',plan:'free',created:'2025-03-05',last:'2025-05-10'},
+    {email:'maritime@outlook.com',plan:'free',created:'2025-04-12',last:'2025-05-08'}
+  ];
+  renderAdminUsers(mock,true);
+  document.getElementById('admin-total').textContent=mock.length;
+  document.getElementById('admin-paid').textContent=mock.filter(function(u){return u.plan!=='free';}).length;
+  document.getElementById('admin-prime-count').textContent=mock.filter(function(u){return u.plan==='prime';}).length;
+  document.getElementById('admin-vault-count').textContent=mock.filter(function(u){return u.plan==='vault';}).length;
+}
+
+function renderAdminUsers(users,isMock){
+  var el=document.getElementById('admin-users-list');
+  if(!el)return;
+  if(!users||!users.length){el.innerHTML='<div style="font-size:9px;color:rgba(255,255,255,.2);text-align:center;padding:20px">No members found.</div>';return;}
+  var pc={free:'rgba(184,200,216,.8)',prime:'rgba(212,175,55,.8)',vault:'rgba(176,110,255,.8)'};
+  var h=(isMock?'<div style="font-size:6px;letter-spacing:3px;color:rgba(255,48,96,.4);margin-bottom:8px;text-align:center">DEMO DATA — Service key needed for live data</div>':'');
+  users.forEach(function(u){
+    var plan=u.plan||u.user_metadata&&u.user_metadata.plan||'free';
+    var email=u.email||u.email||'—';
+    var created=u.created||(u.created_at?u.created_at.substring(0,10):'—');
+    var last=u.last||(u.last_sign_in_at?u.last_sign_in_at.substring(0,10):'—');
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px;margin-bottom:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;transition:all .3s" onmouseover="this.style.borderColor='rgba(255,48,96,.2)'" onmouseout="this.style.borderColor='rgba(255,255,255,.06)'">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:9px;color:#EEEAF5;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+email+'</div>'+
+        '<div style="font-size:6px;color:rgba(255,255,255,.25);letter-spacing:1px">Joined: '+created+' · Last: '+last+'</div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:10px">'+
+        '<span style="font-size:6px;letter-spacing:2px;padding:3px 9px;border-radius:50px;background:rgba(255,255,255,.05);color:'+pc[plan]+';border:1px solid '+pc[plan]+'33">'+plan.toUpperCase()+'</span>'+
+        '<button onclick="adminViewAs(''+email+'',''+plan+'')" style="background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.2);color:#FF3060;padding:4px 10px;font-size:6px;letter-spacing:1px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:8px;white-space:nowrap">VIEW AS</button>'+
+      '</div>'+
+    '</div>';
+  });
+  el.innerHTML=h;
+}
+
+function adminViewAs(email,plan){
+  addAdminLog('Viewing as: '+email+' ('+plan.toUpperCase()+')');
+  adminPreviewTier=plan;
+  adminSetTier(plan);
+  if(confirm('Enter dashboard as '+email+' ('+plan.toUpperCase()+')?')){
+    sess={user:{email:email,id:'admin-view'},plan:plan,isAdmin:true};
+    activatePlan(plan);
+    go('dashboard');
+    dtab('ov');
+  }
+}
+
+function adminSearchUsers(){
+  var q=(document.getElementById('admin-search').value||'').toLowerCase();
+  if(!q)return;
+  addAdminLog('Searching for: '+q);
+  var items=document.querySelectorAll('#admin-users-list > div:not(:first-child)');
+  items.forEach(function(item){
+    var text=item.textContent.toLowerCase();
+    item.style.display=text.includes(q)?'flex':'none';
+  });
+}
+
 </script>
 <style>
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 </style>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="page" id="pg-admin">
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:999;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,4,8,.97);border-bottom:1px solid rgba(255,0,80,.12);backdrop-filter:blur(24px)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="dash-logo" onclick="go('home')" style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:5px;color:#EEEAF5;background:none;border:none;cursor:pointer">VAULT<span style="color:#FF3060">FLOW</span></button>
+      <span style="font-size:6px;letter-spacing:3px;padding:3px 10px;background:rgba(255,0,80,.12);border:1px solid rgba(255,0,80,.25);border-radius:50px;color:#FF3060">ADMIN</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="admin-tier-badge" style="font-size:6px;letter-spacing:2px;padding:4px 12px;border-radius:50px;background:rgba(184,200,216,.12);color:#B8C8D8;border:1px solid rgba(184,200,216,.2)">VIEWING: FREE</span>
+      <button onclick="exitAdmin()" style="background:transparent;border:1px solid rgba(255,0,80,.2);color:#FF3060;padding:7px 13px;font-size:7px;letter-spacing:3px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:50px;transition:all .3s">EXIT ADMIN</button>
+    </div>
+  </nav>
+
+  <div style="padding:54px 16px 20px;max-width:600px;margin:0 auto">
+
+    <!-- TIER SWITCHER -->
+    <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.15);border-radius:20px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#FF3060,transparent);opacity:.4"></div>
+      <div style="font-size:7px;letter-spacing:4px;color:rgba(255,48,96,.6);margin-bottom:12px">TIER PREVIEW — BROWSE AS ANY PLAN</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+        <button onclick="adminSetTier('free')" id="atb-free" style="padding:11px 8px;background:linear-gradient(135deg,#2A3540,#B8C8D8);border:2px solid #B8C8D8;color:#040810;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:14px;transition:all .3s">&#9733; FREE<br><span style="font-size:6px;font-weight:400;opacity:.7">Silver</span></button>
+        <button onclick="adminSetTier('prime')" id="atb-prime" style="padding:11px 8px;background:linear-gradient(135deg,#6A5000,#D4AF37);border:2px solid transparent;color:#040200;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:14px;transition:all .3s">&#9733; PRIME<br><span style="font-size:6px;font-weight:400;opacity:.7">Gold</span></button>
+        <button onclick="adminSetTier('vault')" id="atb-vault" style="padding:11px 8px;background:linear-gradient(135deg,#5010A0,#B06EFF);border:2px solid transparent;color:#fff;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:14px;transition:all .3s">&#9733; VAULT<br><span style="font-size:6px;font-weight:400;opacity:.7">Purple</span></button>
+      </div>
+      <button onclick="adminGoDash()" style="width:100%;padding:12px;background:linear-gradient(135deg,#8B0020,#FF3060);border:none;color:#fff;font-size:7px;letter-spacing:4px;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;border-radius:50px;transition:all .3s">ENTER DASHBOARD AS SELECTED TIER</button>
+    </div>
+
+    <!-- USER ACCOUNTS -->
+    <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.12);border-radius:20px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,80,.3),transparent)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:7px;letter-spacing:4px;color:rgba(255,48,96,.6)">MEMBER ACCOUNTS</div>
+        <button onclick="adminLoadUsers()" style="background:rgba(255,0,80,.1);border:1px solid rgba(255,0,80,.2);color:#FF3060;padding:5px 12px;font-size:6px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:50px">REFRESH</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="admin-search" type="text" placeholder="Search by email..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#EEEAF5;padding:9px 12px;font-size:10px;font-family:'Montserrat',sans-serif;outline:none;border-radius:12px">
+        <button onclick="adminSearchUsers()" style="background:rgba(255,0,80,.1);border:1px solid rgba(255,0,80,.2);color:#FF3060;padding:9px 16px;font-size:7px;letter-spacing:2px;cursor:pointer;font-family:'Montserrat',sans-serif;border-radius:12px;white-space:nowrap">SEARCH</button>
+      </div>
+      <div id="admin-users-list">
+        <div style="font-size:9px;color:rgba(255,255,255,.25);text-align:center;padding:20px">Click REFRESH to load members.</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.1);border-radius:16px;padding:14px">
+        <div style="font-size:6px;letter-spacing:3px;color:rgba(255,48,96,.5);margin-bottom:6px">TOTAL MEMBERS</div>
+        <div id="admin-total" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#FF3060">—</div>
+      </div>
+      <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.1);border-radius:16px;padding:14px">
+        <div style="font-size:6px;letter-spacing:3px;color:rgba(255,48,96,.5);margin-bottom:6px">PAID MEMBERS</div>
+        <div id="admin-paid" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#D4AF37">—</div>
+      </div>
+      <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.1);border-radius:16px;padding:14px">
+        <div style="font-size:6px;letter-spacing:3px;color:rgba(255,48,96,.5);margin-bottom:6px">PRIME MEMBERS</div>
+        <div id="admin-prime-count" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#D4AF37">—</div>
+      </div>
+      <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.1);border-radius:16px;padding:14px">
+        <div style="font-size:6px;letter-spacing:3px;color:rgba(255,48,96,.5);margin-bottom:6px">VAULT MEMBERS</div>
+        <div id="admin-vault-count" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#B06EFF">—</div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div style="background:linear-gradient(145deg,#0E0B16,#08060E);border:1px solid rgba(255,0,80,.1);border-radius:20px;padding:16px">
+      <div style="font-size:7px;letter-spacing:4px;color:rgba(255,48,96,.6);margin-bottom:10px">ACTIVITY LOG</div>
+      <div id="admin-log" style="font-family:'Courier New',monospace;font-size:8px;color:rgba(255,48,96,.5);line-height:2;min-height:80px">
+        &gt; Admin panel initialized<br>
+        &gt; Awaiting commands...
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
