@@ -52,6 +52,18 @@ def split_env(value, fallback):
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
+def requested_products(data):
+    allowed = {"auth", "transactions", "investments", "identity", "liabilities"}
+    products = data.get("products")
+    if isinstance(products, str):
+        products = split_env(products, "")
+    if isinstance(products, list):
+        cleaned = [item for item in products if item in allowed]
+        if cleaned:
+            return cleaned
+    return split_env(PLAID_PRODUCTS, "auth,transactions")
+
+
 def plaid_configured():
     return bool(PLAID_CLIENT_ID and PLAID_SECRET)
 
@@ -69,6 +81,7 @@ def plaid_health_payload():
         "products": split_env(PLAID_PRODUCTS, "auth,transactions"),
         "country_codes": split_env(PLAID_COUNTRY_CODES, "US"),
         "income_link_supported": True,
+        "investment_holdings_supported": True,
         "detail": (
             "Plaid backend is configured."
             if configured
@@ -135,6 +148,8 @@ def root():
             "POST /plaid/exchange-token",
             "POST /plaid/transactions",
             "POST /plaid/balance",
+            "POST /investments/holdings",
+            "POST /plaid/investments/holdings",
             "POST /market/signals",
             "POST /trading/connect",
             "POST /trading/order",
@@ -160,6 +175,7 @@ def live_readiness():
         "build_version": BUILD_VERSION,
         "plaid_backend": plaid_health_payload(),
         "plaid_income_link_supported": True,
+        "investment_holdings_supported": True,
         "stripe_configured": bool(STRIPE_SECRET),
         "alpaca_configured": bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
         "alpaca_orders_enabled": ENABLE_ALPACA_PAPER_ORDERS or ENABLE_LIVE_TRADING,
@@ -206,7 +222,7 @@ async def create_link_token(request: Request):
         "country_codes": split_env(PLAID_COUNTRY_CODES, "US"),
         "language": "en",
         "user": {"client_user_id": str(user_id)},
-        "products": split_env(PLAID_PRODUCTS, "auth,transactions"),
+        "products": requested_products(data),
     }
     status_code, result = await plaid_post("/link/token/create", payload)
     if "link_token" in result:
@@ -331,6 +347,11 @@ async def get_transactions(request: Request):
     )
     if "transactions" in result:
         transactions = result["transactions"]
+        accounts = result.get("accounts", [])
+        balance = 0
+        if accounts:
+            balance_data = accounts[0].get("balances", {})
+            balance = balance_data.get("current") or balance_data.get("available") or 0
         paychecks = [
             txn for txn in transactions
             if txn.get("amount", 0) < -500 and any(
@@ -342,7 +363,8 @@ async def get_transactions(request: Request):
             "success": True,
             "transactions": transactions[:100],
             "paychecks": paychecks[:10],
-            "accounts": result.get("accounts", []),
+            "accounts": accounts,
+            "balance": balance,
             "request_id": result.get("request_id"),
         }
     return plaid_error_response(result, status_code)
@@ -362,6 +384,59 @@ async def get_balance(request: Request):
     if "accounts" in result:
         return {"success": True, "accounts": result["accounts"], "request_id": result.get("request_id")}
     return plaid_error_response(result, status_code)
+
+
+def normalize_investment_holding(holding, securities_by_id):
+    security = securities_by_id.get(holding.get("security_id"), {})
+    quantity = float(holding.get("quantity") or 0)
+    price = float(holding.get("institution_price") or 0)
+    value = float(holding.get("institution_value") or quantity * price or 0)
+    return {
+        "symbol": security.get("ticker_symbol") or security.get("sedol") or security.get("cusip") or "N/A",
+        "name": security.get("name") or "Investment holding",
+        "quantity": quantity,
+        "price": price,
+        "value": value,
+        "type": security.get("type") or security.get("market_identifier_code") or "Security",
+        "account_id": holding.get("account_id"),
+        "security_id": holding.get("security_id"),
+        "cost_basis": holding.get("cost_basis"),
+        "iso_currency_code": holding.get("iso_currency_code") or security.get("iso_currency_code"),
+    }
+
+
+async def investment_holdings_payload(request):
+    require_plaid_config()
+    data = await request.json()
+    access_token = data.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=400, detail="access_token is required.")
+    status_code, result = await plaid_post(
+        "/investments/holdings/get",
+        {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET, "access_token": access_token},
+    )
+    if "holdings" in result:
+        securities_by_id = {item.get("security_id"): item for item in result.get("securities", [])}
+        holdings = [normalize_investment_holding(item, securities_by_id) for item in result.get("holdings", [])]
+        return {
+            "success": True,
+            "holdings": holdings,
+            "accounts": result.get("accounts", []),
+            "securities": result.get("securities", []),
+            "total": sum(item.get("value") or 0 for item in holdings),
+            "request_id": result.get("request_id"),
+        }
+    return plaid_error_response(result, status_code)
+
+
+@app.post("/investments/holdings")
+async def investments_holdings(request: Request):
+    return await investment_holdings_payload(request)
+
+
+@app.post("/plaid/investments/holdings")
+async def plaid_investments_holdings(request: Request):
+    return await investment_holdings_payload(request)
 
 
 @app.post("/market/signals")
