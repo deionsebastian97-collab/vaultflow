@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-08-plaid-income-token-access"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-08-live-readiness-flags"
 
 
 def clean_env_value(name, fallback=""):
@@ -40,6 +40,10 @@ STRIPE_SECRET = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 PRICE_PRIME = os.environ.get("STRIPE_PRICE_PRIME", "")
 PRICE_VAULT = os.environ.get("STRIPE_PRICE_VAULT", "")
+OPENAI_API_KEY = clean_env_value("OPENAI_API_KEY")
+OPENAI_MODEL = clean_env_value("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
+DOC_VAULT_ENCRYPTION_KEY = clean_env_value("DOC_VAULT_ENCRYPTION_KEY")
+ENABLE_TRANSFER_RAIL = clean_env_value("ENABLE_TRANSFER_RAIL", "false").lower() == "true"
 
 PLAID_CLIENT_ID = clean_env_value("PLAID_CLIENT_ID")
 PLAID_SECRET = clean_env_value("PLAID_SECRET")
@@ -204,9 +208,93 @@ def live_readiness():
         "plaid_income_link_supported": True,
         "investment_holdings_supported": True,
         "stripe_configured": bool(STRIPE_SECRET),
+        "ai_configured": bool(OPENAI_API_KEY),
+        "ai_model": OPENAI_MODEL if OPENAI_API_KEY else "",
         "alpaca_configured": bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
         "alpaca_orders_enabled": ENABLE_ALPACA_PAPER_ORDERS or ENABLE_LIVE_TRADING,
+        "transfer_enabled": ENABLE_TRANSFER_RAIL,
+        "doc_vault_key_configured": bool(DOC_VAULT_ENCRYPTION_KEY),
         "detail": "Backend readiness route is live.",
+    }
+
+
+@app.post("/ai/health")
+def ai_health():
+    return {
+        "success": True,
+        "configured": bool(OPENAI_API_KEY),
+        "model": OPENAI_MODEL if OPENAI_API_KEY else "",
+        "detail": (
+            "OpenAI backend key is configured."
+            if OPENAI_API_KEY
+            else "Add OPENAI_API_KEY and optionally OPENAI_MODEL in Railway to enable real AI answers."
+        ),
+    }
+
+
+@app.post("/ai/chat")
+async def ai_chat(request: Request):
+    if not OPENAI_API_KEY:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "success": False,
+                "configured": False,
+                "detail": "Add OPENAI_API_KEY in Railway to enable real AI answers.",
+            },
+        )
+    data = await request.json()
+    question = str(data.get("message") or data.get("question") or "").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="message is required.")
+    snapshot = data.get("snapshot") or {}
+    system_prompt = (
+        "You are VaultFlow's AI financial coach. Give helpful educational guidance, ask users to verify "
+        "numbers, and never claim to provide legal, tax, investment, or lending advice."
+    )
+    user_prompt = f"User question: {question}\n\nSafe financial snapshot JSON: {snapshot}"
+    async with httpx.AsyncClient(timeout=45) as client:
+        response = await client.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "model": OPENAI_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 500,
+            },
+        )
+    result = response.json()
+    if response.status_code >= 400:
+        return JSONResponse(
+            status_code=response.status_code,
+            content={
+                "success": False,
+                "configured": True,
+                "detail": result.get("error", {}).get("message") or "OpenAI request failed.",
+            },
+        )
+    answer = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+    return {"success": True, "configured": True, "model": OPENAI_MODEL, "answer": answer}
+
+
+@app.post("/vault/sign-url")
+async def vault_sign_url(request: Request):
+    data = await request.json()
+    filename = data.get("filename") or "document"
+    if not DOC_VAULT_ENCRYPTION_KEY:
+        return {
+            "success": False,
+            "configured": False,
+            "detail": "Add DOC_VAULT_ENCRYPTION_KEY and a real storage provider before production document uploads.",
+        }
+    return {
+        "success": False,
+        "configured": True,
+        "detail": f"Encryption key is present, but secure object storage is not connected yet for {filename}.",
     }
 
 
