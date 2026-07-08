@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-07-plaid-income-fix"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-08-plaid-user-id-income-fix"
 
 
 def clean_env_value(name, fallback=""):
@@ -262,19 +262,28 @@ async def create_link_token(request: Request):
     return plaid_error_response(result, status_code)
 
 
-async def get_income_user_token(user_id):
+async def get_income_user_reference(user_id):
     if user_id in income_users:
-        return income_users[user_id]
+        return income_users[user_id], None
     payload = {
         "client_id": PLAID_CLIENT_ID,
         "secret": PLAID_SECRET,
         "client_user_id": str(user_id),
     }
     status_code, result = await plaid_post("/user/create", payload)
-    if "user_token" not in result:
+    if result.get("user_id"):
+        income_users[user_id] = {"user_id": result["user_id"]}
+        return income_users[user_id], None
+    if result.get("user_token"):
+        income_users[user_id] = {"user_token": result["user_token"]}
+        return income_users[user_id], None
+    if result.get("request_id") and not (result.get("error_message") or result.get("error_code")):
+        result["error_message"] = (
+            "Plaid created a user response without user_id or user_token. Check whether Income is enabled "
+            "for this Plaid app and whether the User API flow matches the current Plaid dashboard account."
+        )
         return None, plaid_error_response(result, status_code)
-    income_users[user_id] = result["user_token"]
-    return result["user_token"], None
+    return None, plaid_error_response(result, status_code)
 
 
 @app.post("/plaid/create-income-link-token")
@@ -284,7 +293,7 @@ async def create_income_link_token(request: Request):
     user_id = data.get("user_id") or data.get("client_user_id") or "default-user"
     source_types = data.get("income_source_types") or ["payroll"]
     source_types = [item for item in source_types if item in {"payroll", "bank"}] or ["payroll"]
-    user_token, error = await get_income_user_token(user_id)
+    user_ref, error = await get_income_user_reference(user_id)
     if error:
         return error
 
@@ -300,11 +309,10 @@ async def create_income_link_token(request: Request):
         "client_name": PLAID_CLIENT_NAME,
         "country_codes": split_env(PLAID_COUNTRY_CODES, "US"),
         "language": "en",
-        "user": {"client_user_id": str(user_id)},
-        "user_token": user_token,
         "products": ["income_verification"],
         "income_verification": income_verification,
     }
+    payload.update(user_ref)
 
     status_code, result = await plaid_post("/link/token/create", payload)
     if "link_token" in result:
@@ -323,10 +331,11 @@ async def payroll_income(request: Request):
     require_plaid_config()
     data = await request.json()
     user_id = data.get("user_id") or "default-user"
-    user_token = income_users.get(user_id)
-    if not user_token:
+    user_ref = income_users.get(user_id)
+    if not user_ref:
         raise HTTPException(status_code=400, detail="Connect ADP/payroll first with /plaid/create-income-link-token.")
-    payload = {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET, "user_token": user_token}
+    payload = {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET}
+    payload.update(user_ref)
     status_code, result = await plaid_post("/credit/payroll_income/get", payload)
     if status_code < 400:
         return {"success": True, "items": result.get("items", []), "request_id": result.get("request_id")}
