@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-08-live-readiness-flags"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-08-ai-alpaca-market-data"
 
 
 def clean_env_value(name, fallback=""):
@@ -56,6 +56,7 @@ PLAID_BANK_INCOME_DAYS = int(os.environ.get("PLAID_BANK_INCOME_DAYS", "120") or 
 ALPACA_KEY_ID = clean_env_value("ALPACA_KEY_ID")
 ALPACA_SECRET_KEY = clean_env_value("ALPACA_SECRET_KEY")
 ALPACA_TRADING_BASE_URL = clean_env_value("ALPACA_TRADING_BASE_URL", "https://paper-api.alpaca.markets")
+ALPACA_DATA_BASE_URL = clean_env_value("ALPACA_DATA_BASE_URL", "https://data.alpaca.markets")
 ALPACA_DATA_FEED = clean_env_value("ALPACA_DATA_FEED", "iex")
 ENABLE_ALPACA_PAPER_ORDERS = clean_env_value("ENABLE_ALPACA_PAPER_ORDERS", "false").lower() == "true"
 ENABLE_LIVE_TRADING = clean_env_value("ENABLE_LIVE_TRADING", "false").lower() == "true"
@@ -247,22 +248,29 @@ async def ai_chat(request: Request):
     question = str(data.get("message") or data.get("question") or "").strip()
     if not question:
         raise HTTPException(status_code=400, detail="message is required.")
-    snapshot = data.get("snapshot") or {}
+    snapshot = data.get("snapshot") or data.get("context") or {}
+    history = data.get("history") or []
     system_prompt = (
-        "You are VaultFlow's AI financial coach. Give helpful educational guidance, ask users to verify "
-        "numbers, and never claim to provide legal, tax, investment, or lending advice."
+        "You are VaultFlow's AI assistant. Answer normal everyday questions clearly, and answer finance "
+        "questions as an educational financial coach. Be practical, concise, and friendly. Ask users to verify "
+        "numbers before acting. Never claim to provide legal, tax, investment, lending, or trading advice."
     )
-    user_prompt = f"User question: {question}\n\nSafe financial snapshot JSON: {snapshot}"
+    prior = []
+    if isinstance(history, list):
+        for item in history[-8:]:
+            role = "assistant" if item.get("from") == "ai" else "user"
+            text = str(item.get("text") or "")[:900]
+            if text:
+                prior.append({"role": role, "content": text})
+    user_prompt = f"User question: {question}\n\nSafe VaultFlow context JSON: {snapshot}"
+    messages = [{"role": "system", "content": system_prompt}] + prior + [{"role": "user", "content": user_prompt}]
     async with httpx.AsyncClient(timeout=45) as client:
         response = await client.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
             json={
                 "model": OPENAI_MODEL,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
+                "messages": messages,
                 "temperature": 0.4,
                 "max_tokens": 500,
             },
@@ -274,11 +282,12 @@ async def ai_chat(request: Request):
             content={
                 "success": False,
                 "configured": True,
+                "mode": "openai-error",
                 "detail": result.get("error", {}).get("message") or "OpenAI request failed.",
             },
         )
     answer = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-    return {"success": True, "configured": True, "model": OPENAI_MODEL, "answer": answer}
+    return {"success": True, "configured": True, "mode": "openai-responses", "model": OPENAI_MODEL, "answer": answer}
 
 
 @app.post("/vault/sign-url")
@@ -573,45 +582,122 @@ async def plaid_investments_holdings(request: Request):
 @app.post("/market/signals")
 async def market_signals(request: Request):
     data = await request.json()
-    symbol = (data.get("symbol") or "SPY").upper()
-    prices = data.get("prices") or data.get("history") or [498, 501, 503, 500, 506, 509, 512, 511, 515, 518]
-    prices = [float(price) for price in prices if isinstance(price, (int, float))]
-    if len(prices) < 5:
-        raise HTTPException(status_code=400, detail="At least five price points are required.")
-    short = statistics.mean(prices[-5:])
-    long = statistics.mean(prices[-min(20, len(prices)):])
-    returns = [(prices[i] - prices[i - 1]) / prices[i - 1] for i in range(1, len(prices)) if prices[i - 1]]
-    volatility = statistics.pstdev(returns) * math.sqrt(252) if len(returns) > 1 else 0
-    momentum = (prices[-1] - prices[0]) / prices[0]
-    score = max(0, min(100, 50 + (short - long) * 3 + momentum * 100 - volatility * 20))
-    action = "BUY" if score >= 62 else "SELL" if score <= 38 else "HOLD"
+    raw_symbols = data.get("symbols")
+    if isinstance(raw_symbols, list) and raw_symbols:
+        symbols = [str(item).upper().strip() for item in raw_symbols if str(item).strip()][:8]
+    else:
+        symbols = [str(data.get("symbol") or "SPY").upper().strip()]
+    history_by_symbol = data.get("history_by_symbol") if isinstance(data.get("history_by_symbol"), dict) else {}
+
+    def fallback_prices(symbol):
+        seed = sum((index + 3) * ord(char) for index, char in enumerate(symbol))
+        base = 90 + seed % 240
+        prices = []
+        price = float(base)
+        for index in range(60):
+            drift = 0.18 + ((seed % 9) - 4) * 0.015
+            wave = math.sin((index + seed % 13) / 4) * 0.7
+            price = max(8, price + drift + wave)
+            prices.append(round(price, 2))
+        return prices
+
+    async def build_signal(symbol, supplied_prices=None):
+        source = "client-prices"
+        prices = supplied_prices
+        bars_used = 0
+        if not prices and ALPACA_KEY_ID and ALPACA_SECRET_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=20) as client:
+                    response = await client.get(
+                        f"{ALPACA_DATA_BASE_URL}/v2/stocks/{symbol}/bars",
+                        headers={
+                            "APCA-API-KEY-ID": ALPACA_KEY_ID,
+                            "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY,
+                        },
+                        params={"timeframe": "1Day", "limit": 60, "feed": ALPACA_DATA_FEED, "adjustment": "raw"},
+                    )
+                alpaca_data = response.json()
+                bars = alpaca_data.get("bars") or []
+                prices = [float(bar.get("c")) for bar in bars if bar.get("c") is not None]
+                bars_used = len(prices)
+                if prices:
+                    source = "alpaca-market-data"
+            except Exception:
+                prices = None
+        if not prices:
+            source = "backend-local"
+            prices = fallback_prices(symbol)
+        prices = [float(price) for price in prices if isinstance(price, (int, float))]
+        if len(prices) < 5:
+            prices = fallback_prices(symbol)
+            source = "backend-local"
+        short = statistics.mean(prices[-5:])
+        long = statistics.mean(prices[-min(20, len(prices)):])
+        returns = [(prices[i] - prices[i - 1]) / prices[i - 1] for i in range(1, len(prices)) if prices[i - 1]]
+        volatility = statistics.pstdev(returns) * math.sqrt(252) if len(returns) > 1 else 0
+        momentum = (prices[-1] - prices[0]) / prices[0]
+        score = max(0, min(100, 50 + (short - long) * 3 + momentum * 100 - volatility * 20))
+        action = "BUY" if score >= 62 else "SELL" if score <= 38 else "HOLD"
+        last_price = prices[-1]
+        risk_pct = max(0.015, min(0.08, volatility / math.sqrt(252) * 2 if volatility else 0.03))
+        return {
+            "symbol": symbol,
+            "s": symbol,
+            "action": action,
+            "g": action,
+            "label": action,
+            "score": round(score, 1),
+            "confidence": round(score, 1),
+            "source": source,
+            "bars_used": bars_used or len(prices),
+            "last_price": round(last_price, 2),
+            "stop": round(last_price * (1 - risk_pct), 2),
+            "target": round(last_price * (1 + risk_pct * 1.8), 2),
+            "metrics": {
+                "short_average": round(short, 2),
+                "long_average": round(long, 2),
+                "momentum": round(momentum, 4),
+                "annualized_volatility": round(volatility, 4),
+                "risk_pct": round(risk_pct, 4),
+            },
+        }
+
+    signals = []
+    for symbol in symbols:
+        supplied = history_by_symbol.get(symbol)
+        if len(symbols) == 1:
+            supplied = supplied or data.get("prices") or data.get("history")
+        signals.append(await build_signal(symbol, supplied))
+    primary = signals[0]
     return {
         "success": True,
-        "symbol": symbol,
-        "action": action,
-        "confidence": round(score, 1),
-        "metrics": {
-            "short_average": round(short, 2),
-            "long_average": round(long, 2),
-            "momentum": round(momentum, 4),
-            "annualized_volatility": round(volatility, 4),
-        },
+        "symbol": primary["symbol"],
+        "action": primary["action"],
+        "confidence": primary["confidence"],
+        "source": primary["source"],
+        "signals": signals,
+        "metrics": primary["metrics"],
         "disclaimer": "Educational signal only. Review risk before placing real trades.",
     }
 
 
 @app.post("/trading/connect")
 def trading_connect():
+    configured = bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY)
     return {
-        "success": bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
-        "configured": bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
+        "success": configured,
+        "configured": configured,
+        "mode": "paper-ready" if configured and ENABLE_ALPACA_PAPER_ORDERS else "paper-keys-only" if configured else "missing-keys",
         "paper_orders_enabled": ENABLE_ALPACA_PAPER_ORDERS,
         "live_trading_enabled": ENABLE_LIVE_TRADING,
         "base_url": ALPACA_TRADING_BASE_URL,
+        "data_base_url": ALPACA_DATA_BASE_URL,
         "data_feed": ALPACA_DATA_FEED,
         "detail": (
-            "Alpaca keys are configured."
-            if ALPACA_KEY_ID and ALPACA_SECRET_KEY
+            "Alpaca keys are configured. Paper order submission is enabled."
+            if configured and ENABLE_ALPACA_PAPER_ORDERS
+            else "Alpaca keys are configured. Add ENABLE_ALPACA_PAPER_ORDERS=true in Railway to submit paper orders."
+            if configured
             else "Add ALPACA_KEY_ID and ALPACA_SECRET_KEY in Railway."
         ),
     }
