@@ -19,27 +19,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-06-plaid-health"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-07-plaid-income-fix"
+
+
+def clean_env_value(name, fallback=""):
+    raw = os.environ.get(name)
+    if raw is None:
+        raw = fallback
+    value = str(raw).strip()
+    for _ in range(2):
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1].strip()
+    return value
+
+
+def looks_like_client_id(value):
+    return bool(value) and len(value) == 24 and all(ch in "0123456789abcdefABCDEF" for ch in value)
 
 STRIPE_SECRET = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 PRICE_PRIME = os.environ.get("STRIPE_PRICE_PRIME", "")
 PRICE_VAULT = os.environ.get("STRIPE_PRICE_VAULT", "")
 
-PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID", "").strip()
-PLAID_SECRET = os.environ.get("PLAID_SECRET", "").strip()
-PLAID_ENV = os.environ.get("PLAID_ENV", "sandbox").strip() or "sandbox"
-PLAID_CLIENT_NAME = os.environ.get("PLAID_CLIENT_NAME", "VaultFlow").strip() or "VaultFlow"
-PLAID_PRODUCTS = os.environ.get("PLAID_PRODUCTS", "auth,transactions")
-PLAID_COUNTRY_CODES = os.environ.get("PLAID_COUNTRY_CODES", "US")
+PLAID_CLIENT_ID = clean_env_value("PLAID_CLIENT_ID")
+PLAID_SECRET = clean_env_value("PLAID_SECRET")
+PLAID_ENV = clean_env_value("PLAID_ENV", "sandbox") or "sandbox"
+PLAID_CLIENT_NAME = clean_env_value("PLAID_CLIENT_NAME", "VaultFlow") or "VaultFlow"
+PLAID_PRODUCTS = clean_env_value("PLAID_PRODUCTS", "auth,transactions")
+PLAID_COUNTRY_CODES = clean_env_value("PLAID_COUNTRY_CODES", "US")
 PLAID_BANK_INCOME_DAYS = int(os.environ.get("PLAID_BANK_INCOME_DAYS", "120") or "120")
 
-ALPACA_KEY_ID = os.environ.get("ALPACA_KEY_ID", "").strip()
-ALPACA_SECRET_KEY = os.environ.get("ALPACA_SECRET_KEY", "").strip()
-ALPACA_TRADING_BASE_URL = os.environ.get("ALPACA_TRADING_BASE_URL", "https://paper-api.alpaca.markets")
-ALPACA_DATA_FEED = os.environ.get("ALPACA_DATA_FEED", "iex")
-ENABLE_ALPACA_PAPER_ORDERS = os.environ.get("ENABLE_ALPACA_PAPER_ORDERS", "false").lower() == "true"
-ENABLE_LIVE_TRADING = os.environ.get("ENABLE_LIVE_TRADING", "false").lower() == "true"
+ALPACA_KEY_ID = clean_env_value("ALPACA_KEY_ID")
+ALPACA_SECRET_KEY = clean_env_value("ALPACA_SECRET_KEY")
+ALPACA_TRADING_BASE_URL = clean_env_value("ALPACA_TRADING_BASE_URL", "https://paper-api.alpaca.markets")
+ALPACA_DATA_FEED = clean_env_value("ALPACA_DATA_FEED", "iex")
+ENABLE_ALPACA_PAPER_ORDERS = clean_env_value("ENABLE_ALPACA_PAPER_ORDERS", "false").lower() == "true"
+ENABLE_LIVE_TRADING = clean_env_value("ENABLE_LIVE_TRADING", "false").lower() == "true"
 
 stripe.api_key = STRIPE_SECRET
 
@@ -70,6 +85,8 @@ def plaid_configured():
 
 def plaid_health_payload():
     configured = plaid_configured()
+    secret_may_be_client_id = bool(PLAID_SECRET and PLAID_SECRET == PLAID_CLIENT_ID)
+    secret_shape_warning = bool(secret_may_be_client_id or looks_like_client_id(PLAID_SECRET) or len(PLAID_SECRET) < 25)
     return {
         "success": configured,
         "configured": configured,
@@ -78,6 +95,9 @@ def plaid_health_payload():
         "client_id_present": bool(PLAID_CLIENT_ID),
         "secret_present": bool(PLAID_SECRET),
         "client_id_preview": f"{PLAID_CLIENT_ID[:6]}...{PLAID_CLIENT_ID[-4:]}" if PLAID_CLIENT_ID else "",
+        "client_id_shape_ok": looks_like_client_id(PLAID_CLIENT_ID),
+        "secret_shape_ok": bool(PLAID_SECRET and not secret_shape_warning),
+        "secret_may_be_client_id": secret_may_be_client_id,
         "products": split_env(PLAID_PRODUCTS, "auth,transactions"),
         "country_codes": split_env(PLAID_COUNTRY_CODES, "US"),
         "income_link_supported": True,
@@ -93,6 +113,13 @@ def plaid_health_payload():
 def plaid_error_detail(result):
     code = result.get("error_code") or ""
     message = result.get("error_message") or result.get("display_message") or "Plaid request failed."
+    lower_message = message.lower()
+    if "secret must be a properly formatted" in lower_message:
+        return (
+            "Plaid rejected PLAID_SECRET because it is not formatted like a Plaid secret. In Railway, replace "
+            "PLAID_SECRET with the Sandbox Secret from Plaid Dashboard, not the Client ID, publishable key, "
+            "masked dots, quotes, or spaces. Then redeploy the backend."
+        )
     if code in {"INVALID_API_KEYS", "INVALID_CLIENT_ID", "INVALID_SECRET"} or "client_id" in message.lower():
         return (
             "Plaid rejected the backend key pair. In Railway, make sure PLAID_CLIENT_ID is the Plaid Client ID, "
@@ -261,20 +288,23 @@ async def create_income_link_token(request: Request):
     if error:
         return error
 
+    income_verification = {"income_source_types": source_types}
+    if "payroll" in source_types:
+        income_verification["payroll_income"] = {"flow_types": ["payroll_digital_income"]}
+    if "bank" in source_types:
+        income_verification["bank_income"] = {"days_requested": PLAID_BANK_INCOME_DAYS}
+
     payload = {
         "client_id": PLAID_CLIENT_ID,
         "secret": PLAID_SECRET,
         "client_name": PLAID_CLIENT_NAME,
         "country_codes": split_env(PLAID_COUNTRY_CODES, "US"),
         "language": "en",
+        "user": {"client_user_id": str(user_id)},
         "user_token": user_token,
         "products": ["income_verification"],
-        "income_verification": {"income_source_types": source_types},
+        "income_verification": income_verification,
     }
-    if "payroll" in source_types:
-        payload["payroll_income"] = {"flow_types": ["payroll_digital_income"]}
-    if "bank" in source_types:
-        payload["bank_income"] = {"days_requested": PLAID_BANK_INCOME_DAYS}
 
     status_code, result = await plaid_post("/link/token/create", payload)
     if "link_token" in result:
