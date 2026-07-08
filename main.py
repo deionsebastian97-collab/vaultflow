@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-08-plaid-user-id-income-fix"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-08-plaid-income-token-access"
 
 
 def clean_env_value(name, fallback=""):
@@ -271,12 +271,16 @@ async def get_income_user_reference(user_id):
         "client_user_id": str(user_id),
     }
     status_code, result = await plaid_post("/user/create", payload)
-    if result.get("user_id"):
-        income_users[user_id] = {"user_id": result["user_id"]}
-        return income_users[user_id], None
     if result.get("user_token"):
         income_users[user_id] = {"user_token": result["user_token"]}
         return income_users[user_id], None
+    if result.get("user_id"):
+        result["error_message"] = (
+            "Plaid Income requires a user_token, but this Plaid app is returning only user_id from /user/create. "
+            "Plaid requires newer integrations to request user-token access for Bank/Payroll Income through "
+            "Plaid support, an account manager, or the Dashboard. Normal bank and investment Link still work."
+        )
+        return None, plaid_error_response(result, status_code)
     if result.get("request_id") and not (result.get("error_message") or result.get("error_code")):
         result["error_message"] = (
             "Plaid created a user response without user_id or user_token. Check whether Income is enabled "
