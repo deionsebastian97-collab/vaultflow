@@ -478,6 +478,35 @@ body.ruby-theme{--tier:#E45073;--tier-dark:#7A1733;--tier-soft:rgba(228,80,115,0
 .owner-alerts{display:grid;gap:8px;margin-top:10px}
 .owner-alert{border:1px solid rgba(201,168,76,0.16);border-radius:7px;background:rgba(201,168,76,0.05);padding:9px 10px;font-size:10px;color:#8A8070;line-height:1.55}
 .owner-alert strong{display:block;color:#F5F0E8;margin-bottom:2px;font-size:10px}
+.owner-console-btn{display:none}
+body.owner-mode .owner-console-btn{display:inline-block}
+.owner-power-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.owner-power{border:1px solid rgba(214,183,101,0.12);border-radius:8px;background:#101416;padding:10px;font-size:9px;color:#8A8070;line-height:1.55}
+.owner-power strong{display:block;color:#F5F0E8;font-size:10px;margin-bottom:4px;letter-spacing:1px}
+.tab-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.tab-info-card{border:1px solid rgba(214,183,101,0.12);border-radius:12px;background:linear-gradient(145deg,rgba(16,20,20,0.96),rgba(8,10,12,0.96));padding:13px;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.tab-info-card:hover{transform:translateY(-1px);border-color:var(--tier-border);background:linear-gradient(145deg,rgba(20,25,25,0.98),rgba(10,12,14,0.98))}
+.tab-info-card span{display:inline-flex;border:1px solid var(--tier-border);border-radius:999px;padding:4px 7px;color:var(--tier);font-size:7px;letter-spacing:2px;margin-bottom:8px}
+.tab-info-card strong{display:block;color:#F5F0E8;font-size:11px;margin-bottom:5px}
+.tab-info-card small{display:block;color:#8A8070;font-size:9px;line-height:1.55}
+.tour-skip-float{position:fixed;right:18px;bottom:18px;z-index:7000;display:none;border:1px solid rgba(214,183,101,0.38);border-radius:999px;background:linear-gradient(135deg,#8B6914,#D6B765);color:#080808;padding:12px 16px;font-size:9px;letter-spacing:3px;font-weight:900;font-family:'Montserrat',sans-serif;box-shadow:0 18px 46px rgba(0,0,0,0.38);cursor:pointer}
+body.tour-running .tour-skip-float{display:block}
+.tour-overlay{position:fixed;left:50%;top:86px;z-index:6999;width:min(520px,calc(100% - 32px));transform:translate(-50%,-18px) scale(.96);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.2,.8,.2,1)}
+body.tour-running .tour-overlay{opacity:1;transform:translate(-50%,0) scale(1)}
+.tour-card{position:relative;overflow:hidden;border:1px solid rgba(214,183,101,0.34);border-radius:18px;background:linear-gradient(145deg,rgba(8,10,14,0.94),rgba(18,22,26,0.94));box-shadow:0 28px 90px rgba(0,0,0,0.48);padding:16px;backdrop-filter:blur(18px)}
+.tour-card::before{content:'';position:absolute;inset:-40%;background:conic-gradient(from 90deg,transparent,rgba(214,183,101,0.2),transparent,rgba(27,166,114,0.18),transparent);animation:tourSpin 4s linear infinite;opacity:.75}
+.tour-card-inner{position:relative;z-index:1}
+.tour-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:8px;letter-spacing:3px;color:#D6B765;margin-bottom:8px}
+.tour-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#F5F0E8;line-height:1.05;margin-bottom:6px}
+.tour-copy{font-size:10px;color:#9EA7B8;line-height:1.65}
+.tour-progress{height:5px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;margin-top:13px}
+.tour-progress-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#1BA672,#D6B765);transition:width .45s ease}
+.tour-hint{font-size:8px;letter-spacing:2px;color:#8A8070;margin-top:10px}
+.tour-focus{position:relative;animation:tourPanelPulse 1.15s ease-in-out infinite;outline:1px solid rgba(214,183,101,0.42);box-shadow:0 0 0 6px rgba(214,183,101,0.06),0 20px 70px rgba(214,183,101,0.12)!important}
+.dtab.tour-tab-glow{animation:tourTabGlow .8s ease-in-out 3;border-color:rgba(214,183,101,0.65)!important}
+@keyframes tourSpin{to{transform:rotate(360deg)}}
+@keyframes tourPanelPulse{0%,100%{outline-color:rgba(214,183,101,0.24);filter:brightness(1)}50%{outline-color:rgba(214,183,101,0.7);filter:brightness(1.08)}}
+@keyframes tourTabGlow{0%,100%{box-shadow:none}50%{box-shadow:0 0 28px rgba(214,183,101,0.36);transform:translateY(-2px)}}
 .mobile-action-bar{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:900;border:1px solid var(--tier-border);border-radius:12px;background:rgba(5,5,5,0.94);backdrop-filter:blur(16px);box-shadow:0 18px 48px rgba(0,0,0,0.35);padding:8px;grid-template-columns:repeat(3,1fr);gap:6px}
 .mobile-action-bar button{background:#101416;border:1px solid rgba(214,183,101,0.11);border-radius:9px;color:#F5F0E8;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:1px;padding:9px 6px;cursor:pointer}
 .mobile-action-bar button span{display:block;color:var(--tier);font-size:13px;margin-bottom:2px}
@@ -523,6 +552,9 @@ body.hide-demo-help .start-grid{display:none}
 .upload-copy{font-size:10px;color:#8A8070;line-height:1.65}
 .file-input-native{display:block;width:100%;margin-top:12px;color:#F5F0E8;font-size:10px;font-family:'Inter','Montserrat',sans-serif}
 .file-input-native::file-selector-button{margin-right:10px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--tier-dark),var(--tier));color:var(--tier-text);padding:9px 12px;font-size:8px;letter-spacing:2px;font-weight:800;cursor:pointer}
+.vault-doc-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px}
+.doc-kind{display:inline-flex;border:1px solid rgba(125,211,252,0.24);border-radius:999px;background:rgba(125,211,252,0.06);color:#7dd3fc!important;padding:4px 7px;font-size:7px!important;letter-spacing:1px;text-transform:uppercase;margin-right:5px}
+.doc-preview{max-width:64px;max-height:48px;object-fit:cover;border-radius:5px;border:1px solid rgba(214,183,101,0.14);margin-right:8px;vertical-align:middle}
 .download-help{border:1px solid rgba(214,183,101,0.12);border-radius:10px;background:rgba(214,183,101,0.05);padding:10px 11px;font-size:9px;color:#8A8070;line-height:1.6;margin:8px 0 10px}
 .download-help strong{color:#F5F0E8}
 .finance-preview{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;border:1px solid rgba(214,183,101,0.1);border-radius:7px;background:#101416;padding:10px;margin:10px 0}
@@ -798,9 +830,9 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
     <div class="hero-grid"></div>
     <div class="hero-shell">
       <div class="hero-copy">
-        <div class="home-pill">PAYDAY DETECTION · AUTO-ALLOCATION · WEALTH PLAN</div>
-        <h1>Detect payday. Split your money. Build wealth automatically.</h1>
-        <p class="hero-sub">VaultFlow detects payday, splits your money, and routes it toward bills, savings, investing, and real estate goals before cash leaks away.</p>
+        <div class="home-pill">IRREGULAR INCOME · WEALTH COMMAND CENTER · PLANNING SAAS</div>
+        <h1>The financial command center for people who earn differently.</h1>
+        <p class="hero-sub">VaultFlow helps merchant mariners, veterans, overtime workers, contractors, and real estate investors organize income, debt, goals, documents, and decisions in one premium dashboard.</p>
         <div class="hero-actions">
           <div>
             <div class="wrow">
@@ -814,7 +846,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
             <button class="btnout demo-hero" onclick="demoLogin()">TRY DEMO DASHBOARD</button>
           </div>
         </div>
-        <div class="hero-note">No spreadsheet rebuilds. No mystery cash leaks. Just a plan that moves with you.</div>
+        <div class="hero-note">Planning software first. Approved fintech partners later. No bank, broker, lender, or adviser claims.</div>
       </div>
       <div class="hero-panel" aria-label="VaultFlow allocation preview">
         <div class="hero-panel-top">
@@ -830,19 +862,19 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="flow-step"><div class="flow-num">03</div><div><div class="flow-name">Real estate reserve</div><div class="flow-meta">Down payment progress</div></div><div class="flow-amt">$2,237</div></div>
         <div class="flow-step"><div class="flow-num">04</div><div><div class="flow-name">Investing allocation</div><div class="flow-meta">Algo and long-term buys</div></div><div class="flow-amt">$2,000</div></div>
         <div class="hero-trust">
-          <div class="trust-item"><div class="trust-k">SETUP</div><div class="trust-v">5 min</div></div>
-          <div class="trust-item"><div class="trust-k">TOOLS</div><div class="trust-v">8</div></div>
-          <div class="trust-item"><div class="trust-k">PLAN</div><div class="trust-v">Live</div></div>
+          <div class="trust-item"><div class="trust-k">NICHE</div><div class="trust-v">Irregular</div></div>
+          <div class="trust-item"><div class="trust-k">TOOLS</div><div class="trust-v">MVP+</div></div>
+          <div class="trust-item"><div class="trust-k">MODE</div><div class="trust-v">Guarded</div></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="stats">
-    <div class="si"><div class="sl">MONTHLY INCOME MANAGED</div><div class="sv"><span>$</span>10,628</div></div>
-    <div class="si"><div class="sl">ALLOCATION ACCURACY</div><div class="sv">99<span>%</span></div></div>
-    <div class="si"><div class="sl">NET WORTH INCREASE</div><div class="sv">340<span>%</span></div></div>
-    <div class="si"><div class="sl">HOURS SAVED YEARLY</div><div class="sv">240<span>hrs</span></div></div>
+    <div class="si"><div class="sl">CORE MARKET</div><div class="sv">10<span>x</span></div></div>
+    <div class="si"><div class="sl">MVP MODULES</div><div class="sv">8</div></div>
+    <div class="si"><div class="sl">FINTECH RAILS</div><div class="sv">Partner</div></div>
+    <div class="si"><div class="sl">LIVE GUARDRAILS</div><div class="sv">On</div></div>
   </section>
 
   <section class="integration-strip">
@@ -855,6 +887,20 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="integration-chip">RAILWAY BACKEND</div>
         <div class="integration-chip">ALPACA PAPER TRADING</div>
         <div class="integration-chip">SECURE WEBHOOKS</div>
+        <div class="integration-chip">VAULTFLOW CAPITAL</div>
+        <div class="integration-chip">PARTNER-FIRST FINTECH</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="safety-sec">
+    <div class="safety-wrap">
+      <div style="text-align:center;margin-bottom:34px"><div class="tag">THE EDGE</div><h2 class="stitle">Own the market banks ignore.</h2></div>
+      <div class="safety-grid">
+        <div class="safety-card"><div class="safety-icon">M</div><div class="safety-title">Merchant Mariners</div><div class="safety-copy">Hitch pay, sea pay, overtime, per diem, and long gaps between deposits need a calendar-first money system.</div></div>
+        <div class="safety-card"><div class="safety-icon">V</div><div class="safety-title">Veterans</div><div class="safety-copy">VA disability, education benefits, transition planning, documents, and property goals live beside ordinary income.</div></div>
+        <div class="safety-card"><div class="safety-icon">R</div><div class="safety-title">Real Estate Builders</div><div class="safety-copy">Track down payments, cap rate, DSCR, cash flow, leases, loan docs, and property pipelines in the same workspace.</div></div>
+        <div class="safety-card"><div class="safety-icon">AI</div><div class="safety-title">AI Money Planner</div><div class="safety-copy">Ask normal questions, build monthly plans, and simulate decisions without calling it regulated investment advice.</div></div>
       </div>
     </div>
   </section>
@@ -893,12 +939,12 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       <h2 style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;letter-spacing:0;line-height:1.2;color:#F5F0E8">Every feature<br>with purpose.</h2>
     </div>
     <div>
-      <div class="frow"><div class="fnum">01</div><div class="ftit">Bank Detection</div><div class="fdesc">Connects to 12,000+ banks. Detects your paycheck the moment it deposits.</div></div>
-      <div class="frow"><div class="fnum">02</div><div class="ftit">Intelligent Allocation</div><div class="fdesc">Uses avalanche debt method and Kelly criterion for optimal distribution.</div></div>
-      <div class="frow"><div class="fnum">03</div><div class="ftit">Automated Transfers</div><div class="fdesc">Funds move automatically to savings, brokerage, debt, and real estate.</div></div>
-      <div class="frow"><div class="fnum">04</div><div class="ftit">Stock Algorithm</div><div class="fdesc">Connects to Alpaca. Your investing allocation goes directly into your algo.</div></div>
-      <div class="frow"><div class="fnum">05</div><div class="ftit">Real Estate Analyzer</div><div class="fdesc">Cap rate, cash-on-cash, debt service — every metric in seconds.</div></div>
-      <div class="frow"><div class="fnum">06</div><div class="ftit">Wealth Projection</div><div class="fdesc">See your exact net worth year by year toward your $1M goal.</div></div>
+      <div class="frow"><div class="fnum">01</div><div class="ftit">Money Command Center</div><div class="fdesc">Net worth, cash flow, debt, investments, real estate, goals, and documents in one workspace.</div></div>
+      <div class="frow"><div class="fnum">02</div><div class="ftit">Irregular Income Planner</div><div class="fdesc">Built for rotations, VA income, overtime, seasonal checks, contract pay, and high-variable cash flow.</div></div>
+      <div class="frow"><div class="fnum">03</div><div class="ftit">Partner Bank Linking</div><div class="fdesc">Plaid powers account data when configured. Real money movement stays behind approved rails and explicit review.</div></div>
+      <div class="frow"><div class="fnum">04</div><div class="ftit">Educational Signal Engine</div><div class="fdesc">Rules-based market signals, risk notes, and guarded Alpaca order flow with paper mode as the default.</div></div>
+      <div class="frow"><div class="fnum">05</div><div class="ftit">Real Estate Analyzer</div><div class="fdesc">Cap rate, cash-on-cash return, DSCR, mortgage math, down payment goals, and deal pipeline.</div></div>
+      <div class="frow"><div class="fnum">06</div><div class="ftit">AI Financial Twin</div><div class="fdesc">Simulate retirement, job loss, home purchases, investing rates, inflation, and future wealth paths.</div></div>
     </div>
   </div>
 
@@ -908,8 +954,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       <div class="safety-grid">
         <div class="safety-card"><div class="safety-icon">✓</div><div class="safety-title">Plaid Link Ready</div><div class="safety-copy">Bank login is handled through Plaid Link when a backend token endpoint is available. The local preview keeps a sandbox fallback.</div></div>
         <div class="safety-card"><div class="safety-icon">•</div><div class="safety-title">No Bank Passwords</div><div class="safety-copy">VaultFlow never asks users to type bank passwords into the app. Connection status and events are shown openly.</div></div>
-        <div class="safety-card"><div class="safety-icon">$</div><div class="safety-title">Transfer Review</div><div class="safety-copy">Auto-transfer tools queue and record movement by tier. Real production transfers belong behind verified backend rails.</div></div>
-        <div class="safety-card"><div class="safety-icon">!</div><div class="safety-title">Estimator Only</div><div class="safety-copy">Tax, signals, and projections are decision-support tools. They are not legal, tax, or financial advice.</div></div>
+        <div class="safety-card"><div class="safety-icon">$</div><div class="safety-title">Transfer Review</div><div class="safety-copy">Real production transfers require Plaid Transfer or another approved provider, backend flags, account selection, and user confirmation.</div></div>
+        <div class="safety-card"><div class="safety-icon">!</div><div class="safety-title">Software First</div><div class="safety-copy">VaultFlow is planning software. It is not a bank, lender, broker, investment adviser, tax adviser, or credit repair service.</div></div>
       </div>
     </div>
   </section>
@@ -1007,10 +1053,9 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       <div class="ltabs">
         <button class="ltab on" id="lt1" onclick="ltab('in')">SIGN IN</button>
         <button class="ltab" id="lt2" onclick="ltab('up')">CREATE ACCOUNT</button>
-        <button class="ltab" id="lt3" onclick="ltab('owner')">OWNER</button>
       </div>
       <div id="lf1">
-        <label class="lbl">EMAIL</label><input class="inp" type="email" id="sie" placeholder="your@email.com" autocomplete="email">
+        <label class="lbl">EMAIL</label><input class="inp" type="text" id="sie" placeholder="your@email.com" autocomplete="username">
         <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sip" placeholder="Password" autocomplete="current-password">
         <button class="btngold" onclick="signin()">SIGN IN</button>
         <button class="btnout demo-btn" onclick="demoLogin()">USE DEMO ACCOUNT</button>
@@ -1020,12 +1065,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sup" placeholder="Min 6 characters" autocomplete="new-password">
         <label class="lbl">CONFIRM PASSWORD</label><input class="inp" type="password" id="sup2" placeholder="Repeat password" autocomplete="new-password">
         <button class="btngold" onclick="signup()">CREATE ACCOUNT</button>
-      </div>
-      <div id="lf3" style="display:none">
-        <label class="lbl">OWNER EMAIL</label><input class="inp" type="email" id="owe" placeholder="owner@vaultflow.local" autocomplete="email">
-        <label class="lbl">OWNER PASSCODE</label><input class="inp" type="password" id="owp" placeholder="Owner passcode" autocomplete="current-password">
-        <button class="btngold" onclick="ownerLogin()">OPEN OWNER CONSOLE</button>
-        <div class="login-helper">Preview owner access works only on local file/localhost with a local preview code. Production owner access needs server-side admin auth.</div>
       </div>
       <div id="lmsg" class="msgbox"></div>
       <div class="login-helper">Local preview mode keeps demo progress in this browser.</div>
@@ -1040,6 +1079,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
     <button class="logo" onclick="go('home')">VAULT<span>FLOW</span></button>
     <div style="display:flex;gap:8px">
       <button class="ngold" onclick="go('upgrade')">UPGRADE</button>
+      <button class="nbtn owner-console-btn" onclick="openOwnerConsole()">OWNER CONSOLE</button>
       <button class="nbtn" onclick="signout()">SIGN OUT</button>
     </div>
   </nav>
@@ -1078,10 +1118,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div style="font-size:14px;margin-bottom:2px">◉</div>
         <div>PROFILE</div>
       </button>
-      <button class="dtab owner-only" onclick="dtab('own')" title="Owner">
-        <div style="font-size:14px;margin-bottom:2px">♛</div>
-        <div>OWNER</div>
-      </button>
       <button class="dtab" onclick="go('upgrade')" title="Upgrade">
         <div style="font-size:14px;margin-bottom:2px">★</div>
         <div>UPGRADE</div>
@@ -1098,7 +1134,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <option value="pr">DEALS</option>
         <option value="bl">BLOG</option>
         <option value="pf">PROFILE</option>
-        <option value="own">OWNER</option>
         <option value="upgrade">UPGRADE</option>
       </select>
     </div>
@@ -1167,6 +1202,15 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="trust-chip"><span>PLAID</span><strong id="trust-plaid">Link status checking</strong></div>
         <div class="trust-chip"><span>BILLING</span><strong>Stripe checkout ready</strong></div>
         <div class="trust-chip"><span>MODE</span><strong id="trust-mode">Preview guardrails on</strong></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:14px">
+        <div class="chart-head"><div><div class="chart-title">VaultFlow Company Strategy</div><div class="chart-sub">Start as financial planning SaaS, become fintech through approved partners.</div></div><button class="mini-action" onclick="dtab('pf')">CHECK LIVE RAILS</button></div>
+        <div class="fos-grid">
+          <div class="fos-item"><strong>Core niche</strong><span>Veterans, merchant mariners, contractors, overtime workers, travel nurses, and real estate investors.</span></div>
+          <div class="fos-item"><strong>MVP promise</strong><span>Organize, plan, simulate, export, and coach. Do not claim to manage money or guarantee outcomes.</span></div>
+          <div class="fos-item"><strong>Fintech path</strong><span>Plaid for data, Stripe for billing, Alpaca for guarded trading, licensed partners for lending or advisory later.</span></div>
+          <div class="fos-item"><strong>Launch guardrail</strong><span>No real transfers, loans, or direct investment advice unless approvals, contracts, and compliance are complete.</span></div>
+        </div>
       </div>
       <div class="premium-grid">
         <div class="metric-tile"><div class="metric-icon">$</div><div class="metric-label">Net Worth</div><div class="metric-value" id="pro-net-worth">$0</div><div class="metric-note" id="pro-net-worth-note">Assets minus debt</div></div>
@@ -1279,10 +1323,24 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         </div>
         <div class="start-panel">
           <div class="tag" style="margin-bottom:8px">DEMO WALKTHROUGH</div>
-          <div class="mode-copy">Run a slower guided tour that explains each tab, bank setup, payday detection, stock signals, and where to find exports.</div>
+          <div class="mode-copy">Run a quick guided tour that explains each tab, bank setup, payday detection, stock signals, and where to find exports. Use Skip Tour any time.</div>
           <button class="btngold" onclick="runDemoFlow()">RUN GUIDED TOUR</button>
           <button class="btnout" onclick="skipSiteTour()">SKIP SITE TOUR</button>
           <div class="demo-console" id="demo-flow-log"><div class="demo-line"><span class="demo-dot"></span><span>Ready to run the guided demo.</span></div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head"><div><div class="chart-title">Tab Guide</div><div class="chart-sub">Tap a box to jump to that part of VaultFlow.</div></div><button class="mini-action" onclick="skipSiteTour()">SKIP TOUR</button></div>
+        <div class="tab-info-grid">
+          <div class="tab-info-card" onclick="dtab('ov')"><span>OVERVIEW</span><strong>Command center</strong><small>Net worth, Wealth GPS, Digital Twin, AI briefings, and next-best actions.</small></div>
+          <div class="tab-info-card" onclick="dtab('al')"><span>ALLOCATE</span><strong>Money routing</strong><small>Enter income, bills, goals, upload screenshots, and calculate payday allocation.</small></div>
+          <div class="tab-info-card" onclick="hasTier('prime')?dtab('tl'):go('upgrade')"><span>TOOLS</span><strong>Prime tools</strong><small>Debt payoff, tax estimator, calculators, stock signals, and guarded paper trading.</small></div>
+          <div class="tab-info-card" onclick="dtab('nw')"><span>WEALTH</span><strong>Assets and investments</strong><small>Track net worth, outside brokerage accounts, holdings, CSV imports, and manual assets.</small></div>
+          <div class="tab-info-card" onclick="dtab('gl')"><span>GOALS</span><strong>Life targets</strong><small>Emergency fund, down payment, portfolio, FIRE, millionaire path, and goal progress.</small></div>
+          <div class="tab-info-card" onclick="hasTier('vault')?dtab('pr'):go('upgrade')"><span>DEALS</span><strong>Vault pipeline</strong><small>Real estate deal tracker, rental math, property status, and investor workflow.</small></div>
+          <div class="tab-info-card" onclick="dtab('bl')"><span>BLOG</span><strong>Education</strong><small>VaultFlow articles, strategy explainers, and finance playbooks.</small></div>
+          <div class="tab-info-card" onclick="dtab('pf')"><span>PROFILE</span><strong>Settings and integrations</strong><small>Plaid, payroll, reports, secure document vault, Capital bridge, themes, and launch audit.</small></div>
+          <div class="tab-info-card" onclick="openVaultFlowCapital()"><span>CAPITAL</span><strong>Connected lending concept</strong><small>Open VaultFlow Capital and send a safe preview snapshot from this browser.</small></div>
         </div>
       </div>
       <div class="coach-grid">
@@ -1612,11 +1670,21 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="resbox" id="live-readiness-result"></div>
       </div>
       <div class="card">
+        <div class="tag" style="margin-bottom:8px">BUSINESS GUARDRAILS</div>
+        <div class="bank-state-box"><strong>Most valuable path:</strong> Launch as financial planning SaaS for irregular-income wealth builders. Add regulated fintech only through approved partners when the legal stack is ready.</div>
+        <div class="setup-list">
+          <div class="setup-step"><div class="setup-num">01</div><div><div class="setup-title">Own the niche</div><div class="setup-copy">Veterans, merchant mariners, union/overtime workers, contractors, travel nurses, and real estate investors.</div><div class="setup-pill">POSITIONING</div></div></div>
+          <div class="setup-step"><div class="setup-num">02</div><div><div class="setup-title">Stay software-first</div><div class="setup-copy">Use planning, calculators, reports, document vault, and AI coaching before launching lending, custody, or managed transfers.</div><div class="setup-pill">LOWER RISK</div></div></div>
+          <div class="setup-step"><div class="setup-num">03</div><div><div class="setup-title">Use partners</div><div class="setup-copy">Plaid for data, Stripe for billing, Alpaca for guarded trading, licensed providers for loans, banking, advisory, and KYC.</div><div class="setup-pill">PARTNERS</div></div></div>
+          <div class="setup-step"><div class="setup-num">04</div><div><div class="setup-title">Protect launch</div><div class="setup-copy">Terms, privacy, security policy, deletion flow, no-guarantee copy, and a human compliance review before public traffic.</div><div class="setup-pill">REQUIRED</div></div></div>
+        </div>
+      </div>
+      <div class="card">
         <div class="tag" style="margin-bottom:8px">SETTINGS</div>
         <div style="font-size:11px;color:#8A8070;line-height:1.8">Tune how VaultFlow behaves in this browser preview.</div>
         <div class="settings-grid">
           <label class="setting-row"><input type="checkbox" id="set_anim" onchange="toggleSetting('animations',this.checked)"><span><div class="setting-title">Launch animation</div><div class="setting-copy">Play the break-open dashboard animation.</div></span></label>
-          <label class="setting-row"><input type="checkbox" id="set_sound" onchange="toggleSetting('soundFx',this.checked)"><span><div class="setting-title">Animation sound</div><div class="setting-copy">Play the crack, whoosh, and bass hit when the dashboard opens.</div></span></label>
+          <label class="setting-row"><input type="checkbox" id="set_sound" onchange="toggleSetting('soundFx',this.checked)"><span><div class="setting-title">Animation sound</div><div class="setting-copy">Play the premium vault crack, glass shimmer, whoosh, and bass hit when the dashboard opens.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_dense" onchange="toggleSetting('dense',this.checked)"><span><div class="setting-title">Dense dashboard</div><div class="setting-copy">Tighter cards for a more command-center feel.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_force_real" onchange="toggleSetting('realPlaid',this.checked)"><span><div class="setting-title">Use Railway Plaid backend</div><div class="setting-copy">When on localhost, call the real backend instead of demo fallback.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_demo_help" onchange="toggleSetting('demoHelp',this.checked)"><span><div class="setting-title">Show demo guidance</div><div class="setting-copy">Keep walkthrough and helper copy visible.</div></span></label>
@@ -1644,6 +1712,18 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="tag" style="margin-bottom:8px">INTEGRATIONS</div>
         <div class="integration-grid" id="integration-grid"></div>
       </div>
+      <div class="card">
+        <div class="tag" style="margin-bottom:8px">VAULTFLOW CAPITAL</div>
+        <div class="bank-state-box"><strong>Capital bridge:</strong> Open the connected capital-readiness marketplace, send a safe dashboard snapshot, and collect waitlist interest without making loan decisions inside VaultFlow.</div>
+        <div class="system-grid" style="margin-top:12px">
+          <div class="system-cell"><div class="system-label">CAPITAL BACKEND</div><div class="system-value" id="capital-backend-status">Not checked</div></div>
+          <div class="system-cell"><div class="system-label">BRIDGE</div><div class="system-value" id="capital-bridge-status">Ready</div></div>
+        </div>
+        <button class="btngold" onclick="openVaultFlowCapital()">OPEN VAULTFLOW CAPITAL</button>
+        <button class="btnout" onclick="syncCapitalBridge()">SEND SAFE SNAPSHOT</button>
+        <button class="btnout" onclick="checkCapitalReadiness()">CHECK CAPITAL BACKEND</button>
+        <div id="capital-msg" class="msgbox"></div>
+      </div>
       <div class="report-grid">
         <div class="card">
           <div class="tag" style="margin-bottom:8px">REPORTS & EXPORTS</div>
@@ -1653,13 +1733,33 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div id="report-msg" class="msgbox"></div>
         </div>
         <div class="card">
+          <div class="tag" style="margin-bottom:8px">UNIVERSAL IMPORT</div>
+          <div class="bank-state-box"><strong>Import anything:</strong> Drop any file type. VaultFlow stores it in the secure vault, previews what the browser can read, and auto-detects finance data from CSV, JSON, OFX/QFX, text, screenshots, paystubs, and statements.</div>
+          <label class="upload-zone" id="universal-import-zone" for="universal_import_input" ondragover="fileDrag(event,'universal-import-zone',true)" ondragleave="fileDrag(event,'universal-import-zone',false)" ondrop="universalImportDrop(event)">
+            <div class="upload-title">DROP ANY FILE OR TAP TO IMPORT</div>
+            <div class="upload-copy">PDFs, images, CSVs, spreadsheets, statements, JSON, OFX/QFX, docs, paystubs, leases, tax files, and screenshots all go into the secure vault manifest.</div>
+            <input class="file-input-native" type="file" id="universal_import_input" multiple onchange="handleUniversalImport(this.files)">
+          </label>
+          <div class="vault-doc-tools">
+            <button class="btngold" onclick="openUniversalImporter()">BROWSE ANY FILE</button>
+            <button class="btnout" onclick="clearImportHistory()">CLEAR IMPORT LOG</button>
+          </div>
+          <div id="universal-import-status" class="msgbox"></div>
+          <div class="doc-list" id="universal-import-list"><div class="doc-item"><div><strong>No imports yet.</strong><span>Import files to auto-route them into the secure vault.</span></div><span>Ready</span></div></div>
+        </div>
+        <div class="card">
           <div class="tag" style="margin-bottom:8px">SECURE DOCUMENT VAULT</div>
-          <div class="bank-state-box"><strong>Secure vault:</strong> Files are tracked with encrypted-vault metadata, removable controls, signed URL placeholders, and optional inclusion in exported financial reports. Production upload/download should use the backend signed-url routes.</div>
+          <div class="bank-state-box"><strong>Secure vault:</strong> Files are encrypted locally when WebCrypto is available, fingerprinted with SHA-256, tracked with encrypted metadata, removable controls, signed URL placeholders, and optional inclusion in exported financial reports. Production upload/download should use backend signed-url routes.</div>
           <label class="upload-zone" id="doc-upload-zone" for="doc_vault_input" ondragover="fileDrag(event,'doc-upload-zone',true)" ondragleave="fileDrag(event,'doc-upload-zone',false)" ondrop="docVaultDrop(event)">
             <div class="upload-title">CHOOSE FILES FROM DOWNLOADS</div>
-            <div class="upload-copy">Statements, tax docs, PDFs, CSVs, screenshots, paystubs, and deal files can be attached to the report manifest.</div>
-            <input class="file-input-native" type="file" id="doc_vault_input" multiple accept=".pdf,.csv,.txt,.jpg,.jpeg,.png,.heic,.heif,.webp,.doc,.docx,.xls,.xlsx,application/pdf,image/*" onchange="handleVaultDocs(this.files)">
+            <div class="upload-copy">Statements, tax docs, PDFs, CSVs, screenshots, paystubs, spreadsheets, archives, and deal files can be attached to the report manifest.</div>
+            <input class="file-input-native" type="file" id="doc_vault_input" multiple onchange="handleVaultDocs(this.files)">
           </label>
+          <div class="vault-doc-tools">
+            <button class="btngold" onclick="openDocVaultPicker()">BROWSE FILES / PAYSTUBS</button>
+            <button class="btnout" onclick="exportFinancialReport()">EXPORT WITH FILES</button>
+          </div>
+          <div id="doc-upload-status" class="msgbox"></div>
           <div class="doc-list" id="doc-vault-list"><div class="doc-item"><div><strong>No documents added.</strong><span>Upload statements, tax docs, deal PDFs, or screenshots.</span></div><span>Local</span></div></div>
         </div>
       </div>
@@ -1681,7 +1781,9 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="status-grid">
           <div class="status-cell"><div class="status-label">PLAID LINK SDK</div><div class="status-value" id="plaid-sdk-status">Checking...</div></div>
           <div class="status-cell"><div class="status-label">BACKEND RAIL</div><div class="status-value" id="plaid-backend-status">Waiting</div></div>
+          <div class="status-cell"><div class="status-label">PLAID APPROVAL</div><div class="status-value" id="plaid-approval-status">Not checked</div></div>
           <div class="status-cell"><div class="status-label">ADP / PAYROLL</div><div class="status-value" id="payroll-backend-status">Waiting</div></div>
+          <div class="status-cell"><div class="status-label">TRANSFER APPROVAL</div><div class="status-value" id="transfer-approval-status">Not checked</div></div>
           <div class="status-cell"><div class="status-label">MODE</div><div class="status-value" id="plaid-mode-status">Preview</div></div>
           <div class="status-cell"><div class="status-label">LAST EVENT</div><div class="status-value" id="plaid-event-status">None yet</div></div>
         </div>
@@ -1691,6 +1793,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <button class="btngold" onclick="connectBank()">CONNECT YOUR BANK</button>
           <button class="btnout" onclick="connectPayrollProvider()">CONNECT ADP / PAYROLL</button>
           <button class="btnout" onclick="checkPlaidReadiness()">CHECK PLAID STATUS</button>
+          <button class="btnout" onclick="checkPlaidApprovalStatus()">CHECK PLAID APPROVAL</button>
           <button class="btnout" onclick="demoBankConnect()">USE LOCAL DEMO DATA</button>
           <div id="bank-msg" class="msgbox"></div>
         </div>
@@ -1704,6 +1807,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div id="bank-transactions"></div>
           <button class="btngold" style="margin-top:12px" onclick="connectBank()">CONNECT / RECONNECT REAL BANK</button>
           <button class="btnout" onclick="connectPayrollProvider()">CONNECT ADP / PAYROLL</button>
+          <button class="btnout" onclick="checkPlaidApprovalStatus()">CHECK PLAID APPROVAL</button>
           <button class="btnout" onclick="clearBankSession()">CLEAR BANK SESSION</button>
           <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">DETECT PAYCHECKS</button>
           <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
@@ -1725,15 +1829,22 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <label class="lbl">DESTINATION</label>
         <select class="inp" id="transfer_dest"><option>Emergency Fund</option><option>Debt Payoff</option><option>Real Estate Reserve</option><option>Alpaca Funding</option><option>HYSA</option></select>
         <label class="lbl">AMOUNT ($)</label><input class="inp" type="number" id="transfer_amt" placeholder="500">
+        <label class="lbl">LEGAL NAME FOR PLAID TRANSFER</label><input class="inp" type="text" id="transfer_legal_name" placeholder="Full legal name">
+        <div class="trust-note" id="transfer-account-note"><strong>Connected account:</strong> Reconnect through Plaid if this says no account id.</div>
         <label class="checkline"><input type="checkbox" id="transfer_review_ok"><span>I reviewed this amount and destination. Submit only as a demo queue or to an approved backend transfer rail.</span></label>
+        <label class="checkline"><input type="checkbox" id="transfer_auto_ok"><span>Save this as an auto-transfer rule for detected paydays. VaultFlow still requires backend rails and audit history before real money moves.</span></label>
+        <label class="checkline"><input type="checkbox" id="transfer_live_ok"><span>I authorize creating this real Plaid Transfer only if Plaid Transfer approval, backend env flags, and account checks all pass.</span></label>
         <button class="btngold" onclick="executeBankTransfer()">REVIEW AND QUEUE TRANSFER</button>
         <div class="resbox" id="transfer_result"></div>
+        <div class="doc-list" id="transfer-history-list" style="margin-top:10px"></div>
       </div>
       <div class="card" data-min-tier="prime" data-lock-text="PRIME REQUIRED · Trading integration starts with Prime.">
         <div class="tag" style="margin-bottom:8px">TRADING INTEGRATION</div>
         <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">Connect Alpaca and submit signal-driven orders. Paper mode is the default; live trading requires backend keys, live endpoint, explicit live-trading flag, user authorization, and risk controls.</div>
+        <div class="trust-note" id="trading-mode-note"><strong>Trading mode:</strong> Connect Alpaca to verify paper or live mode before submitting.</div>
         <label class="lbl">SYMBOL</label><input class="inp" type="text" id="trade_symbol" value="SPY">
         <label class="lbl">DOLLAR AMOUNT ($)</label><input class="inp" type="number" id="trade_amount" value="250">
+        <label class="checkline" id="trade-live-confirm-wrap"><input type="checkbox" id="trade_live_ok"><span>I understand this can place a real Alpaca market order when live mode is active, and I authorize this exact symbol and dollar amount.</span></label>
         <button class="btngold" onclick="connectTrading()">CONNECT ALPACA TRADING</button>
         <button class="btnout" onclick="executeTrade()">SUBMIT GUARDED TRADE</button>
         <div class="resbox" id="trade_result"></div>
@@ -1756,7 +1867,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
     <!-- OWNER -->
     <div id="dt-own" style="display:none">
       <div class="tag">OWNER COMMAND</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px;color:#F5F0E8">Account Monitor</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px;color:#F5F0E8">Private Owner Console</div>
       <div class="owner-panel">
         <div class="owner-grid">
           <div class="owner-stat"><div class="owner-stat-label">TOTAL ACCOUNTS</div><div class="owner-stat-value" id="own_total">0</div></div>
@@ -1764,7 +1875,12 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div class="owner-stat"><div class="owner-stat-label">BANK CONNECTIONS</div><div class="owner-stat-value" id="own_banks">0</div></div>
           <div class="owner-stat"><div class="owner-stat-label">ADMIN EVENTS</div><div class="owner-stat-value" id="own_audit">0</div></div>
         </div>
-        <div style="font-size:10px;color:#8A8070;line-height:1.8">Owner mode is an explicit admin console with audit logging. It can monitor demo account activity, plan status, bank connection state, and webhook events. Hidden backdoor access is intentionally not used.</div>
+        <div style="font-size:10px;color:#8A8070;line-height:1.8">Owner mode is a private console with audit logging. Production owner access must use server-side admin auth before real customer data is shown.</div>
+        <div class="owner-power-grid">
+          <div class="owner-power"><strong>All Tier Access</strong>Owner access can view Prime/Vault workflows, restricted features, and upgrade gates.</div>
+          <div class="owner-power"><strong>Account Monitor</strong>Review demo users, plan tier, bank state, payday status, and admin events.</div>
+          <div class="owner-power"><strong>Capital Bridge</strong>Open VaultFlow Capital, sync safe snapshots, and check the Capital backend route.</div>
+        </div>
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">ACCOUNT DIRECTORY</div>
@@ -1803,10 +1919,15 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">OWNER CONTROLS</div>
+        <button class="btngold" onclick="ownerOpenVaultFlow()">OPEN VAULTFLOW COMMAND CENTER</button>
+        <button class="btnout" onclick="ownerOpenCapital()">OPEN VAULTFLOW CAPITAL</button>
+        <button class="btnout" onclick="ownerSyncCapital()">SYNC CAPITAL SNAPSHOT</button>
+        <button class="btnout" onclick="ownerRunAllChecks()">RUN FULL SYSTEM CHECK</button>
         <button class="btngold" onclick="ownerRefresh()">REFRESH MONITOR</button>
         <button class="btnout" onclick="ownerRunAudit()">RUN ACCESS AUDIT</button>
         <button class="btnout" onclick="ownerPlaidHealth()">CHECK PLAID HEALTH</button>
         <button class="btnout" onclick="ownerDemoEvent()">SIMULATE WEBHOOK EVENT</button>
+        <button class="btnout" onclick="closeOwnerConsole()">CLOSE OWNER CONSOLE</button>
         <button class="btnout" onclick="ownerLockConsole()">LOCK OWNER CONSOLE</button>
       </div>
     </div>
@@ -1887,17 +2008,20 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
     </div>
     <div id="lc-tos">
       <div class="legh1">Terms of <em>Service</em></div><div class="legdate">LAST UPDATED — MAY 2025</div>
-      <div class="legsec"><div class="legstit">1. Not Financial Advice</div><div class="legtxt">VaultFlow is not a registered investment advisor. All content is for informational purposes only. All financial decisions are solely your responsibility.</div></div>
-      <div class="legsec"><div class="legstit">2. Subscriptions</div><div class="legtxt">Paid subscriptions are billed monthly. Cancel anytime — access continues through end of billing period. No refunds for partial months.</div></div>
-      <div class="legsec"><div class="legstit">3. Liability</div><div class="legtxt">VaultFlow shall not be liable for any indirect or consequential damages resulting from use of the Service.</div></div>
-      <div class="legsec"><div class="legstit">4. Contact</div><div class="legtxt">Questions: deionsebastian97@gmail.com</div></div>
+      <div class="legsec"><div class="legstit">1. Planning Software Only</div><div class="legtxt">VaultFlow helps users organize, plan, simulate, and learn. VaultFlow is not a bank, lender, broker-dealer, investment adviser, tax adviser, credit repair company, or money transmitter.</div></div>
+      <div class="legsec"><div class="legstit">2. Educational Information</div><div class="legtxt">AI answers, tax estimates, market signals, projections, and calculators are informational tools only. They are not legal, tax, investment, lending, or financial advice, and results are never guaranteed.</div></div>
+      <div class="legsec"><div class="legstit">3. Partner Integrations</div><div class="legtxt">Bank data, billing, trading, transfer, and future capital products may be powered by third-party partners. Real transfers, trades, loans, advisory services, or banking features require proper approvals and separate provider terms.</div></div>
+      <div class="legsec"><div class="legstit">4. Subscriptions</div><div class="legtxt">Paid subscriptions are billed monthly. Cancel anytime; access continues through end of billing period. No refunds for partial months unless required by law.</div></div>
+      <div class="legsec"><div class="legstit">5. Liability</div><div class="legtxt">VaultFlow shall not be liable for indirect or consequential damages resulting from use of the Service. Users remain responsible for verifying all numbers and decisions.</div></div>
+      <div class="legsec"><div class="legstit">6. Contact</div><div class="legtxt">Questions: deionsebastian97@gmail.com</div></div>
     </div>
     <div id="lc-priv" style="display:none">
       <div class="legh1">Privacy <em>Policy</em></div><div class="legdate">LAST UPDATED — MAY 2025</div>
-      <div class="legsec"><div class="legstit">1. Data We Collect</div><div class="legtxt">We collect your email and financial profile data you enter. We do not store bank credentials.</div></div>
-      <div class="legsec"><div class="legstit">2. How We Use It</div><div class="legtxt">We use your data to provide the Service. We do not sell your personal information.</div></div>
-      <div class="legsec"><div class="legstit">3. Security</div><div class="legtxt">Data stored via Supabase with industry-standard encryption at rest and in transit.</div></div>
-      <div class="legsec"><div class="legstit">4. Contact</div><div class="legtxt">Privacy questions: deionsebastian97@gmail.com</div></div>
+      <div class="legsec"><div class="legstit">1. Data We Collect</div><div class="legtxt">We collect account profile data, financial numbers users enter, connected-account metadata, uploaded document metadata, and app activity needed to provide the Service. We do not ask users to type bank passwords into VaultFlow.</div></div>
+      <div class="legsec"><div class="legstit">2. How We Use It</div><div class="legtxt">We use data to provide dashboards, reports, AI coaching, account linking, support, security, and billing. We do not sell personal information.</div></div>
+      <div class="legsec"><div class="legstit">3. Security</div><div class="legtxt">VaultFlow uses backend environment variables for secrets, signed URL scaffolding for secure vault uploads, and partner APIs for sensitive financial connections. Production launch requires final security review.</div></div>
+      <div class="legsec"><div class="legstit">4. Data Deletion</div><div class="legtxt">Users may request deletion of their VaultFlow profile and stored app data by contacting support. Production accounts should include an in-app deletion flow before broad public launch.</div></div>
+      <div class="legsec"><div class="legstit">5. Contact</div><div class="legtxt">Privacy questions: deionsebastian97@gmail.com</div></div>
     </div>
   </div>
   <footer>
@@ -1934,6 +2058,18 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
     <div class="command-results" id="command-results"></div>
   </div>
 </div>
+<div class="tour-overlay" id="tour-overlay" aria-live="polite">
+  <div class="tour-card">
+    <div class="tour-card-inner">
+      <div class="tour-kicker"><span id="tour-step-label">GUIDED TOUR</span><span id="tour-step-count">0/0</span></div>
+      <div class="tour-title" id="tour-title">VaultFlow Tour</div>
+      <div class="tour-copy" id="tour-copy">The tour is starting.</div>
+      <div class="tour-progress"><div class="tour-progress-fill" id="tour-progress-fill"></div></div>
+      <div class="tour-hint">Move your mouse or press Skip Tour to stop instantly.</div>
+    </div>
+  </div>
+</div>
+<button class="tour-skip-float" id="tour-skip-float" onclick="skipSiteTour()">SKIP TOUR</button>
 
 <script>
 // ===== CONFIG =====
@@ -1941,7 +2077,10 @@ var SB_URL='https://sefxpcatuctgqwflmrdj.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhwY2F0dWN0Z3F3ZmxtcmRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjU5NjEsImV4cCI6MjA5NDI0MTk2MX0.64rTufpnz7YFn_WRP5es2zwpd5sQxP1I24U8Dj_QtgQ';
 var PK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
 var RAIL='https://vaultflow-production.up.railway.app';
+var CAPITAL_LOCAL='../outputs/vaultflow-capital.html?from=vaultflow';
+var CAPITAL_PUBLIC='https://vaultflow-rust.vercel.app/vaultflow-capital.html?from=vaultflow';
 var FORCE_REAL_PLAID=true;
+var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-09-import-vault-scale';
 var PLAID_ENDPOINTS={
   linkToken:'/plaid/create-link-token',
   incomeLinkToken:'/plaid/create-income-link-token',
@@ -1949,6 +2088,7 @@ var PLAID_ENDPOINTS={
   exchange:'/plaid/exchange-token',
   transactions:'/plaid/transactions',
   health:'/plaid/health',
+  approval:'/plaid/approval-status',
   investmentHoldings:'/plaid/investments/holdings'
 };
 
@@ -1960,8 +2100,13 @@ var investmentMeta=null;
 var payrollConnected=false;
 var payrollMeta=null;
 var vaultDocs=[];
+var vaultDocFiles={};
+var vaultDocFileUrls={};
+var vaultDocPreviews={};
+var importHistory=[];
 var vaultTasks=[];
 var vaultNotifications=[];
+var transferHistory=[];
 var selPlanVal='prime';
 var stripe=null,cardEl=null,stripeOk=false;
 var currentSession=null;
@@ -1970,6 +2115,9 @@ var activeDashboardTab='ov';
 var upgradeReturn={page:'home',tab:'ov'};
 var tourRunning=false;
 var tourTimers=[];
+var tourStopOnMouseAt=0;
+var tourStepIndex=0;
+var tourTotalSteps=8;
 var suppressAllocAutoSwitch=false;
 var stripeTries=0;
 var STORE_KEY='vaultflow_preview_state_v2';
@@ -1978,6 +2126,8 @@ var PLAN_NAMES={essential:'Essential',prime:'Prime',vault:'Vault',owner:'Owner'}
 var TAB_REQUIREMENTS={tl:'prime',pr:'vault',own:'owner'};
 var uiSettings={animations:true,soundFx:true,dense:false,realPlaid:true,demoHelp:true,lightMode:false,haptics:true,theme:'royal'};
 var ownerAudit=[];
+var tradingLiveMode=false;
+var tradingMode='preview';
 var OWNER_ACCOUNTS=[
   {email:'demo@vaultflow.local',plan:'essential',bank:'Disconnected',lastPaycheck:'None',status:'Trial'},
   {email:'captain@vaultflow.local',plan:'prime',bank:'Connected',lastPaycheck:'$10,136',status:'Active'},
@@ -2194,7 +2344,7 @@ function applyTierAccess(){
     }
   });
   document.querySelectorAll('.dtab').forEach(function(btn,i){
-    var names=tabIds.concat(['upgrade']);
+    var names=visibleTabIds.concat(['upgrade']);
     var id=names[i];
     var required=TAB_REQUIREMENTS[id];
     var locked=required&&!hasTier(required);
@@ -2269,8 +2419,10 @@ function saveState(){
       investmentSession:investmentAccessToken,
       investmentMeta:investmentMeta,
       vaultDocs:vaultDocs,
+      importHistory:importHistory,
       vaultTasks:vaultTasks,
       vaultNotifications:vaultNotifications,
+      transferHistory:transferHistory,
       activeDashboardTab:activeDashboardTab,
       plan:currentSession&&currentSession.plan,
       bankDemo:plaidAccessToken==='demo',
@@ -2298,8 +2450,10 @@ function loadState(){
     if(data&&data.investmentSession)investmentAccessToken=data.investmentSession;
     if(data&&data.investmentMeta)investmentMeta=data.investmentMeta;
     if(data&&Array.isArray(data.vaultDocs))vaultDocs=data.vaultDocs;
+    if(data&&Array.isArray(data.importHistory))importHistory=data.importHistory;
     if(data&&Array.isArray(data.vaultTasks))vaultTasks=data.vaultTasks;
     if(data&&Array.isArray(data.vaultNotifications))vaultNotifications=data.vaultNotifications;
+    if(data&&Array.isArray(data.transferHistory))transferHistory=data.transferHistory;
     if(data&&data.activeDashboardTab)activeDashboardTab=data.activeDashboardTab;
     if(data&&data.bankDemo)plaidAccessToken='demo';
     if(data&&data.bankSession)plaidAccessToken=data.bankSession;
@@ -2415,6 +2569,11 @@ function updatePublicNav(){
 
 var dashboardBreakTimer=null;
 var vaultAudioCtx=null;
+var vaultAudioUnlocked=false;
+var vaultAudioQueued=false;
+var vaultAudioResumePending=false;
+var vaultSoundQueueTimer=null;
+var vaultSoundLastPlayed=0;
 
 function getVaultAudio(){
   var Ctx=window.AudioContext||window.webkitAudioContext;
@@ -2423,13 +2582,61 @@ function getVaultAudio(){
   return vaultAudioCtx;
 }
 
+function flushQueuedVaultSound(){
+  if(!vaultAudioQueued)return;
+  vaultAudioQueued=false;
+  if(vaultSoundQueueTimer)clearTimeout(vaultSoundQueueTimer);
+  vaultSoundQueueTimer=setTimeout(function(){
+    vaultSoundQueueTimer=null;
+    playLaunchSound(true,{fromUnlock:true});
+  },40);
+}
+
 function unlockVaultAudio(){
   if(!uiSettings.soundFx)return;
   var ctx=getVaultAudio();
-  if(ctx&&ctx.state==='suspended')ctx.resume().catch(function(){});
+  if(!ctx)return;
+  function markReady(){
+    vaultAudioResumePending=false;
+    vaultAudioUnlocked=true;
+    flushQueuedVaultSound();
+  }
+  if(ctx.state==='suspended'){
+    if(vaultAudioResumePending)return;
+    vaultAudioResumePending=true;
+    ctx.resume().then(markReady).catch(function(){
+      vaultAudioResumePending=false;
+      vaultAudioQueued=true;
+    });
+  }else{
+    markReady();
+  }
 }
 
-function playTone(ctx,start,freq,duration,type,gain,slideTo){
+function audioDest(ctx){
+  var master=ctx.createGain();
+  var comp=ctx.createDynamicsCompressor();
+  comp.threshold.setValueAtTime(-21,ctx.currentTime);
+  comp.knee.setValueAtTime(20,ctx.currentTime);
+  comp.ratio.setValueAtTime(8,ctx.currentTime);
+  comp.attack.setValueAtTime(0.004,ctx.currentTime);
+  comp.release.setValueAtTime(0.22,ctx.currentTime);
+  master.gain.setValueAtTime(0.82,ctx.currentTime);
+  master.connect(comp).connect(ctx.destination);
+  return master;
+}
+
+function panNode(ctx,node,dest,pan){
+  if(ctx.createStereoPanner){
+    var p=ctx.createStereoPanner();
+    p.pan.setValueAtTime(Math.max(-1,Math.min(1,pan||0)),ctx.currentTime);
+    node.connect(p).connect(dest);
+  }else{
+    node.connect(dest);
+  }
+}
+
+function playTone(ctx,dest,start,freq,duration,type,gain,slideTo,pan){
   var osc=ctx.createOscillator();
   var amp=ctx.createGain();
   osc.type=type||'sine';
@@ -2438,46 +2645,73 @@ function playTone(ctx,start,freq,duration,type,gain,slideTo){
   amp.gain.setValueAtTime(0.0001,start);
   amp.gain.exponentialRampToValueAtTime(Math.max(0.0002,gain||0.08),start+0.012);
   amp.gain.exponentialRampToValueAtTime(0.0001,start+duration);
-  osc.connect(amp).connect(ctx.destination);
+  osc.connect(amp);
+  panNode(ctx,amp,dest,pan||0);
   osc.start(start);
   osc.stop(start+duration+0.04);
 }
 
-function playNoise(ctx,start,duration,gain){
-  var buffer=ctx.createBuffer(1,Math.max(1,ctx.sampleRate*duration),ctx.sampleRate);
+function makeNoiseBuffer(ctx,duration){
+  var buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*duration)),ctx.sampleRate);
   var data=buffer.getChannelData(0);
-  for(var i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);
+  for(var i=0;i<data.length;i++){
+    var tail=1-i/data.length;
+    data[i]=(Math.random()*2-1)*tail;
+  }
+  return buffer;
+}
+
+function playNoise(ctx,dest,start,duration,gain,filterType,freqA,freqB,pan){
+  var buffer=makeNoiseBuffer(ctx,duration);
   var src=ctx.createBufferSource();
   var filter=ctx.createBiquadFilter();
   var amp=ctx.createGain();
-  filter.type='highpass';
-  filter.frequency.setValueAtTime(900,start);
-  filter.frequency.exponentialRampToValueAtTime(2600,start+duration);
+  filter.type=filterType||'highpass';
+  filter.Q.setValueAtTime(filterType==='bandpass'?6:1.2,start);
+  filter.frequency.setValueAtTime(Math.max(40,freqA||900),start);
+  filter.frequency.exponentialRampToValueAtTime(Math.max(45,freqB||2600),start+duration);
   amp.gain.setValueAtTime(0.0001,start);
   amp.gain.exponentialRampToValueAtTime(gain||0.11,start+0.01);
   amp.gain.exponentialRampToValueAtTime(0.0001,start+duration);
   src.buffer=buffer;
-  src.connect(filter).connect(amp).connect(ctx.destination);
+  src.connect(filter).connect(amp);
+  panNode(ctx,amp,dest,pan||0);
   src.start(start);
   src.stop(start+duration+0.02);
 }
 
-function playLaunchSound(force){
+function playGlassShard(ctx,dest,start,pan,freq){
+  playNoise(ctx,dest,start,0.075,0.09,'highpass',1600,6200,pan);
+  playTone(ctx,dest,start+0.006,freq,0.12,'triangle',0.032,freq*1.65,pan);
+}
+
+function playLaunchSound(force,opts){
   if(!force&&!uiSettings.soundFx)return;
   var ctx=getVaultAudio();
   if(!ctx)return;
   if(ctx.state==='suspended'){
-    ctx.resume().then(function(){playLaunchSound(force);}).catch(function(){});
+    vaultAudioQueued=true;
+    unlockVaultAudio();
     return;
   }
-  var now=ctx.currentTime+0.02;
-  playNoise(ctx,now,0.18,0.13);
-  playNoise(ctx,now+0.2,0.32,0.08);
-  playTone(ctx,now,72,0.46,'sawtooth',0.1,38);
-  playTone(ctx,now+0.08,420,0.22,'triangle',0.055,980);
-  playTone(ctx,now+0.18,680,0.18,'triangle',0.045,1320);
-  playTone(ctx,now+0.3,960,0.16,'triangle',0.035,1620);
-  playTone(ctx,now+0.42,48,0.34,'sine',0.14,32);
+  if(!force&&Date.now()-vaultSoundLastPlayed<900)return;
+  vaultAudioUnlocked=true;
+  vaultSoundLastPlayed=Date.now();
+  var dest=audioDest(ctx);
+  var now=ctx.currentTime+0.025;
+  playTone(ctx,dest,now,58,0.78,'sine',0.16,31,0);
+  playTone(ctx,dest,now+0.01,116,0.5,'triangle',0.05,74,0);
+  playNoise(ctx,dest,now,0.11,0.16,'highpass',700,4100,-0.4);
+  playGlassShard(ctx,dest,now+0.09,-0.65,720);
+  playGlassShard(ctx,dest,now+0.17,0.55,940);
+  playGlassShard(ctx,dest,now+0.25,-0.22,1180);
+  playNoise(ctx,dest,now+0.28,0.46,0.13,'bandpass',360,2100,0.18);
+  playTone(ctx,dest,now+0.32,420,0.32,'triangle',0.035,1280,-0.12);
+  playTone(ctx,dest,now+0.44,840,0.26,'triangle',0.042,1580,0.18);
+  playTone(ctx,dest,now+0.56,46,0.42,'sine',0.2,30,0);
+  playTone(ctx,dest,now+0.62,1320,0.34,'sine',0.038,1760,-0.18);
+  playTone(ctx,dest,now+0.72,1980,0.22,'triangle',0.026,2640,0.34);
+  playNoise(ctx,dest,now+0.78,0.2,0.045,'lowpass',1800,620,0);
 }
 
 function testLaunchSound(){
@@ -2485,7 +2719,7 @@ function testLaunchSound(){
   applyUiSettings();
   saveState();
   playLaunchSound(true);
-  msg('settings-msg','Animation sound played. If you still cannot hear it, check browser tab audio and system volume.','#00ff88');
+  msg('settings-msg','Premium vault sound played. If you still cannot hear it, click this button once more after checking tab audio and system volume.','#00ff88');
 }
 
 document.addEventListener('pointerdown',unlockVaultAudio);
@@ -2543,7 +2777,7 @@ function go(name,opts){
     suppressAllocAutoSwitch=true;
     alloc();
     suppressAllocAutoSwitch=false;
-    dtab(opts.tab||(isOwner()?'own':activeDashboardTab||'ov'));
+    dtab(opts.tab||activeDashboardTab||'ov');
     if(!opts.noBreak)triggerDashboardBreak();
   }
 }
@@ -2601,6 +2835,7 @@ function startApp(){
   renderProps();
   renderInvestmentHoldings();
   renderVaultDocs();
+  renderTransferHistory();
   renderTasks();
   renderNotifications();
   renderPremiumDashboard();
@@ -2639,13 +2874,14 @@ function initStripe(){
 
 // ===== AUTH =====
 function ltab(t){
-  document.getElementById('lf1').style.display=t==='in'?'block':'none';
-  document.getElementById('lf2').style.display=t==='up'?'block':'none';
-  document.getElementById('lf3').style.display=t==='owner'?'block':'none';
-  document.getElementById('lt1').className='ltab'+(t==='in'?' on':'');
-  document.getElementById('lt2').className='ltab'+(t==='up'?' on':'');
-  document.getElementById('lt3').className='ltab'+(t==='owner'?' on':'');
-  document.getElementById('lmsg').textContent='';
+  if(t==='owner')t='in';
+  var f1=document.getElementById('lf1'),f2=document.getElementById('lf2');
+  var b1=document.getElementById('lt1'),b2=document.getElementById('lt2');
+  if(f1)f1.style.display=t==='in'?'block':'none';
+  if(f2)f2.style.display=t==='up'?'block':'none';
+  if(b1)b1.className='ltab'+(t==='in'?' on':'');
+  if(b2)b2.className='ltab'+(t==='up'?' on':'');
+  if(document.getElementById('lmsg'))document.getElementById('lmsg').textContent='';
 }
 
 function msg(id,txt,color){
@@ -2759,7 +2995,7 @@ function askVaultAssistant(question){
     history:aiChatHistory.filter(function(x){return x.text!=='Thinking...';}).slice(-8),
     context:assistantContext()
   }).then(function(d){
-    if(d&&d.mode==='openai-responses'){
+    if(d&&((d.mode==='openai-responses')||(d.success&&d.configured&&d.answer))){
       setAiMode('Real AI · '+(d.model||'OpenAI'),'openai');
       return d.answer||localAnswer;
     }
@@ -2819,10 +3055,10 @@ function localVaultAnswer(question){
     return 'The tax estimator is for planning only, not tax advice. Enter W-2/maritime income, other income, filing status, itemized deductions, withholding, and self-employment profit. It estimates taxable income, federal tax, FICA/self-employment tax, and refund or amount due.';
   }
   if(/owner|admin|monitor|backdoor|account info/.test(q)){
-    return 'Owner mode is an explicit admin console, not a hidden backdoor. Demo owner login can monitor preview account status, plan tier, bank connection state, webhook events, and audit actions. Real production admin access should use role-based auth and audit logs.';
+    return 'Owner mode is a private admin console, not a visible public tab or hidden backdoor. Admin actions are logged, and production admin access should use server-side role-based auth before viewing real customer data.';
   }
   if(/sound|audio|hear|animation|anime/.test(q)){
-    return 'Go to Profile, turn on Animation sound, then press TEST ANIMATION SOUND. Browsers often block audio until you click something, so the test button is the fastest way to unlock it. The same crack, whoosh, and bass hit plays when the dashboard opens.';
+    return 'Go to Profile, turn on Animation sound, then press TEST ANIMATION SOUND. Browsers block sound until a click or tap, so pressing the test button unlocks it. The dashboard opening now plays a layered vault crack, glass shimmer, whoosh, and bass hit.';
   }
   if(/hello|hi|help|what can you do/.test(q)){
     return 'I can help customers connect Plaid, choose the right tier, understand payday detection, upload finance screenshots, use the stock algo, estimate taxes, and understand transfer safety. Ask me a specific VaultFlow question and I will walk you through it.';
@@ -2832,6 +3068,10 @@ function localVaultAnswer(question){
 
 function signin(){
   var e=document.getElementById('sie').value.trim();
+  if(isOwnerUsername(e)){
+    ownerLoginFromUsername(e);
+    return;
+  }
   var p=document.getElementById('sip').value;
   if(!e||!p){msg('lmsg','Please fill in all fields.','#ff4444');return;}
   if(!isEmail(e)){msg('lmsg','Please enter a valid email.','#ff4444');return;}
@@ -2877,24 +3117,33 @@ function allowPreviewOwnerLogin(){
   return location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 }
 
-function ownerLogin(){
-  var e=document.getElementById('owe').value.trim().toLowerCase();
-  var p=document.getElementById('owp').value;
+function isOwnerUsername(value){
+  return String(value||'').trim().toLowerCase()==='deion';
+}
+
+function ownerLoginFromUsername(username){
+  username=String(username||'').trim().toLowerCase();
   if(!allowPreviewOwnerLogin()){
-    msg('lmsg','Owner console is disabled on hosted pages until server-side admin auth is connected.','#ff4444');
+    msg('lmsg','This account requires secure admin authentication.','#ff4444');
     return;
   }
-  if(e!=='owner@vaultflow.local'||!p){
-    msg('lmsg','Owner preview requires the local owner email and a local preview code.','#ff4444');
+  if(!isOwnerUsername(username)){
+    msg('lmsg','Access denied.','#ff4444');
     return;
   }
+  var e='deion@vaultflow.owner';
   var session=makeSession(e,'vault');
   session.owner=true;
+  session.ownerName='deion';
   session.user.id='owner-console';
-  msg('lmsg','Owner console unlocked.','#00ff88');
+  msg('lmsg','Opening secure workspace.','#00ff88');
   finishAuth(session);
-  recordAdminAudit('OWNER_LOGIN','Owner console opened for '+e+'.');
-  setTimeout(function(){go('dashboard');dtab('own');},500);
+  recordAdminAudit('OWNER_LOGIN','Owner console opened.');
+  setTimeout(function(){openOwnerConsole();},500);
+}
+
+function ownerLogin(){
+  ownerLoginFromUsername(document.getElementById('sie')?document.getElementById('sie').value:'');
 }
 
 function signout(){
@@ -2927,6 +3176,7 @@ function waitlist(inputId,msgId){
 
 // ===== DASHBOARD TABS =====
 var tabIds=['ov','al','tl','nw','gl','pr','bl','pf','own'];
+var visibleTabIds=['ov','al','tl','nw','gl','pr','bl','pf'];
 function dtab(t){
   hapticPulse(10);
   var required=TAB_REQUIREMENTS[t];
@@ -2941,7 +3191,7 @@ function dtab(t){
     if(el)el.style.display=id===t?'block':'none';
   });
   document.querySelectorAll('.dtab').forEach(function(btn,i){
-    var names=tabIds.concat(['upgrade']);
+    var names=visibleTabIds.concat(['upgrade']);
     btn.className='dtab'+(names[i]===t?' on':'');
   });
   if(t==='pf')loadProfile();
@@ -2992,6 +3242,59 @@ function ownerViewAccount(email){
   if(!acct)return;
   recordAdminAudit('VIEW_ACCOUNT','Owner viewed '+acct.email+'.');
   ownerLog('Viewing '+acct.email+' · '+planName(acct.plan)+' · Bank '+acct.bank+' · Last paycheck '+acct.lastPaycheck+'.');
+}
+
+function openOwnerConsole(){
+  if(!isOwner()){
+    go('login');
+    ltab('in');
+    msg('lmsg','Sign in with an authorized account.','#C9A84C');
+    setTimeout(function(){
+      var input=document.getElementById('sie');
+      if(input)input.focus();
+    },80);
+    return;
+  }
+  go('dashboard',{tab:'own',noBreak:true});
+  dtab('own');
+  recordAdminAudit('OWNER_CONSOLE','Owner opened the private console.');
+}
+
+function closeOwnerConsole(){
+  if(!isOwner())return;
+  dtab('ov');
+  recordAdminAudit('OWNER_CONSOLE_CLOSE','Owner returned to the VaultFlow command center.');
+}
+
+function ownerOpenVaultFlow(){
+  if(!isOwner())return;
+  recordAdminAudit('OPEN_VAULTFLOW','Owner opened the main VaultFlow command center.');
+  ownerLog('Main VaultFlow command center opened.');
+  go('dashboard',{tab:'ov',noBreak:true});
+}
+
+function ownerOpenCapital(){
+  if(!isOwner())return;
+  recordAdminAudit('OPEN_CAPITAL','Owner opened VaultFlow Capital from owner console.');
+  ownerLog('VaultFlow Capital opened with safe bridge snapshot.');
+  openVaultFlowCapital();
+}
+
+function ownerSyncCapital(){
+  if(!isOwner())return;
+  syncCapitalBridge();
+  recordAdminAudit('CAPITAL_SYNC','Owner sent a safe VaultFlow snapshot to Capital.');
+  ownerLog('Capital bridge snapshot saved.');
+}
+
+function ownerRunAllChecks(){
+  if(!isOwner())return;
+  recordAdminAudit('OWNER_FULL_CHECK','Owner ran Plaid, AI, trading, Capital, and launch readiness checks.');
+  ownerLog('Full owner system check started.');
+  checkPlaidReadiness(true);
+  checkAiHealth();
+  checkCapitalReadiness();
+  runLiveReadinessAudit();
 }
 
 function recordAdminAudit(type,detail){
@@ -3382,6 +3685,67 @@ function financeSnapshot(){
   var inv=Math.max(0,Math.min(Math.round(av*0.30),gv('a_inv')||2000));
   var liq=Math.max(0,av-em-debt-re-inv);
   return {inc:inc,exp:exp,av:av,em:em,debt:debt,re:re,inv:inv,liq:liq};
+}
+
+function capitalUrl(){
+  if(location.protocol==='file:')return CAPITAL_LOCAL;
+  if(location.hostname==='127.0.0.1'||location.hostname==='localhost')return '../outputs/vaultflow-capital.html?from=vaultflow';
+  return CAPITAL_PUBLIC;
+}
+
+function capitalSnapshot(){
+  var s=financeSnapshot();
+  return {
+    source:'vaultflow-main-app',
+    sentAt:new Date().toISOString(),
+    email:currentSession&&currentSession.user?currentSession.user.email:'',
+    plan:currentPlan(),
+    monthlyIncome:Math.round(s.inc||0),
+    monthlyExpenses:Math.round(s.exp||0),
+    freeCash:Math.round(s.av||0),
+    suggestedEmergency:Math.round(s.em||0),
+    suggestedDebtPayoff:Math.round(s.debt||0),
+    suggestedRealEstateReserve:Math.round(s.re||0),
+    suggestedInvesting:Math.round(s.inv||0),
+    bankConnected:!!plaidAccessToken,
+    paydayDetected:!!paydayDetected,
+    note:'Browser-safe VaultFlow Capital bridge. No bank credentials, SSN, access tokens, API secrets, or credit decision data included.'
+  };
+}
+
+function setCapitalStatus(backend,bridge,color){
+  putText('capital-backend-status',backend||'Not checked');
+  putText('capital-bridge-status',bridge||((localStorage.getItem('vaultflow_capital_bridge')||localStorage.getItem('vaultflow_capital_profile'))?'Connected':'Ready'));
+  if(color)msg('capital-msg',backend,color);
+}
+
+function syncCapitalBridge(){
+  var snap=capitalSnapshot();
+  localStorage.setItem('vaultflow_capital_connected','true');
+  localStorage.setItem('vaultflow_capital_profile',JSON.stringify(snap));
+  localStorage.setItem('vaultflow_capital_bridge',JSON.stringify({connected:true,source:'vaultflow-main-app',connectedAt:new Date().toISOString()}));
+  setCapitalStatus('Snapshot saved','Connected','#00ff88');
+  msg('capital-msg','Safe VaultFlow snapshot saved for Capital. No sensitive credentials were shared.','#00ff88');
+  return snap;
+}
+
+function openVaultFlowCapital(){
+  syncCapitalBridge();
+  var url=capitalUrl();
+  try{window.open(url,'_blank');}
+  catch(e){location.href=url;}
+}
+
+function checkCapitalReadiness(){
+  setCapitalStatus('Checking...','Ready','#C9A84C');
+  return withTimeout(fetch(RAIL+'/capital/health',{method:'GET'}),9000).then(function(r){return r.json();}).then(function(d){
+    var ok=d&&d.success;
+    setCapitalStatus(ok?'Live':(d&&d.detail?d.detail:'Review'),'Connected',ok?'#00ff88':'#C9A84C');
+    return d||{success:false};
+  }).catch(function(){
+    setCapitalStatus('Not deployed yet','Ready','#ff4444');
+    return {success:false,detail:'Capital backend route unavailable.'};
+  });
 }
 
 function nextPaydayLabel(){
@@ -4272,21 +4636,12 @@ function handleInvestmentCsv(files){
   if(!file){putText('investment-status','No file selected');return;}
   var reader=new FileReader();
   reader.onload=function(ev){
-    var rows=String(ev.target.result||'').split(/\r?\n/).map(function(line){return line.split(',').map(function(x){return x.trim();});}).filter(function(r){return r.length>1;});
-    var imported=[];
-    rows.forEach(function(r,i){
-      if(i===0&&/symbol|ticker/i.test(r.join(',')))return;
-      var symbol=(r[0]||'').toUpperCase().replace(/[^A-Z0-9.\-]/g,'');
-      var name=r[1]||symbol;
-      var qty=parseFloat(r[2])||1;
-      var price=parseFloat(r[3])||0;
-      var value=parseFloat(r[4])||qty*price;
-      if(symbol&&value>0)imported.push({symbol:symbol,name:name,quantity:qty,price:price,value:value,type:'CSV'});
-    });
-    investmentHoldings=investmentHoldings.concat(imported);
+    var before=investmentHoldings.length;
+    var importedCount=importHoldingsFromRows(parseCsvRows(String(ev.target.result||'')),file.name);
     renderInvestmentHoldings();
-    putText('investment-status',imported.length?'Imported '+imported.length+' holdings':'No holdings found in CSV');
-    msg('settings-msg','Imported '+imported.length+' holdings from CSV.','#00ff88');
+    var added=investmentHoldings.length-before||importedCount;
+    putText('investment-status',added?'Imported '+added+' holdings':'No holdings found in CSV');
+    msg('settings-msg','Imported '+added+' holdings from CSV.','#00ff88');
   };
   reader.onerror=function(){putText('investment-status','Could not read CSV');};
   reader.readAsText(file);
@@ -4299,6 +4654,8 @@ var commandActions=[
   {name:'Run Stock Algo',desc:'Open tools and generate market signals',run:function(){go('dashboard',{tab:'tl',noBreak:true});setTimeout(cSig,120);}},
   {name:'Track Investments',desc:'Open net worth and connected portfolio tracking',run:function(){go('dashboard',{tab:'nw',noBreak:true});}},
   {name:'Connect Bank',desc:'Open Profile and Plaid connection tools',run:function(){go('dashboard',{tab:'pf',noBreak:true});}},
+  {name:'Universal Import',desc:'Import any file into the secure vault and auto-detect finance data',run:function(){go('dashboard',{tab:'pf',noBreak:true});setTimeout(openUniversalImporter,120);}},
+  {name:'Open VaultFlow Capital',desc:'Launch the connected capital-readiness marketplace',run:openVaultFlowCapital},
   {name:'Open AI Advisor',desc:'Ask VaultFlow Assistant for help',run:function(){toggleAiChat(true);}},
   {name:'Export Report',desc:'Print or save a financial report',run:exportFinancialReport},
   {name:'Upgrade Plan',desc:'Open Prime and Vault options',run:function(){go('upgrade');}}
@@ -4352,14 +4709,16 @@ document.addEventListener('click',function(e){
   if(e.target.closest&&e.target.closest('button'))hapticPulse(8);
 });
 
-function exportFinancialReport(){
+function buildFinancialReportHtml(){
   var s=financeSnapshot(),al=currentAssetsLiabilities();
   var reportDocs=vaultDocs.filter(function(d){return d.includeInReport!==false;});
   var docsHtml=reportDocs.length?'<h2>Secure Document Vault Manifest</h2><p>Attached files are listed as an encrypted vault manifest. Production downloads should use expiring signed URLs.</p><table><tr><th>File</th><th>Type</th><th>Size</th><th>Status</th></tr>'+
     reportDocs.map(function(d){
-      return '<tr><td>'+esc(d.name)+'</td><td>'+esc(d.type||'document')+'</td><td>'+fileSizeLabel(d.size)+'</td><td>'+(d.encrypted?'Encrypted metadata':'Local metadata')+' · '+(d.signedUrl?'Signed URL ready':'Needs signed URL')+'</td></tr>';
+      var preview=vaultDocPreviews[d.id]?'<br><img src="'+vaultDocPreviews[d.id]+'" style="max-width:220px;max-height:160px;margin-top:8px;border:1px solid #ddd;border-radius:8px">':'';
+      var hash=d.sha256?'<br><small>SHA-256 '+esc(String(d.sha256).slice(0,24))+'</small>':'';
+      return '<tr><td>'+esc(d.name)+preview+hash+'</td><td>'+esc(d.category||'document')+'<br><small>'+esc(d.type||'document')+'</small></td><td>'+fileSizeLabel(d.size)+'</td><td>'+(d.encrypted?'Client-encrypted':'Local metadata')+' · '+(d.signedUrlReady||d.signedUrl?'Signed URL ready':'Needs signed URL')+'</td></tr>';
     }).join('')+'</table>':'<h2>Secure Document Vault Manifest</h2><p>No secure files are marked for report export.</p>';
-  var html='<html><head><title>VaultFlow Financial Report</title><style>body{font-family:Arial;padding:32px;color:#111}h1{font-size:28px}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left}.big{font-size:22px;font-weight:bold}</style></head><body>'+
+  return '<html><head><title>VaultFlow Financial Report</title><style>body{font-family:Arial;padding:32px;color:#111}h1{font-size:28px}h2{margin-top:28px}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left;vertical-align:top}.big{font-size:22px;font-weight:bold}small{color:#666}</style></head><body>'+
     '<h1>VaultFlow Financial Report</h1><p>Generated '+new Date().toLocaleString()+'</p>'+
     '<table><tr><th>Metric</th><th>Value</th></tr>'+
     '<tr><td>Monthly income</td><td class="big">'+fmt(s.inc)+'</td></tr>'+
@@ -4371,9 +4730,35 @@ function exportFinancialReport(){
     '<tr><td>Net worth</td><td class="big">'+fmt(al.netWorth)+'</td></tr></table>'+
     docsHtml+
     '<p>Educational report only. Not financial, tax, legal, or investment advice.</p></body></html>';
+}
+
+function downloadFinancialReportHtml(html){
+  var blob=new Blob([html],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='vaultflow-financial-report.html';
+  a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+
+function exportFinancialReport(){
+  var s=financeSnapshot(),al=currentAssetsLiabilities();
+  var reportDocs=vaultDocs.filter(function(d){return d.includeInReport!==false;});
+  var html=buildFinancialReportHtml();
   var win=window.open('','_blank');
-  if(win){win.document.write(html);win.document.close();win.focus();setTimeout(function(){win.print();},250);}
-  msg('report-msg','Report opened. Use print/save as PDF.','#00ff88');
+  if(win){win.document.write(html);win.document.close();win.focus();setTimeout(function(){win.print();},250);msg('report-msg','Report opened. Use print/save as PDF. '+reportDocs.length+' secure file'+(reportDocs.length===1?'':'s')+' included in the manifest.','#00ff88');}
+  else{downloadFinancialReportHtml(html);msg('report-msg','Popup was blocked, so VaultFlow downloaded the report instead. '+reportDocs.length+' secure file'+(reportDocs.length===1?'':'s')+' included.','#00ff88');}
+  postBackend('/reports/export',{
+    user_id:currentSession&&currentSession.user?currentSession.user.id:'guest',
+    snapshot:{income:s.inc,expenses:s.exp,free_cash_flow:s.av,assets:al.assets,debt:al.debt,net_worth:al.netWorth},
+    documents:reportDocs.map(function(d){return {id:d.id,name:d.name,size:d.size,type:d.type,category:d.category||'document',includeInReport:d.includeInReport!==false,signedUrlReady:!!(d.signedUrlReady||d.signedUrl),encrypted:!!d.encrypted,fileHash:d.sha256||''};})
+  }).then(function(d){
+    if(d&&d.success)msg('report-msg','Report opened and backend export registered: '+(d.report_id||'ready')+'.','#00ff88');
+    else if(d&&d.detail)msg('report-msg','Report opened locally. Backend export needs setup: '+d.detail,'#C9A84C');
+  }).catch(function(){
+    msg('report-msg','Report opened locally. Backend export route is not reachable yet.','#C9A84C');
+  });
 }
 
 function downloadCsvSnapshot(){
@@ -4389,26 +4774,400 @@ function downloadCsvSnapshot(){
   msg('report-msg','CSV snapshot downloaded.','#00ff88');
 }
 
-function handleVaultDocs(files){
+function openDocVaultPicker(){
+  var input=document.getElementById('doc_vault_input');
+  if(input)input.click();
+}
+
+function openUniversalImporter(){
+  var input=document.getElementById('universal_import_input');
+  if(input)input.click();
+}
+
+function universalImportDrop(e){
+  e.preventDefault();
+  fileDrag(e,'universal-import-zone',false);
+  handleUniversalImport(e.dataTransfer&&e.dataTransfer.files);
+}
+
+function clearImportHistory(){
+  importHistory=[];
+  renderImportHistory();
+  saveState();
+  msg('universal-import-status','Import log cleared. Vault documents were left in place.','#C9A84C');
+}
+
+function vaultCryptoAvailable(){
+  return !!(window.crypto&&crypto.subtle&&window.TextEncoder&&window.FileReader);
+}
+
+function bytesToHex(buf){
+  return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+
+function bytesToBase64(bytes){
+  var bin='';
+  var arr=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);
+  arr.forEach(function(b){bin+=String.fromCharCode(b);});
+  return btoa(bin);
+}
+
+function base64ToBytes(str){
+  var bin=atob(str||'');
+  var out=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+
+function sessionVaultSecret(){
+  var key='vaultflow_vault_session_secret';
+  var secret=sessionStorage.getItem(key);
+  if(!secret){
+    var bytes=new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    secret=bytesToBase64(bytes);
+    sessionStorage.setItem(key,secret);
+  }
+  return secret;
+}
+
+function vaultUserScope(){
+  return currentSession&&currentSession.user&&currentSession.user.id?currentSession.user.id:'guest';
+}
+
+async function vaultCryptoKey(){
+  var enc=new TextEncoder();
+  var material=enc.encode(sessionVaultSecret()+':'+vaultUserScope()+':vaultflow-doc-vault');
+  var digest=await crypto.subtle.digest('SHA-256',material);
+  return crypto.subtle.importKey('raw',digest,{name:'AES-GCM'},false,['encrypt','decrypt']);
+}
+
+async function secureVaultFile(doc,file){
+  if(!file)return doc;
+  var buffer=await file.arrayBuffer();
+  if(window.crypto&&crypto.subtle){
+    doc.sha256=bytesToHex(await crypto.subtle.digest('SHA-256',buffer));
+  }
+  if(!vaultCryptoAvailable()){
+    doc.encrypted=false;
+    doc.security='metadata-only-local-preview';
+    vaultDocFiles[doc.id]=file;
+    try{vaultDocFileUrls[doc.id]=URL.createObjectURL(file);}catch(e){}
+    return doc;
+  }
+  var key=await vaultCryptoKey();
+  var iv=new Uint8Array(12);
+  crypto.getRandomValues(iv);
+  var cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,buffer);
+  var encryptedBlob=new Blob([cipher],{type:'application/octet-stream'});
+  vaultDocFiles[doc.id]={
+    encryptedBlob:encryptedBlob,
+    iv:bytesToBase64(iv),
+    name:file.name,
+    type:file.type||'application/octet-stream',
+    size:file.size
+  };
+  doc.encrypted=true;
+  doc.encryption='AES-GCM local preview';
+  doc.encryptedSize=encryptedBlob.size;
+  doc.localPlaintextStored=false;
+  doc.security='client-encrypted';
+  return doc;
+}
+
+async function decryptVaultFile(doc){
+  var payload=vaultDocFiles[doc.id];
+  if(!payload||!payload.encryptedBlob)return null;
+  if(!vaultCryptoAvailable())throw new Error('Vault crypto unavailable in this browser session.');
+  var key=await vaultCryptoKey();
+  var iv=base64ToBytes(payload.iv);
+  var cipher=await payload.encryptedBlob.arrayBuffer();
+  var plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,cipher);
+  return new Blob([plain],{type:payload.type||doc.type||'application/octet-stream'});
+}
+
+function importKind(file){
+  var name=String(file&&file.name||'').toLowerCase();
+  var type=String(file&&file.type||'').toLowerCase();
+  if(type.indexOf('image/')===0)return 'image';
+  if(/\.csv$/.test(name)||type.indexOf('csv')>-1)return 'csv';
+  if(/\.json$/.test(name)||type.indexOf('json')>-1)return 'json';
+  if(/\.(ofx|qfx)$/.test(name))return 'bank-export';
+  if(/\.(txt|md|rtf)$/.test(name)||type.indexOf('text/')===0)return 'text';
+  if(/\.(xls|xlsx|numbers)$/.test(name))return 'spreadsheet';
+  if(/\.pdf$/.test(name)||type.indexOf('pdf')>-1)return 'pdf';
+  if(/\.(doc|docx|pages)$/.test(name))return 'document';
+  if(/\.(zip|rar|7z)$/.test(name))return 'archive';
+  return 'file';
+}
+
+function parseCsvRows(text){
+  var rows=[],row=[],cell='',quoted=false;
+  for(var i=0;i<String(text||'').length;i++){
+    var ch=text[i],next=text[i+1];
+    if(ch==='"'&&quoted&&next==='"'){cell+='"';i++;continue;}
+    if(ch==='"'){quoted=!quoted;continue;}
+    if(ch===','&&!quoted){row.push(cell.trim());cell='';continue;}
+    if((ch==='\n'||ch==='\r')&&!quoted){
+      if(ch==='\r'&&next==='\n')i++;
+      row.push(cell.trim());
+      if(row.some(function(x){return x!=='';}))rows.push(row);
+      row=[];cell='';
+      continue;
+    }
+    cell+=ch;
+  }
+  row.push(cell.trim());
+  if(row.some(function(x){return x!=='';}))rows.push(row);
+  return rows;
+}
+
+function importHoldingsFromRows(rows,sourceName){
+  if(!rows||!rows.length)return 0;
+  var header=rows[0].map(function(h){return String(h||'').toLowerCase();});
+  var symbolIdx=header.findIndex(function(h){return /symbol|ticker|security/.test(h);});
+  var valueIdx=header.findIndex(function(h){return /value|market value|amount/.test(h);});
+  var qtyIdx=header.findIndex(function(h){return /qty|quantity|shares/.test(h);});
+  var priceIdx=header.findIndex(function(h){return /price|last|cost/.test(h);});
+  var nameIdx=header.findIndex(function(h){return /name|description/.test(h);});
+  if(symbolIdx<0&&rows.length){
+    var first=rows[0][0]||'';
+    if(/^[A-Z]{1,6}$/i.test(first))symbolIdx=0;
+  }
+  if(symbolIdx<0)return 0;
+  var imported=[];
+  rows.slice(header.indexOf('symbol')>-1||header.indexOf('ticker')>-1?1:0).forEach(function(r){
+    var symbol=String(r[symbolIdx]||'').toUpperCase().replace(/[^A-Z0-9.\-]/g,'');
+    var qty=parseFloat(String(r[qtyIdx]||'').replace(/[$,]/g,''))||1;
+    var price=parseFloat(String(r[priceIdx]||'').replace(/[$,]/g,''))||0;
+    var value=parseFloat(String(r[valueIdx]||'').replace(/[$,]/g,''))||qty*price;
+    var name=r[nameIdx]||symbol;
+    if(symbol&&value>0)imported.push({symbol:symbol,name:name,quantity:qty,price:price,value:value,type:'Import'});
+  });
+  if(imported.length){
+    investmentHoldings=investmentHoldings.concat(imported);
+    renderInvestmentHoldings();
+  }
+  return imported.length;
+}
+
+function applyImportedFinanceHints(rows){
+  var applied=0;
+  rows.forEach(function(r){
+    var key=String(r[0]||'').toLowerCase();
+    var value=parseFloat(String(r[1]||r[2]||'').replace(/[$,]/g,''));
+    if(!isFinite(value))return;
+    var map=[
+      [/income|pay|salary|wages|maritime/,'a_oth'],
+      [/rent|housing|mortgage payment/,'a_rent'],
+      [/food|grocery/,'a_food'],
+      [/phone|mobile/,'a_phone'],
+      [/transport|car|gas/,'a_trans'],
+      [/emergency/,'a_em'],
+      [/down payment|real estate target/,'a_re'],
+      [/invest/,'a_inv']
+    ];
+    map.forEach(function(pair){
+      if(pair[0].test(key)){
+        var el=document.getElementById(pair[1]);
+        if(el&&!el.value){el.value=Math.round(value);applied++;}
+      }
+    });
+  });
+  if(applied)alloc();
+  return applied;
+}
+
+function detectOfxTransactions(text){
+  var names=(String(text||'').match(/<NAME>([^\r\n<]+)/gi)||[]).map(function(x){return x.replace(/<NAME>/i,'').trim();});
+  var amounts=(String(text||'').match(/<TRNAMT>([^\r\n<]+)/gi)||[]).map(function(x){return parseFloat(x.replace(/<TRNAMT>/i,'').trim())||0;});
+  var imported=[];
+  for(var i=0;i<Math.min(names.length,amounts.length,100);i++)imported.push({name:names[i],amount:amounts[i],date:new Date().toISOString().slice(0,10)});
+  if(imported.length){
+    bankTransactions=bankTransactions.concat(imported);
+    paydayDetected=false;
+    refreshSystemStatus();
+  }
+  return imported.length;
+}
+
+function parseUniversalText(file,text,kind){
+  var result={holdings:0,hints:0,transactions:0,notes:''};
+  try{
+    if(kind==='json'){
+      var data=JSON.parse(text);
+      var rows=Array.isArray(data)?data:(Array.isArray(data.holdings)?data.holdings:[]);
+      if(rows.length&&typeof rows[0]==='object'){
+        var csvRows=[Object.keys(rows[0])].concat(rows.map(function(obj){return Object.keys(rows[0]).map(function(k){return obj[k];});}));
+        result.holdings=importHoldingsFromRows(csvRows,file.name);
+      }
+    }else if(kind==='csv'||kind==='text'){
+      var rows=parseCsvRows(text);
+      result.holdings=importHoldingsFromRows(rows,file.name);
+      result.hints=applyImportedFinanceHints(rows);
+      if(!result.holdings&&!result.hints)result.notes='Stored as searchable text/document.';
+    }else if(kind==='bank-export'){
+      result.transactions=detectOfxTransactions(text);
+    }
+  }catch(e){
+    result.notes='Stored securely; automatic parser could not read this file.';
+  }
+  return result;
+}
+
+function renderImportHistory(){
+  var el=document.getElementById('universal-import-list');
+  if(!el)return;
+  if(!importHistory.length){
+    el.innerHTML='<div class="doc-item"><div><strong>No imports yet.</strong><span>Import files to auto-route them into the secure vault.</span></div><span>Ready</span></div>';
+    return;
+  }
+  el.innerHTML=importHistory.slice(0,10).map(function(item){
+    return '<div class="doc-item"><div><strong>'+esc(item.name)+'</strong><span>'+esc(item.kind)+' · '+fileSizeLabel(item.size)+' · '+esc(item.detail||'Stored in secure vault')+'</span></div><span class="doc-status">'+esc(item.status||'imported')+'</span></div>';
+  }).join('');
+}
+
+function recordImport(file,kind,detail,status){
+  importHistory.unshift({
+    id:'imp_'+uid(),
+    name:file.name,
+    size:file.size,
+    kind:kind,
+    detail:detail||'Stored in secure vault',
+    status:status||'imported',
+    time:new Date().toISOString()
+  });
+  importHistory=importHistory.slice(0,100);
+  renderImportHistory();
+}
+
+function handleUniversalImport(files){
   var list=Array.from(files||[]);
   if(!list.length)return;
+  setBox('universal-import-status','Importing '+list.length+' file'+(list.length>1?'s':'')+'...','#C9A84C');
+  handleVaultDocs(list,'universal-import');
+  list.forEach(function(file){
+    var kind=importKind(file);
+    if(kind==='image'){
+      recordImport(file,kind,'Image secured in vault. Use screenshot scanner in Allocator for OCR-style number detection.','secured');
+      return;
+    }
+    if(['csv','json','text','bank-export'].indexOf(kind)>-1){
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var result=parseUniversalText(file,String(ev.target.result||''),kind);
+        var detail=[];
+        if(result.holdings)detail.push(result.holdings+' holdings');
+        if(result.hints)detail.push(result.hints+' finance hints');
+        if(result.transactions)detail.push(result.transactions+' transactions');
+        recordImport(file,kind,detail.length?'Parsed '+detail.join(', '):(result.notes||'Stored securely in vault'),'parsed');
+        saveState();
+      };
+      reader.onerror=function(){recordImport(file,kind,'Stored securely; browser could not parse text.','secured');};
+      reader.readAsText(file);
+    }else{
+      recordImport(file,kind,'Stored securely; browser preview parser not required for this file type.','secured');
+    }
+  });
+  var input=document.getElementById('universal_import_input');
+  if(input)input.value='';
+  setBox('universal-import-status','Universal import complete. Files were routed into the secure vault and parsable finance data was applied.','#00ff88');
+  saveState();
+}
+
+function classifyVaultDoc(file){
+  var name=String(file&&file.name||'').toLowerCase();
+  var type=String(file&&file.type||'').toLowerCase();
+  if(/paystub|pay-stub|payroll|adp|w2|w-2|earnings|paycheck/.test(name))return 'paystub';
+  if(/tax|1099|1040|irs|return/.test(name))return 'tax';
+  if(/statement|bank|checking|savings|credit|card/.test(name))return 'statement';
+  if(/mortgage|lease|rent|property|deed|zillow/.test(name))return 'property';
+  if(type.indexOf('image/')===0)return 'screenshot';
+  return 'document';
+}
+
+function readVaultDocPreview(doc,file){
+  if(!file||String(file.type||'').indexOf('image/')!==0)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    vaultDocPreviews[doc.id]=reader.result;
+    renderVaultDocs();
+  };
+  reader.readAsDataURL(file);
+}
+
+function registerVaultDocWithBackend(doc){
+  postBackend('/vault/register',{
+    user_id:currentSession&&currentSession.user?currentSession.user.id:'guest',
+    doc_id:doc.id,
+    filename:doc.name,
+    size:doc.size,
+    type:doc.type,
+    category:doc.category,
+    include_in_report:doc.includeInReport!==false,
+    file_hash:doc.sha256||'',
+    encrypted:!!doc.encrypted,
+    source:doc.source||'vaultflow-web'
+  }).then(function(d){
+    if(!d)return;
+    doc.backendRegistered=!!d.registered;
+    doc.manifestDigest=d.manifest_digest||doc.manifestDigest;
+    doc.signedUrlReady=!!d.signed_urls_ready;
+    doc.encrypted=!!d.encrypted_manifest_ready||doc.encrypted;
+    renderVaultDocs();
+    saveState();
+    if(d.detail)msg('doc-upload-status',d.detail,d.signed_urls_ready?'#00ff88':'#C9A84C');
+  }).catch(function(){
+    msg('doc-upload-status','Document is available locally. Backend vault registration waits for the latest deploy.','#C9A84C');
+  });
+}
+
+function handleVaultDocs(files,source){
+  var list=Array.from(files||[]);
+  if(!list.length)return;
+  var pending=list.length;
   list.forEach(function(file){
     var docId='doc_'+uid();
-    vaultDocs.push({
+    var category=classifyVaultDoc(file);
+    var doc={
       id:docId,
       name:file.name,
       size:file.size,
       type:file.type||'document',
+      category:category,
       added:new Date().toISOString(),
       encrypted:true,
+      encryption:'pending',
       includeInReport:true,
+      source:source||'doc-vault',
       signedUrl:createLocalVaultSignedUrl(docId),
       expiresAt:new Date(Date.now()+15*60*1000).toISOString()
+    };
+    vaultDocs.push(doc);
+    readVaultDocPreview(doc,file);
+    secureVaultFile(doc,file).then(function(){
+      registerVaultDocWithBackend(doc);
+      if(!usePlaidDemoFallback())refreshVaultDocSignature(vaultDocs.findIndex(function(x){return x.id===doc.id;}),true);
+    }).catch(function(){
+      doc.encrypted=false;
+      doc.security='encryption-error';
+      vaultDocFiles[docId]=file;
+      try{vaultDocFileUrls[docId]=URL.createObjectURL(file);}catch(e){}
+      registerVaultDocWithBackend(doc);
+    }).finally(function(){
+      pending--;
+      renderVaultDocs();
+      saveState();
+      if(pending===0)msg('doc-upload-status',list.length+' file'+(list.length>1?'s':'')+' secured in vault and marked for report export.','#00ff88');
     });
   });
   renderVaultDocs();
+  renderTransferHistory();
   vaultNotifications.unshift({title:'Document vault updated',body:list.length+' file'+(list.length>1?'s':'')+' added from your computer.',time:new Date().toISOString()});
   renderNotifications();
+  var input=document.getElementById('doc_vault_input');
+  if(input)input.value='';
+  msg('doc-upload-status','Securing '+list.length+' file'+(list.length>1?'s':'')+' in the vault...','#C9A84C');
   saveState();
 }
 
@@ -4420,10 +5179,13 @@ function renderVaultDocs(){
     return;
   }
   el.innerHTML=vaultDocs.map(function(d,i){
-    var status=d.encrypted?'Encrypted':'Metadata only';
+    var status=d.encrypted?'Encrypted':(d.signedUrlReady||d.signedUrl?'Signed':'Queued');
     var report=d.includeInReport!==false?'Included in report':'Excluded from report';
-    return '<div class="doc-item"><div><strong>'+esc(d.name)+'</strong><span>'+esc(d.type||'document')+' · '+fileSizeLabel(d.size)+' · '+new Date(d.added).toLocaleDateString()+' · '+esc(report)+'</span></div>'+
-      '<div class="doc-actions"><span class="doc-status '+(d.signedUrl?'':'warn')+'">'+esc(status)+'</span><button class="owner-action" onclick="refreshVaultDocSignature('+i+')">SIGN URL</button><button class="owner-action" onclick="toggleVaultDocReport('+i+')">'+(d.includeInReport!==false?'EXCLUDE':'INCLUDE')+'</button><button class="owner-action" onclick="removeVaultDoc('+i+')">REMOVE</button></div></div>';
+    var preview=vaultDocPreviews[d.id]?'<img class="doc-preview" src="'+vaultDocPreviews[d.id]+'" alt="">':'';
+    var hash=d.sha256?' · SHA-256 '+esc(String(d.sha256).slice(0,12)):'';
+    var security=d.encryption||d.security||'secure manifest';
+    return '<div class="doc-item"><div>'+preview+'<strong>'+esc(d.name)+'</strong><span><span class="doc-kind">'+esc(d.category||'document')+'</span>'+esc(d.type||'document')+' · '+fileSizeLabel(d.size)+' · '+new Date(d.added).toLocaleDateString()+' · '+esc(report)+' · '+esc(security)+hash+'</span></div>'+
+      '<div class="doc-actions"><span class="doc-status '+(d.encrypted||d.signedUrlReady||d.signedUrl?'':'warn')+'">'+esc(status)+'</span><button class="owner-action" onclick="openVaultDoc('+i+')">OPEN</button><button class="owner-action" onclick="refreshVaultDocSignature('+i+')">SIGN URL</button><button class="owner-action" onclick="toggleVaultDocReport('+i+')">'+(d.includeInReport!==false?'EXCLUDE':'INCLUDE')+'</button><button class="owner-action" onclick="removeVaultDoc('+i+')">REMOVE</button></div></div>';
   }).join('');
 }
 
@@ -4431,26 +5193,57 @@ function createLocalVaultSignedUrl(docId){
   return 'vaultflow://signed-document/'+encodeURIComponent(docId)+'?expires='+(Date.now()+15*60*1000);
 }
 
-function refreshVaultDocSignature(i){
+function refreshVaultDocSignature(i,silent){
   if(!vaultDocs[i])return;
   var doc=vaultDocs[i];
   doc.signedUrl=createLocalVaultSignedUrl(doc.id||('doc_'+i));
   doc.expiresAt=new Date(Date.now()+15*60*1000).toISOString();
   renderVaultDocs();
   saveState();
-  msg('report-msg','Signed URL refreshed locally for '+doc.name+'.','#00ff88');
+  if(!silent)msg('report-msg','Signed URL refreshed locally for '+doc.name+'.','#00ff88');
   if(!usePlaidDemoFallback()){
-    postBackend('/vault/sign-url',{doc_id:doc.id,filename:doc.name,type:doc.type,size:doc.size,user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).then(function(d){
+    postBackend('/vault/sign-url',{doc_id:doc.id,filename:doc.name,type:doc.type,size:doc.size,file_hash:doc.sha256||'',user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).then(function(d){
       if(d&&d.success){
         doc.signedUrl=d.download_url;
         doc.uploadUrl=d.upload_url;
+        doc.signedUrlReady=true;
+        doc.storageProvider=d.storage_provider||doc.storageProvider;
+        doc.storageKey=d.storage_key||doc.storageKey;
         doc.expiresAt=d.expires_at;
         renderVaultDocs();
         saveState();
-        msg('report-msg','Backend signed URL ready for '+doc.name+'.','#00ff88');
+        if(!silent)msg('report-msg','Backend signed URL ready for '+doc.name+'.','#00ff88');
+      }else if(d&&d.detail){
+        msg('doc-upload-status','Backend vault setup needed: '+d.detail,'#C9A84C');
       }
     }).catch(function(){});
   }
+}
+
+async function openVaultDoc(i){
+  var doc=vaultDocs[i];
+  if(!doc)return;
+  var payload=vaultDocFiles[doc.id];
+  if(payload&&payload.encryptedBlob){
+    try{
+      var blob=await decryptVaultFile(doc);
+      var decryptedUrl=URL.createObjectURL(blob);
+      window.open(decryptedUrl,'_blank');
+      setTimeout(function(){URL.revokeObjectURL(decryptedUrl);},60000);
+      msg('doc-upload-status','Decrypted and opened '+doc.name+' for this browser session.','#00ff88');
+      return;
+    }catch(e){
+      msg('doc-upload-status','Could not decrypt this local file. Re-upload it or refresh the signed URL.','#ff4444');
+      return;
+    }
+  }
+  var url=vaultDocFileUrls[doc.id]||doc.signedUrl;
+  if(url){
+    window.open(url,'_blank');
+    msg('doc-upload-status','Opening '+doc.name+'.','#00ff88');
+    return;
+  }
+  msg('doc-upload-status','This file was restored from saved metadata. Upload it again to open the local file preview.','#C9A84C');
 }
 
 function toggleVaultDocReport(i){
@@ -4464,9 +5257,12 @@ function toggleVaultDocReport(i){
 function removeVaultDoc(i){
   if(!vaultDocs[i])return;
   var removed=vaultDocs.splice(i,1)[0];
+  if(removed&&vaultDocFileUrls[removed.id]){try{URL.revokeObjectURL(vaultDocFileUrls[removed.id]);}catch(e){}}
+  if(removed){delete vaultDocFiles[removed.id];delete vaultDocFileUrls[removed.id];delete vaultDocPreviews[removed.id];}
   renderVaultDocs();
   saveState();
   msg('report-msg','Removed '+removed.name+' from the secure vault list.','#C9A84C');
+  postBackend('/vault/remove',{doc_id:removed.id,user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){});
 }
 
 function requestNotifications(){
@@ -4616,10 +5412,52 @@ function addDemoLine(text,color){
   el.scrollTop=el.scrollHeight;
 }
 
+function clearTourFocus(){
+  document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');});
+  document.querySelectorAll('.tour-tab-glow').forEach(function(el){el.classList.remove('tour-tab-glow');});
+}
+
+function setTourOverlay(label,title,copy){
+  var pct=Math.min(100,Math.round((tourStepIndex/tourTotalSteps)*100));
+  var step=document.getElementById('tour-step-label');
+  var count=document.getElementById('tour-step-count');
+  var titleEl=document.getElementById('tour-title');
+  var copyEl=document.getElementById('tour-copy');
+  var fill=document.getElementById('tour-progress-fill');
+  if(step)step.textContent=label||'GUIDED TOUR';
+  if(count)count.textContent=tourStepIndex+'/'+tourTotalSteps;
+  if(titleEl)titleEl.textContent=title||'VaultFlow Tour';
+  if(copyEl)copyEl.textContent=copy||'Follow the highlighted section.';
+  if(fill)fill.style.width=pct+'%';
+}
+
+function highlightTourTarget(tab){
+  clearTourFocus();
+  var panel=document.getElementById('dt-'+tab);
+  if(panel)panel.classList.add('tour-focus');
+  var index=visibleTabIds.indexOf(tab);
+  if(index>-1){
+    var btn=document.querySelectorAll('.dtab')[index];
+    if(btn)btn.classList.add('tour-tab-glow');
+  }
+}
+
+function tourMoment(tab,title,copy,line,color,after){
+  if(!tourRunning)return;
+  tourStepIndex++;
+  setTourOverlay(tabLabel(tab),title,copy);
+  if(tab)dtab(tab);
+  highlightTourTarget(tab);
+  if(line)addDemoLine(line,color||'#C9A84C');
+  if(typeof after==='function')after();
+}
+
 function clearTourTimers(){
   tourTimers.forEach(function(timer){clearTimeout(timer);});
   tourTimers=[];
   tourRunning=false;
+  document.body.classList.remove('tour-running');
+  clearTourFocus();
 }
 
 function tourStep(delay,fn){
@@ -4629,15 +5467,26 @@ function tourStep(delay,fn){
   tourTimers.push(timer);
 }
 
-function skipSiteTour(){
+function skipSiteTour(reason){
   clearTourTimers();
-  addDemoLine('Site tour skipped. You can restart it any time from Overview.','#C9A84C');
+  addDemoLine(reason||'Site tour skipped. You can restart it any time from Overview.','#C9A84C');
   dtab(activeDashboardTab||'ov');
 }
+
+function stopTourForMouse(){
+  if(!tourRunning)return;
+  if(Date.now()<tourStopOnMouseAt)return;
+  skipSiteTour('Tour stopped because you moved the mouse.');
+}
+
+document.addEventListener('mousemove',stopTourForMouse,{passive:true});
 
 function runDemoFlow(){
   clearTourTimers();
   tourRunning=true;
+  tourStepIndex=0;
+  tourStopOnMouseAt=Date.now()+650;
+  document.body.classList.add('tour-running');
   if(!currentSession){
     finishAuth(makeSession('demo@vaultflow.local','prime'));
   }
@@ -4649,30 +5498,26 @@ function runDemoFlow(){
     activatePrime('prime');
     addDemoLine('Prime preview tools activated.','#00ff88');
   }
-  dtab('ov');
   alloc();
-  addDemoLine('Overview is your command center: net worth, Wealth GPS, Digital Twin, health score, and next actions.','#00ff88');
-  tourStep(1800,function(){
-    dtab('al');
-    addDemoLine('Allocator is where users enter income, bills, goals, or upload screenshots so they do not have to type every number.','#C9A84C');
+  tourMoment('ov','Overview Command Center','This is the first screen: net worth, Wealth GPS, Digital Twin, health score, AI briefings, and next actions.','Overview is your command center: net worth, Wealth GPS, Digital Twin, health score, and next actions.','#00ff88');
+  tourStep(1200,function(){
+    tourMoment('al','Allocator','Users enter income, bills, goals, or upload screenshots so they do not have to type every number.','Allocator is where users enter income, bills, goals, or upload screenshots so they do not have to type every number.','#C9A84C');
   });
-  tourStep(3900,function(){
-    dtab('pf');
-    addDemoLine('Profile is where users connect Plaid, manage reports, secure files, settings, and integrations. Connecting local demo bank data now.','#C9A84C');
-    demoBankConnect();
+  tourStep(2700,function(){
+    tourMoment('pf','Profile And Integrations','This is where Plaid, payroll, reports, secure files, settings, launch checks, and Capital bridge live.','Profile is where users connect Plaid, manage reports, secure files, settings, and integrations. Connecting local demo bank data now.','#C9A84C',demoBankConnect);
   });
-  tourStep(6200,function(){
-    addDemoLine('Payday detector scans deposits like payroll, salary, direct deposit, maritime pay, VA deposits, and recurring income.','#C9A84C');
+  tourStep(4400,function(){
+    setTourOverlay('PAYDAY','Payday Detection','VaultFlow scans deposits like payroll, salary, direct deposit, maritime pay, VA deposits, and recurring income.');
     detectPaycheck();
+    addDemoLine('Payday detector scans deposits like payroll, salary, direct deposit, maritime pay, VA deposits, and recurring income.','#C9A84C');
   });
-  tourStep(8500,function(){
-    dtab('tl');
-    addDemoLine('Tools includes debt payoff, investment growth, real estate math, tax estimates, and the stock algo. Running signals now.','#C9A84C');
-    cSig();
+  tourStep(6100,function(){
+    tourMoment('tl','Prime Tools','Debt payoff, investment growth, real estate math, tax estimates, stock signals, and guarded paper trading live here.','Tools includes debt payoff, investment growth, real estate math, tax estimates, and the stock algo. Running signals now.','#C9A84C',cSig);
   });
-  tourStep(11100,function(){
+  tourStep(8200,function(){
     var best=bestBuySignal();
     if(best){
+      setTourOverlay('TRADING','Guarded Paper Trade','The signal engine can stage a paper trade from the strongest BUY signal.');
       addDemoLine('Staging '+best.s+' paper trade from best BUY signal.','#00ff88');
       stagePaperTrade(best.s,best.size||signalSettings().maxPosition);
     }else{
@@ -4680,23 +5525,21 @@ function runDemoFlow(){
       dtab('tl');
     }
   });
+  tourStep(10100,function(){
+    tourMoment('nw','Wealth Tracking','Track outside investment accounts, demo holdings, CSV imports, manual assets, and total net worth.','Wealth tracks outside investment accounts through Plaid Investments, demo data, CSV import, or manual holdings.','#C9A84C',demoInvestmentConnect);
+  });
+  tourStep(11900,function(){
+    tourMoment('gl','Goal Planning','Emergency fund, down payment, portfolio, FIRE, millionaire path, and long-term progress live here.','Goals shows emergency fund, down payment, portfolio, and millionaire progress. Users update progress here.','#C9A84C');
+  });
   tourStep(13700,function(){
-    dtab('nw');
-    demoInvestmentConnect();
-    addDemoLine('Wealth tracks outside investment accounts through Plaid Investments, demo data, CSV import, or manual holdings.','#C9A84C');
+    var tab=hasTier('vault')?'pr':'ov';
+    tourMoment(tab,'Vault Deals','Vault members get the real estate pipeline. Lower tiers stay restricted so the tier system is enforced.',hasTier('vault')?'Deals is the Vault real estate pipeline for rental and property analysis.':'Deals is a Vault-only tab, so lower tiers do not see or open it.','#C9A84C');
   });
-  tourStep(16200,function(){
-    dtab('gl');
-    addDemoLine('Goals shows emergency fund, down payment, portfolio, and millionaire progress. Users update progress here.','#C9A84C');
-  });
-  tourStep(18800,function(){
-    dtab(hasTier('vault')?'pr':'ov');
-    addDemoLine(hasTier('vault')?'Deals is the Vault real estate pipeline for rental and property analysis.':'Deals is a Vault-only tab, so lower tiers do not see or open it.','#C9A84C');
-  });
-  tourStep(21500,function(){
-    dtab('ov');
-    addDemoLine('Tour complete. Use the top tabs or mobile dropdown to move around. Upgrade returns you to the screen you came from.','#00ff88');
+  tourStep(15600,function(){
+    tourMoment('ov','Tour Complete','Use the tab guide, top tabs, command palette, or mobile dropdown to move around.','Tour complete. Use the top tabs or mobile dropdown to move around. Upgrade returns you to the screen you came from.','#00ff88');
     tourRunning=false;
+    document.body.classList.remove('tour-running');
+    clearTourFocus();
     saveState();
     renderCommandCenter();
   });
@@ -4709,8 +5552,13 @@ function resetPreviewState(){
   investmentAccessToken=null;
   investmentMeta=null;
   vaultDocs=[];
+  vaultDocFiles={};
+  vaultDocFileUrls={};
+  vaultDocPreviews={};
+  importHistory=[];
   vaultTasks=[];
   vaultNotifications=[];
+  transferHistory=[];
   plaidAccessToken=null;
   bankTransactions=[];
   plaidMeta=null;
@@ -4737,8 +5585,10 @@ function currentPreviewState(){
     investmentSession:investmentAccessToken,
     investmentMeta:investmentMeta,
     vaultDocs:vaultDocs,
+    importHistory:importHistory,
     vaultTasks:vaultTasks,
     vaultNotifications:vaultNotifications,
+    transferHistory:transferHistory,
     plan:currentSession&&currentSession.plan,
     bankDemo:plaidAccessToken==='demo',
     bankSession:(plaidAccessToken&&plaidAccessToken!=='demo')?String(plaidAccessToken):null,
@@ -4772,6 +5622,7 @@ var plaidAccessToken = null;
 var bankTransactions = [];
 var plaidMeta = null;
 var plaidBackendState = {label:'Not checked',kind:'warn'};
+var plaidApprovalState = {bank:'unknown',income:'unknown',transfer:'unknown',detail:'Not checked'};
 var paydayDetected = false;
 var lastPaycheckAmount = null;
 var transferRailState = {label:'Review only',kind:'warn',note:'Backend transfer rails disabled until approved'};
@@ -4782,6 +5633,8 @@ function setStatus(id,text,kind){
   el.className='status-value '+(kind?('status-'+kind):'');
   el.textContent=text;
   if(id==='plaid-backend-status')plaidBackendState={label:text,kind:kind||'warn'};
+  if(id==='plaid-approval-status')plaidApprovalState.bank=kind||'warn';
+  if(id==='transfer-approval-status')plaidApprovalState.transfer=kind||'warn';
   refreshSystemStatus();
 }
 
@@ -4893,12 +5746,22 @@ function refreshSystemStatus(){
   if(transferNote){
     transferNote.innerHTML='<strong>Transfer mode:</strong> '+(hasTier('vault')?(bank.connected?transferRailState.note:'Connect a bank before transfer review.'): 'Vault tier required for transfer review tools.');
   }
+  updateTransferAccountNote();
   refreshBankStateUI();
 }
 
 function auditLine(label,state,detail){
-  var color=state==='pass'?'#00ff88':state==='fail'?'#ff4444':'#C9A84C';
-  var badge=state==='pass'?'PASS':state==='fail'?'FIX':'REVIEW';
+  var styles={
+    pass:{color:'#00ff88',badge:'PASS'},
+    fail:{color:'#ff4444',badge:'FIX'},
+    warn:{color:'#C9A84C',badge:'REVIEW'},
+    setup:{color:'#7dd3fc',badge:'SETUP'},
+    deploy:{color:'#b084ff',badge:'DEPLOY'},
+    hold:{color:'#ff8a4c',badge:'HOLD'}
+  };
+  var cfg=styles[state]||styles.warn;
+  var color=cfg.color;
+  var badge=cfg.badge;
   return '<div class="intel-item"><div class="intel-icon" style="color:'+color+';border-color:'+color+'">'+badge.charAt(0)+'</div><div><strong>'+esc(label)+'</strong><span>'+esc(detail)+'</span></div><div class="intel-level" style="color:'+color+';border-color:'+color+'">'+badge+'</div></div>';
 }
 
@@ -4917,6 +5780,12 @@ function normalizePlaidAuditResult(result){
       detail:'Plaid rejected the backend key pair. In Railway, verify PLAID_CLIENT_ID is the Plaid Client ID and PLAID_SECRET is the Sandbox secret for PLAID_ENV=sandbox, then redeploy the backend.'
     };
   }
+  if(lower.indexOf('secret must be a properly formatted')>-1||lower.indexOf('properly formatted, non-empty string')>-1){
+    return {
+      success:false,
+      detail:'Railway PLAID_SECRET is present, but Plaid says it is not a valid secret. Replace PLAID_SECRET with the Plaid Dashboard Sandbox Secret exactly. Do not use the Client ID, masked dots, publishable key, quotes, or spaces. Then redeploy Railway.'
+    };
+  }
   if(lower.indexOf('secret')>-1&&lower.indexOf('invalid')>-1){
     return {
       success:false,
@@ -4932,7 +5801,18 @@ function auditPlaidBackend(){
   }
   var userId=currentSession&&currentSession.user?currentSession.user.id:'guest';
   return postBackend(PLAID_ENDPOINTS.health,{user_id:userId}).then(function(d){
-    if(d&&d.success)return d;
+    if(d&&d.success){
+      return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId,products:['auth','transactions']}).then(function(link){
+        if(link&&link.link_token){
+          return {success:true,detail:'Plaid backend created a real sandbox bank Link token.'};
+        }
+        var normalized=normalizePlaidAuditResult(link||{success:false,detail:'Plaid health passed, but Link token creation failed.'});
+        normalized.detail='Health route is live, but Link token creation failed. '+(normalized.detail||'Check Railway Plaid variables and redeploy.');
+        return normalized;
+      }).catch(function(){
+        return {success:false,detail:'Health route is live, but Plaid Link token route failed. Check Railway logs and redeploy the latest backend.'};
+      });
+    }
     if(d&&String(d.detail||'').toLowerCase().indexOf('not found')>-1){
       return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId}).then(function(link){
         if(link&&link.link_token){
@@ -4975,6 +5855,11 @@ function auditPayrollBackend(){
       return {success:true,detail:'ADP / payroll Plaid Income Link token route is ready.'};
     }
     var normalized=normalizePlaidAuditResult(d||{success:false,detail:'Payroll Income Link route failed.'});
+    var lowerDetail=String(normalized.detail||'').toLowerCase();
+    if((d&&d.setup_required)||lowerDetail.indexOf('user_token')>-1||lowerDetail.indexOf('income is enabled')>-1||lowerDetail.indexOf('income requires')>-1){
+      normalized.setup_required=true;
+      normalized.detail='Plaid payroll/ADP route is deployed, but Plaid Income user-token access still needs to be enabled for this Plaid app before payroll can pass.';
+    }
     setStatus('payroll-backend-status',normalized.detail||'Payroll route warning','warn');
     return normalized;
   }).catch(function(){
@@ -4991,24 +5876,93 @@ function runLiveReadinessAudit(){
   var bank=bankConnectionState();
   var readiness=postBackend('/live/readiness',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Backend readiness route unavailable.'};});
   var plaid=auditPlaidBackend();
+  var approval=checkPlaidApprovalStatus(true).catch(function(){return {success:false,detail:'Plaid approval route unavailable.'};});
   var payroll=auditPayrollBackend();
   var trading=postBackend('/trading/connect',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Trading route unavailable.'};});
   var ai=postBackend('/ai/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'AI health route unavailable.'};});
-  Promise.all([readiness,plaid,payroll,trading,ai]).then(function(results){
-    var ready=results[0]||{},plaidHealth=results[1]||{},payrollHealth=results[2]||{},trade=results[3]||{},aiHealth=results[4]||{};
+  var capital=checkCapitalReadiness().catch(function(){return {success:false,detail:'Capital backend route unavailable.'};});
+  var billing=postBackend('/billing/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Billing health route unavailable.'};});
+  var transfer=postBackend('/bank/transfer/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Transfer health route unavailable.'};});
+  var vault=postBackend('/vault/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Secure vault health route unavailable.'};});
+  var reports=postBackend('/reports/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Report export health route unavailable.'};});
+  var scaling=postBackend('/scaling/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Scaling health route unavailable.'};});
+  Promise.all([readiness,plaid,approval,payroll,trading,ai,capital,billing,transfer,vault,reports,scaling]).then(function(results){
+    var ready=results[0]||{},plaidHealth=results[1]||{},approvalHealth=results[2]||{},payrollHealth=results[3]||{},trade=results[4]||{},aiHealth=results[5]||{},capitalHealth=results[6]||{};
+    var billingHealth=results[7]||ready.billing||{},transferHealth=results[8]||ready.transfer||{},vaultHealth=results[9]||ready.doc_vault||{},reportsHealth=results[10]||ready.report_exports||{};
+    var scalingHealth=results[11]||ready.scaling||{};
+    var backendBuild=ready.build_version||'unknown';
+    var backendCurrent=backendBuild===EXPECTED_BACKEND_BUILD||backendBuild.indexOf('import-vault-scale')>-1;
+    function detailText(data){
+      return String((data&&data.detail)||'');
+    }
+    function routeMissing(data){
+      return detailText(data).toLowerCase().indexOf('not found')>-1||detailText(data).toLowerCase().indexOf('route unavailable')>-1;
+    }
+    function routeDetail(data,label){
+      var detail=detailText(data);
+      if(routeMissing(data)){
+        return label+' route is missing because Railway is running backend build '+backendBuild+'. Redeploy the latest VaultFlow ZIP or GitHub commit with '+EXPECTED_BACKEND_BUILD+'.';
+      }
+      return detail;
+    }
+    function configState(ok,data){
+      if(ok)return 'pass';
+      if(!backendCurrent&&routeMissing(data))return 'deploy';
+      return 'setup';
+    }
+    if(!backendCurrent){
+      var legacyStripeOk=!!ready.stripe_configured;
+      var legacyTransferOk=!!ready.transfer_enabled;
+      var legacyVaultOk=!!ready.doc_vault_key_configured;
+      var legacyTradingOk=!!(ready.alpaca_configured||trade.success);
+      var legacyAiOk=!!(ready.ai_configured||aiHealth.configured);
+      var staleRows=[];
+      staleRows.push(auditLine('Backend build','deploy','Railway is still running '+backendBuild+'. Upload or redeploy the latest VaultFlow package so the new readiness routes can run.'));
+      staleRows.push(auditLine('Plaid Link SDK',window.Plaid?'pass':'warn',window.Plaid?'Plaid Link script loaded in the browser.':'Plaid Link script is not loaded yet; check cdn.plaid.com/network.'));
+      staleRows.push(auditLine('Plaid backend',plaidHealth.success?'pass':'fail',plaidHealth.detail||'Plaid health checked.'));
+      staleRows.push(auditLine('Plaid product approval','deploy','Redeploy the newest backend before checking Plaid Income or Plaid Transfer approval inside VaultFlow.'));
+      staleRows.push(auditLine('Payment checkout',legacyStripeOk?'pass':'hold',legacyStripeOk?'Old backend reports Stripe is configured. New checkout health route will verify details after redeploy.':'Stripe setup could not be confirmed on the old backend.'));
+      staleRows.push(auditLine('AI assistant',legacyAiOk?'pass':'setup',legacyAiOk?'OpenAI backend key is configured.':'Add OPENAI_API_KEY in Railway after redeploy if AI still does not answer.'));
+      staleRows.push(auditLine('Trading integration',legacyTradingOk?'pass':'setup',legacyTradingOk?'Alpaca keys are configured on the backend.':'Add Alpaca keys in Railway for market data and guarded paper trading.'));
+      staleRows.push(auditLine('ADP / payroll income','hold','Waiting for the latest backend deploy before judging ADP/payroll. Plaid Income may still require user-token access in Plaid.'));
+      staleRows.push(auditLine('Auto bank transfer rail',legacyTransferOk?'pass':'setup',legacyTransferOk?'Old backend reports transfer rail enabled. New transfer health route will verify provider handoff after redeploy.':'Transfer rail is not enabled yet. That is expected until provider approval and env setup are complete.'));
+      staleRows.push(auditLine('Secure document vault',legacyVaultOk?'pass':'setup',legacyVaultOk?'Old backend reports vault encryption key is configured. New signed URL health route will verify storage after redeploy.':'Add DOC_VAULT_ENCRYPTION_KEY and storage settings in Railway before production uploads.'));
+      staleRows.push(auditLine('Scalable storage','deploy','Redeploy the newest backend before checking DATABASE_URL, Redis, or storage-provider readiness.'));
+      staleRows.push(auditLine('Report exports','hold','Browser report and CSV exports work locally. Backend export tracking waits for the latest Railway deploy.'));
+      staleRows.push(auditLine('Live launch decision','deploy','Only one fix is required before rerunning this audit: redeploy the latest VaultFlow backend package. After that, the audit will check setup items one by one.'));
+      el.innerHTML=staleRows.join('');
+      el.style.display='block';
+      el.style.color='#8A8070';
+      refreshSystemStatus();
+      return;
+    }
+    var billingOk=!!(billingHealth.success||ready.payment_checkout_configured);
+    var transferOk=!!(transferHealth.success||ready.transfer_enabled);
+    var transferApprovalOk=!(transferHealth&&transferHealth.plaid_transfer_provider)||!!(approvalHealth&&approvalHealth.transfer&&approvalHealth.transfer.approved);
+    var incomeApprovalOk=!!(approvalHealth&&approvalHealth.income&&approvalHealth.income.approved);
+    var vaultOk=!!(vaultHealth.success||ready.doc_vault_signed_urls_ready);
+    var reportsOk=!!(reportsHealth.success||ready.report_exports_enabled);
+    var liveReady=!!(backendCurrent&&plaidHealth.success&&incomeApprovalOk&&payrollHealth.success&&trade.success&&aiHealth.configured&&capitalHealth.success&&billingOk&&transferOk&&transferApprovalOk&&vaultOk&&reportsOk);
+    var launchState=liveReady?'pass':(!backendCurrent||!plaidHealth.success?'fail':'setup');
+    var launchDetail=liveReady?'All critical backend rails are configured. Run one real Plaid sandbox link, one Stripe test payment, one paper Alpaca order, and one transfer-provider dry run before public traffic.':(!backendCurrent?'Redeploy the latest backend first. The current live Railway build is missing the new readiness routes.':'Finish the SETUP rows, then rerun the audit before taking real users.');
     var rows=[];
+    rows.push(auditLine('Backend build',backendCurrent?'pass':'fail',backendCurrent?'Railway is running the latest VaultFlow backend build.':'Railway is running '+backendBuild+'. Redeploy the latest package so the new checkout, transfer, vault, export, and Capital routes exist.'));
     rows.push(auditLine('Plaid Link SDK',window.Plaid?'pass':'warn',window.Plaid?'Plaid Link script loaded in the browser.':'Plaid Link script is not loaded yet; check cdn.plaid.com/network.'));
     rows.push(auditLine('Plaid backend',plaidHealth.success?'pass':'fail',plaidHealth.detail||'Plaid health checked.'));
-    rows.push(auditLine('ADP / payroll income',payrollHealth.success?'pass':'warn',payrollHealth.detail||'Payroll Income Link checked.'));
-    rows.push(auditLine('AI assistant',aiHealth.configured?'pass':'warn',aiHealth.configured?'Real OpenAI chat is configured on the backend with '+(aiHealth.model||'the selected model')+'.':(aiHealth.detail||'Add OPENAI_API_KEY to the backend and redeploy to enable real AI answers.')));
-    rows.push(auditLine('Payment checkout',stripeOk?'pass':'warn',stripeOk==='demo'?'Demo checkout is active in local preview.':'Stripe publishable key and card element are ready when checkout initializes.'));
+    rows.push(auditLine('Plaid product approval',(approvalHealth&&approvalHealth.success)?'pass':'setup',(approvalHealth&&approvalHealth.detail)||'Plaid approval status checked.'));
+    rows.push(auditLine('Plaid Transfer approval',transferApprovalOk?'pass':'setup',(approvalHealth&&approvalHealth.transfer&&approvalHealth.transfer.detail)||'Plaid Transfer approval could not be confirmed yet.'));
+    rows.push(auditLine('ADP / payroll income',payrollHealth.success?'pass':(payrollHealth.setup_required?'setup':'fail'),payrollHealth.detail||'Payroll Income Link checked.'));
+    rows.push(auditLine('AI assistant',aiHealth.configured?'pass':'setup',aiHealth.configured?'Real OpenAI chat is configured on the backend with '+(aiHealth.model||'the selected model')+'.':(aiHealth.detail||'Add OPENAI_API_KEY to the backend and redeploy to enable real AI answers.')));
+    rows.push(auditLine('Payment checkout',configState(billingOk,billingHealth),routeDetail(billingHealth,'Billing')||(stripeOk==='demo'?'Demo checkout is active locally, but the live billing backend must pass before launch.':'Stripe billing backend health checked.')));
     rows.push(auditLine('Bank account link',bank.connected?'pass':'warn',bank.connected?bank.copy:'No active bank session. Connect Plaid or use sandbox demo before live payday workflows.'));
     rows.push(auditLine('Paycheck allocation',paydayDetected&&s.av>0?'pass':'warn',paydayDetected&&s.av>0?'Paycheck detected and allocator has positive free cash.':'Run payday detection after bank link and confirm income exceeds expenses.'));
-    rows.push(auditLine('Auto bank transfer rail',ready.transfer_enabled?'pass':'warn',ready.transfer_enabled?'Backend transfer rail is enabled. Confirm compliance and user authorization.':'Real transfers are disabled, which is correct until ACH/Plaid Transfer approval is complete.'));
+    rows.push(auditLine('Auto bank transfer rail',configState(transferOk,transferHealth),routeDetail(transferHealth,'Transfer')||'Transfer rail health checked.'));
     rows.push(auditLine('Trading integration',trade.success?'pass':'warn',(trade.detail||'Trading checked.')+(ready.alpaca_live_trading_enabled?' Live trading flag is enabled.':' Live trading is guarded off unless explicitly enabled server-side.')));
-    rows.push(auditLine('Secure document vault',ready.doc_vault_key_configured?'pass':'warn',ready.doc_vault_key_configured?'Backend encryption key is configured and signed-url routes are available.':'Add DOC_VAULT_ENCRYPTION_KEY in backend env before production document uploads.'));
-    rows.push(auditLine('Report exports',vaultDocs.some(function(d){return d.includeInReport!==false;})?'pass':'warn',vaultDocs.length?'Secure vault manifest will include selected files.':'No secure files uploaded yet; report export still works without attachments.'));
-    rows.push(auditLine('Live launch decision',plaidHealth.success&&s.av>0&&ready.success?'pass':'warn',plaidHealth.success&&s.av>0&&ready.success?'Core launch rails are configured. Do one real sandbox Plaid link and one paper Alpaca test before public launch.':'Fix the reviewed items before taking real users.'));
+    rows.push(auditLine('VaultFlow Capital',capitalHealth.success?'pass':'warn',capitalHealth.success?'Capital bridge backend is live in waitlist mode.':'Capital backend route is not deployed yet; the Capital page will save locally until Railway has the new route.'));
+    rows.push(auditLine('Secure document vault',configState(vaultOk,vaultHealth),routeDetail(vaultHealth,'Secure vault')||'Secure vault signed URL health checked.'));
+    rows.push(auditLine('Scalable storage',scalingHealth.success?'pass':'setup',scalingHealth.detail||'Scaling storage route checked.'));
+    rows.push(auditLine('Report exports',configState(reportsOk,reportsHealth),routeDetail(reportsHealth,'Report export')||(vaultDocs.length?'Secure vault manifest will include selected files.':'Report export works without attachments.')));
+    rows.push(auditLine('Live launch decision',launchState,launchDetail));
     el.innerHTML=rows.join('');
     el.style.display='block';
     el.style.color='#8A8070';
@@ -5021,12 +5975,32 @@ function updateBankMeta(){
   if(!el)return;
   if(!plaidMeta){
     el.textContent='';
+    updateTransferAccountNote();
     return;
   }
   var inst=plaidMeta.institution&&plaidMeta.institution.name?plaidMeta.institution.name:'Plaid Sandbox Bank';
   var accounts=Array.isArray(plaidMeta.accounts)?plaidMeta.accounts.length:1;
   var session=plaidMeta.link_session_id?' · Session '+plaidMeta.link_session_id:'';
   el.innerHTML='Institution: <span style="color:#F5F0E8">'+esc(inst)+'</span> · Accounts: <span style="color:#F5F0E8">'+accounts+'</span>'+esc(session);
+  updateTransferAccountNote();
+}
+
+function selectedPlaidAccount(){
+  if(!plaidMeta||!Array.isArray(plaidMeta.accounts)||!plaidMeta.accounts.length)return null;
+  var checking=plaidMeta.accounts.find(function(a){return String(a.subtype||'').toLowerCase()==='checking';});
+  return checking||plaidMeta.accounts[0];
+}
+
+function updateTransferAccountNote(){
+  var el=document.getElementById('transfer-account-note');
+  if(!el)return;
+  var account=selectedPlaidAccount();
+  if(account){
+    var mask=account.mask?' ending '+account.mask:'';
+    el.innerHTML='<strong>Connected account:</strong> '+esc(account.name||account.subtype||'Plaid account')+esc(mask)+' · Account ID ready for Plaid Transfer.';
+  }else{
+    el.innerHTML='<strong>Connected account:</strong> No Plaid account id yet. Connect or reconnect your bank before live transfers.';
+  }
 }
 
 function checkPlaidReadiness(ownerRequested){
@@ -5054,15 +6028,53 @@ function checkPlaidReadiness(ownerRequested){
   });
 }
 
+function checkPlaidApprovalStatus(ownerRequested){
+  if(usePlaidDemoFallback()){
+    setStatus('plaid-approval-status','Demo fallback','warn');
+    setStatus('transfer-approval-status','Demo only','warn');
+    setStatus('payroll-backend-status','Demo payroll','warn');
+    plaidApprovalState={bank:'warn',income:'warn',transfer:'warn',detail:'Local demo fallback is active.'};
+    if(ownerRequested)recordAdminAudit('PLAID_APPROVAL','Local demo fallback is active; live approval must be checked on Railway.');
+    return Promise.resolve({success:true,demo:true});
+  }
+  var uid=currentSession&&currentSession.user&&currentSession.user.id?currentSession.user.id:'approval-check';
+  setStatus('plaid-approval-status','Checking...','warn');
+  setStatus('transfer-approval-status','Checking...','warn');
+  return postBackend(PLAID_ENDPOINTS.approval,{user_id:uid}).then(function(d){
+    var bankOk=!!(d&&d.plaid_backend&&d.plaid_backend.success);
+    var incomeOk=!!(d&&d.income&&d.income.approved);
+    var transferOk=!!(d&&d.transfer&&d.transfer.approved);
+    var incomeSetup=!!(d&&d.income&&d.income.setup_required);
+    var transferSetup=!!(d&&d.transfer&&d.transfer.setup_required);
+    var bankDetail=(d&&d.plaid_backend&&d.plaid_backend.detail)||'Plaid backend checked.';
+    var incomeDetail=(d&&d.income&&d.income.detail)||'Plaid Income checked.';
+    var transferDetail=(d&&d.transfer&&d.transfer.detail)||'Plaid Transfer checked.';
+    setStatus('plaid-approval-status',bankOk?'Bank Link approved':'Bank Link setup',bankOk?'good':'warn');
+    setStatus('payroll-backend-status',incomeOk?'ADP/payroll approved':(incomeSetup?'Income setup needed':'Income not approved'),incomeOk?'good':(incomeSetup?'warn':'bad'));
+    setStatus('transfer-approval-status',transferOk?'Plaid Transfer approved':(transferSetup?'Transfer setup needed':'Transfer not approved'),transferOk?'good':(transferSetup?'warn':'bad'));
+    plaidApprovalState={bank:bankOk?'good':'warn',income:incomeOk?'good':'warn',transfer:transferOk?'good':'warn',detail:transferDetail};
+    msg('bank-msg','Plaid check: '+bankDetail+' Payroll: '+incomeDetail+' Transfer: '+transferDetail,bankOk?'#C9A84C':'#ff4444');
+    updatePlaidEvent(transferOk?'Plaid Transfer approved':'Plaid approval checked',transferOk?'good':'warn');
+    if(ownerRequested)recordAdminAudit('PLAID_APPROVAL',bankDetail+' Payroll: '+incomeDetail+' Transfer: '+transferDetail);
+    return d;
+  }).catch(function(){
+    setStatus('plaid-approval-status','Approval route missing','bad');
+    setStatus('transfer-approval-status','Approval route missing','bad');
+    updatePlaidEvent('Approval route failed','bad');
+    return {success:false,detail:'Plaid approval status route unavailable. Redeploy the latest backend package.'};
+  });
+}
+
 function verifyPlaidLinkRoute(ownerRequested){
   var uid=currentSession&&currentSession.user&&currentSession.user.id?currentSession.user.id:'health-check';
   setStatus('plaid-backend-status','Checking Link route...','warn');
-  return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:uid}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:uid,products:['auth','transactions']}).then(function(d){
     var ok=!!(d&&d.link_token);
-    setStatus('plaid-backend-status',ok?'Link route ready':'Backend route warning',ok?'good':'warn');
+    var normalized=ok?{success:true,detail:'Link route ready'}:normalizePlaidAuditResult(d||{success:false,detail:'Link token missing'});
+    setStatus('plaid-backend-status',ok?'Link route ready':(normalized.detail||'Backend route warning'),ok?'good':'warn');
     updatePlaidEvent(ok?'Link token route ready':'Link route warning',ok?'good':'warn');
     if(ownerRequested)recordAdminAudit('PLAID_STATUS',ok?'Plaid Link token route is ready.':'Plaid Link token route returned a warning.');
-    return {success:ok,link_ready:ok,detail:ok?'Link route ready':(d&&d.detail)||'Link token missing'};
+    return {success:ok,link_ready:ok,detail:normalized.detail||'Link token missing'};
   }).catch(function(){
     setStatus('plaid-backend-status','Backend unavailable','bad');
     updatePlaidEvent('Link route failed','bad');
@@ -5228,8 +6240,9 @@ function connectPayrollProvider(){
   postBackend(PLAID_ENDPOINTS.incomeLinkToken,{user_id:uid,income_source_types:['payroll']}).then(function(d){
     if(!d||!d.link_token){
       var detail=(d&&d.detail)||'Could not create Payroll Income Link token.';
-      setStatus('payroll-backend-status',detail,'bad');
-      msg('bank-msg','ADP / payroll setup needs backend fix: '+detail,'#ff4444');
+      var setupNeeded=!!(d&&d.setup_required);
+      setStatus('payroll-backend-status',setupNeeded?'Plaid Income setup needed':detail,setupNeeded?'warn':'bad');
+      msg('bank-msg',(setupNeeded?'ADP / payroll needs Plaid Income setup: ':'ADP / payroll setup needs backend fix: ')+detail,setupNeeded?'#C9A84C':'#ff4444');
       return;
     }
     setStatus('payroll-backend-status','Payroll Link ready','good');
@@ -5383,20 +6396,78 @@ function copyRef(){
 
 var tradingConnected=false;
 
+function updateTradingModeUi(data){
+  data=data||{};
+  tradingMode=data.mode||tradingMode||'preview';
+  tradingLiveMode=!!(data.live_trading_enabled&&String(data.base_url||'').indexOf('paper-api')===-1);
+  var note=document.getElementById('trading-mode-note');
+  var liveBox=document.getElementById('trade_live_ok');
+  if(note){
+    note.innerHTML='<strong>Trading mode:</strong> '+(tradingLiveMode?'LIVE ALPACA ORDERS ENABLED. Every order needs the live authorization checkbox. Max notional: '+fmt(data.live_trade_max_notional||1000)+'.':'Paper/guarded mode. No live Alpaca order will be submitted unless backend reports live mode.');
+    note.style.borderColor=tradingLiveMode?'rgba(255,68,68,0.35)':'rgba(214,183,101,0.16)';
+    note.style.color=tradingLiveMode?'#ff8a4c':'#8A8070';
+  }
+  if(liveBox&&!tradingLiveMode)liveBox.checked=false;
+}
+
+function recordTransferHistory(item){
+  transferHistory.unshift(Object.assign({
+    id:'VF-'+Date.now().toString().slice(-6),
+    createdAt:new Date().toISOString()
+  },item||{}));
+  transferHistory=transferHistory.slice(0,20);
+  renderTransferHistory();
+  saveState();
+}
+
+function renderTransferHistory(){
+  var el=document.getElementById('transfer-history-list');
+  if(!el)return;
+  if(!transferHistory.length){
+    el.innerHTML='<div class="doc-item"><div><strong>No transfer history yet.</strong><span>Reviewed auto-transfer requests will appear here.</span></div><span>Vault</span></div>';
+    return;
+  }
+  el.innerHTML=transferHistory.slice(0,6).map(function(t){
+    var status=t.status||'queued';
+    var good=/submitted|demo/.test(status);
+    return '<div class="doc-item"><div><strong>'+esc(t.destination||'Vault transfer')+' · '+fmt(t.amount||0)+'</strong><span>'+esc(status)+' · '+new Date(t.createdAt||Date.now()).toLocaleString()+(t.autopilot?' · auto-payday rule':'')+'</span></div><span class="doc-status '+(good?'':'warn')+'">'+esc(t.id||'queued')+'</span></div>';
+  }).join('');
+}
+
 function executeBankTransfer(){
   if(!requireTier('vault','Auto bank transfer'))return;
   var dest=document.getElementById('transfer_dest').value;
   var amt=gv('transfer_amt');
   var reviewed=document.getElementById('transfer_review_ok');
+  var autoRule=document.getElementById('transfer_auto_ok');
+  var liveRule=document.getElementById('transfer_live_ok');
+  var legalName=(document.getElementById('transfer_legal_name')&&document.getElementById('transfer_legal_name').value||'').trim();
+  var account=selectedPlaidAccount();
   if(!plaidAccessToken){setBox('transfer_result','Connect your bank before executing transfers.','#ff4444');return;}
   if(!amt||amt<=0){setBox('transfer_result','Enter a transfer amount.','#ff4444');return;}
   if(reviewed&&!reviewed.checked){setBox('transfer_result','Review and authorize this transfer before submitting.','#C9A84C');return;}
+  if(liveRule&&liveRule.checked&&!account){setBox('transfer_result','Reconnect your bank through Plaid first. Live Plaid Transfer needs an account id from Link.','#ff4444');return;}
+  if(liveRule&&liveRule.checked&&!legalName){setBox('transfer_result','Enter the legal name on the bank account before requesting a live Plaid Transfer.','#ff4444');return;}
   setBox('transfer_result','Checking transfer rail...','#C9A84C');
-  var payload={access_token:plaidAccessToken,destination:dest,amount:amt,user_id:currentSession&&currentSession.user?currentSession.user.id:'demo'};
+  var payload={
+    access_token:plaidAccessToken,
+    account_id:account&&account.id?account.id:'',
+    legal_name:legalName||((currentSession&&currentSession.user&&currentSession.user.email)?currentSession.user.email.split('@')[0].replace(/[._-]+/g,' '):'VaultFlow User'),
+    destination:dest,
+    amount:amt,
+    review_authorized:!!(reviewed&&reviewed.checked),
+    execute_live_transfer:!!(liveRule&&liveRule.checked),
+    autopilot:!!(autoRule&&autoRule.checked),
+    source:'vaultflow-web',
+    description:'VaultFlow '+dest,
+    user_id:currentSession&&currentSession.user?currentSession.user.id:'demo'
+  };
   if(usePlaidDemoFallback()||plaidAccessToken==='demo'){
     setTimeout(function(){
       transferRailState={label:'Demo queued',kind:'good',note:'Demo ledger entry created. No real money moved.'};
-      setBox('transfer_result','Demo transfer queued: <span class="rv">'+fmt(amt)+'</span> to '+esc(dest)+'. Ledger ID VF-'+Date.now().toString().slice(-6),'#00ff88');
+      var ledger='VF-'+Date.now().toString().slice(-6);
+      setBox('transfer_result','Demo transfer queued: <span class="rv">'+fmt(amt)+'</span> to '+esc(dest)+'. Ledger ID '+ledger+(payload.autopilot?' · Auto-payday rule saved':''),'#00ff88');
+      recordTransferHistory({id:ledger,destination:dest,amount:amt,status:'demo_queued',autopilot:payload.autopilot});
       addWebhookEvent({type:'TRANSFER_QUEUED',msg:fmt(amt)+' queued to '+dest,color:'#00ff88'});
       if(reviewed)reviewed.checked=false;
       refreshSystemStatus();
@@ -5408,9 +6479,21 @@ function executeBankTransfer(){
   postBackend('/bank/transfer',payload).then(function(d){
     if(d&&d.success){
       transferRailState={label:'Live transfer submitted',kind:'good',note:'Backend accepted the reviewed transfer request.'};
-      setBox('transfer_result','Transfer submitted: <span class="rv">'+esc(d.transfer_id||'pending')+'</span>','#00ff88');
+      var plaidLine=d.plaid_transfer_id?'<br>Plaid transfer: <span class="rv">'+esc(d.plaid_transfer_id)+'</span>':'';
+      setBox('transfer_result','Transfer submitted: <span class="rv">'+esc(d.transfer_id||'pending')+'</span>'+plaidLine,'#00ff88');
+      recordTransferHistory({id:d.transfer_id||'submitted',destination:dest,amount:amt,status:d.status||'submitted',autopilot:payload.autopilot});
       if(reviewed)reviewed.checked=false;
+      if(liveRule)liveRule.checked=false;
       addWebhookEvent({type:'TRANSFER_SUBMITTED',msg:fmt(amt)+' submitted to '+dest,color:'#00ff88'});
+    }
+    else if(d&&d.review_only&&d.transfer_id){
+      transferRailState={label:'Guarded queue',kind:'warn',note:'Reviewed request saved. Backend transfer rails are still guarded off, so no money moved.'};
+      var authLine=d.authorization_id?'<br>Plaid authorization: <span class="rv">'+esc(d.authorization_id)+'</span>':'';
+      setBox('transfer_result','Reviewed transfer saved safely: <span class="rv">'+esc(d.transfer_id)+'</span>'+authLine+'<br>'+esc(d.detail||'No money moved.'),'#C9A84C');
+      recordTransferHistory({id:d.transfer_id,destination:dest,amount:amt,status:d.status||'review_only_guarded',autopilot:payload.autopilot});
+      if(reviewed)reviewed.checked=false;
+      if(liveRule)liveRule.checked=false;
+      addWebhookEvent({type:'TRANSFER_REVIEW_ONLY',msg:fmt(amt)+' reviewed for '+dest+'; no money moved',color:'#C9A84C'});
     }
     else{
       transferRailState={label:'Transfers disabled',kind:'warn',note:(d&&d.detail)||'Backend transfer rail is not enabled.'};
@@ -5439,6 +6522,7 @@ function connectTrading(){
   setBox('trade_result','Connecting trading account...','#C9A84C');
   postBackend('/trading/connect',{user_id:currentSession&&currentSession.user?currentSession.user.id:'user'}).then(function(d){
     tradingConnected=!!(d&&d.success);
+    updateTradingModeUi(d||{});
     setBox('trade_result',tradingConnected?'Trading account connected. Mode: '+esc((d&&d.mode)||'preview')+'. '+esc((d&&d.detail)||''):esc((d&&d.detail)||'Trading connection failed.'),tradingConnected?'#00ff88':'#ff4444');
     refreshSystemStatus();
   }).catch(function(){
@@ -5460,13 +6544,18 @@ function executeTrade(){
   var signal=(lastSignals||[]).find(function(s){return String(s.s||'').toUpperCase()===symbol;})||buildSignals([symbol],signalSettings())[0];
   if(signal.g==='SELL'){setBox('trade_result','Signal is SELL for '+esc(symbol)+'. Trade blocked by risk rules.','#ff4444');return;}
   if(signal.g==='HOLD'){setBox('trade_result','Signal is HOLD for '+esc(symbol)+'. No order submitted.','#C9A84C');return;}
+  var liveBox=document.getElementById('trade_live_ok');
+  if(tradingLiveMode&&(!liveBox||!liveBox.checked)){
+    setBox('trade_result','Live Alpaca trading is enabled. Check the live-order authorization box before submitting this exact '+esc(symbol)+' order for '+fmt(amount)+'.','#ff4444');
+    return;
+  }
   if(isLocalPreview()&&!uiSettings.realPlaid){
     setBox('trade_result','Guarded paper order submitted: <span class="rv">'+esc(symbol)+'</span> BUY '+fmt(amount)+' · confidence '+signal.confidence+'% · stop '+priceFmt(signal.stop)+' · target '+priceFmt(signal.target),'#00ff88');
     addWebhookEvent({type:'PAPER_TRADE',msg:'BUY '+symbol+' for '+fmt(amount),color:'#0088ff'});
     return;
   }
   setBox('trade_result','Submitting trade...','#C9A84C');
-  postBackend('/trading/order',{symbol:symbol,notional:amount,side:'buy',signal:signal,user_id:currentSession&&currentSession.user?currentSession.user.id:'user'}).then(function(d){
+  postBackend('/trading/order',{symbol:symbol,notional:amount,side:'buy',signal:signal,live_authorized:!!(liveBox&&liveBox.checked),user_id:currentSession&&currentSession.user?currentSession.user.id:'user'}).then(function(d){
     if(d&&d.success)setBox('trade_result','Order submitted: <span class="rv">'+esc(d.order_id||'pending')+'</span> · Mode: '+esc(d.mode||'paper')+' · Status: '+esc(d.status||'submitted'),'#00ff88');
     else setBox('trade_result',esc((d&&d.detail)||'Order failed.'),'#ff4444');
   }).catch(function(){
