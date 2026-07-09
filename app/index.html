@@ -474,12 +474,29 @@ body.ruby-theme{--tier:#E45073;--tier-dark:#7A1733;--tier-soft:rgba(228,80,115,0
 .setting-row input{margin-top:2px;accent-color:var(--tier)}
 .setting-title{font-size:10px;color:#F5F0E8;margin-bottom:4px;letter-spacing:1px}
 .setting-copy{font-size:9px;color:#8A8070;line-height:1.45}
+.profile-hero-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;border:1px solid rgba(214,183,101,0.16);border-radius:10px;background:radial-gradient(circle at 0% 0%,var(--tier-soft),transparent 38%),linear-gradient(145deg,rgba(16,20,20,0.98),rgba(8,10,12,0.98));padding:16px;margin-bottom:12px}
+.profile-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#F5F0E8;margin-bottom:5px}
+.profile-copy{font-size:10px;color:#8A8070;line-height:1.7;max-width:660px}
+.profile-quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.profile-quick-card{border:1px solid rgba(214,183,101,0.11);border-radius:8px;background:#101416;padding:10px}
+.profile-quick-card span{display:block;font-size:7px;letter-spacing:2px;color:var(--gold2);margin-bottom:5px}
+.profile-quick-card strong{display:block;font-size:10px;color:#F5F0E8;line-height:1.45}
+.profile-action-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.profile-action-row .btngold,.profile-action-row .btnout{width:auto;min-width:150px;margin-top:0}
+.profile-section-title{font-size:9px;letter-spacing:2px;color:var(--gold2);margin:14px 0 8px}
+.profile-muted-box{border:1px solid rgba(214,183,101,0.1);border-radius:8px;background:rgba(16,20,20,0.7);padding:10px;font-size:10px;color:#8A8070;line-height:1.65}
 .owner-filters{display:grid;grid-template-columns:1.1fr .7fr .7fr;gap:8px;margin:10px 0 12px}
 .owner-alerts{display:grid;gap:8px;margin-top:10px}
 .owner-alert{border:1px solid rgba(201,168,76,0.16);border-radius:7px;background:rgba(201,168,76,0.05);padding:9px 10px;font-size:10px;color:#8A8070;line-height:1.55}
 .owner-alert strong{display:block;color:#F5F0E8;margin-bottom:2px;font-size:10px}
 .owner-console-btn{display:none}
 body.owner-mode .owner-console-btn{display:inline-block}
+.owner-command-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.owner-control-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.owner-control-group{border:1px solid rgba(214,183,101,0.12);border-radius:9px;background:#101416;padding:12px}
+.owner-control-group strong{display:block;color:#F5F0E8;font-size:10px;letter-spacing:1px;margin-bottom:5px}
+.owner-control-group span{display:block;color:#8A8070;font-size:9px;line-height:1.5;margin-bottom:9px}
+.owner-control-group .btngold,.owner-control-group .btnout{margin-top:6px}
 .owner-power-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .owner-power{border:1px solid rgba(214,183,101,0.12);border-radius:8px;background:#101416;padding:10px;font-size:9px;color:#8A8070;line-height:1.55}
 .owner-power strong{display:block;color:#F5F0E8;font-size:10px;margin-bottom:4px;letter-spacing:1px}
@@ -768,7 +785,11 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
   .trust-ribbon{grid-template-columns:1fr 1fr}
   .system-grid{grid-template-columns:1fr}
   .settings-grid{grid-template-columns:1fr}
+  .profile-hero-card{grid-template-columns:1fr}
+  .profile-quick-grid{grid-template-columns:1fr 1fr}
+  .profile-action-row .btngold,.profile-action-row .btnout{width:100%}
   .owner-filters{grid-template-columns:1fr}
+  .owner-command-layout,.owner-control-grid{grid-template-columns:1fr}
   .dsg{grid-template-columns:1fr 1fr}
   .command-grid{grid-template-columns:1fr}
   .move-actions{grid-template-columns:1fr}
@@ -1339,7 +1360,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div class="tab-info-card" onclick="dtab('gl')"><span>GOALS</span><strong>Life targets</strong><small>Emergency fund, down payment, portfolio, FIRE, millionaire path, and goal progress.</small></div>
           <div class="tab-info-card" onclick="hasTier('vault')?dtab('pr'):go('upgrade')"><span>DEALS</span><strong>Vault pipeline</strong><small>Real estate deal tracker, rental math, property status, and investor workflow.</small></div>
           <div class="tab-info-card" onclick="dtab('bl')"><span>BLOG</span><strong>Education</strong><small>VaultFlow articles, strategy explainers, and finance playbooks.</small></div>
-          <div class="tab-info-card" onclick="dtab('pf')"><span>PROFILE</span><strong>Settings and integrations</strong><small>Plaid, payroll, reports, secure document vault, Capital bridge, themes, and launch audit.</small></div>
+          <div class="tab-info-card" onclick="dtab('pf')"><span>PROFILE</span><strong>Settings and integrations</strong><small>Plan, bank connection, reports, secure files, themes, notifications, and export tools.</small></div>
           <div class="tab-info-card" onclick="openVaultFlowCapital()"><span>CAPITAL</span><strong>Connected lending concept</strong><small>Open VaultFlow Capital and send a safe preview snapshot from this browser.</small></div>
         </div>
       </div>
@@ -1630,68 +1651,53 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
 
     <!-- PROFILE -->
     <div id="dt-pf" style="display:none">
-      <div class="tag">YOUR ACCOUNT</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px;color:#F5F0E8">Profile &amp; Settings</div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">ACCOUNT INFO</div>
-        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px">EMAIL</div>
-        <div id="pemail" style="font-size:12px;color:#8A8070;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Loading...</div>
-        <div style="font-size:9px;color:#8B6914;letter-spacing:2px;margin-bottom:5px;margin-top:12px">PLAN</div>
-        <div id="plan-display" style="font-size:12px;color:#C9A84C;padding:10px 0">Essential (Free)</div>
-        <button id="upgrade-action" class="btngold" style="margin-top:12px" onclick="go('upgrade')">UPGRADE TO PRIME</button>
-        <button id="downgrade-action" class="btnout" style="display:none" onclick="downgradePlan()">DOWNGRADE PLAN</button>
-        <div id="plan-change-msg" class="msgbox"></div>
+      <div class="tag">PROFILE</div>
+      <div class="profile-hero-card">
+        <div>
+          <div class="profile-title">Account &amp; Settings</div>
+          <div class="profile-copy">Manage your plan, connect accounts, upload documents, export reports, and tune the VaultFlow experience from one clean place.</div>
+        </div>
+        <button class="btnout" onclick="toggleAiChat(true);askAiQuick('Help me choose what to do next in my VaultFlow profile')">AI HELP</button>
       </div>
       <div class="card">
-        <div class="tag" style="margin-bottom:8px">REFERRAL PROGRAM</div>
+        <div class="tag" style="margin-bottom:8px">ACCOUNT &amp; PLAN</div>
+        <div class="profile-section-title">EMAIL</div>
+        <div id="pemail" style="font-size:12px;color:#8A8070;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.07)">Loading...</div>
+        <div class="profile-section-title">CURRENT PLAN</div>
+        <div id="plan-display" style="font-size:12px;color:#C9A84C;padding:10px 0">Essential (Free)</div>
+        <div class="profile-action-row">
+          <button id="upgrade-action" class="btngold" onclick="go('upgrade')">UPGRADE TO PRIME</button>
+          <button id="downgrade-action" class="btnout" style="display:none" onclick="downgradePlan()">DOWNGRADE PLAN</button>
+        </div>
+        <div id="plan-change-msg" class="msgbox"></div>
+        <div class="profile-section-title">REFERRAL</div>
         <div class="rbox">
           <div style="font-size:11px;color:#8A8070;margin-bottom:6px">Share VaultFlow and earn 1 free month for every friend who upgrades.</div>
           <div class="rlink" id="rlink">vaultflow.org?ref=loading...</div>
-          <button class="btngold" onclick="copyRef()">COPY REFERRAL LINK</button>
+          <button class="btnout" onclick="copyRef()">COPY REFERRAL LINK</button>
         </div>
       </div>
       <div class="card">
-        <div class="tag" style="margin-bottom:8px">SYSTEM STATUS</div>
-        <div class="system-grid">
-          <div class="system-cell"><div class="system-label">APP MODE</div><div class="system-value" id="system-mode">Checking...</div></div>
-          <div class="system-cell"><div class="system-label">BANK LINK</div><div class="system-value" id="system-bank">Not connected</div></div>
-          <div class="system-cell"><div class="system-label">TRANSFER RAIL</div><div class="system-value" id="system-transfer">Review only</div></div>
-          <div class="system-cell"><div class="system-label">PAYDAY DETECTOR</div><div class="system-value" id="system-payday">Waiting</div></div>
-          <div class="system-cell"><div class="system-label">TRADING</div><div class="system-value" id="system-trading">Paper mode</div></div>
-          <div class="system-cell"><div class="system-label">DATA STORAGE</div><div class="system-value" id="system-storage">Browser preview</div></div>
-          <div class="system-cell"><div class="system-label">AI ASSISTANT</div><div class="system-value" id="system-ai">Checking AI backend</div></div>
+        <div class="tag" style="margin-bottom:8px">ACCOUNT SUMMARY</div>
+        <div class="profile-quick-grid">
+          <div class="profile-quick-card"><span>PLAN</span><strong id="profile-summary-plan">Essential</strong></div>
+          <div class="profile-quick-card"><span>BANK</span><strong id="system-bank">Not connected</strong></div>
+          <div class="profile-quick-card"><span>PAYDAY</span><strong id="system-payday">Waiting</strong></div>
+          <div class="profile-quick-card"><span>MODE</span><strong id="system-mode">Checking</strong></div>
         </div>
-        <div class="trust-note" id="system-trust-note"><strong>Preview guardrail:</strong> Plaid secrets belong only in the backend. This page can open Plaid Link, but it should never store Plaid client secrets or bank passwords.</div>
-      </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">GO LIVE READINESS</div>
-        <div class="bank-state-box"><strong>Launch check:</strong> Audit Plaid routes, payment mode, bank session, paycheck detection, transfer rail, secure vault URLs, and Alpaca trading status before you put real users on it.</div>
-        <button class="btngold" onclick="runLiveReadinessAudit()">RUN LIVE READINESS AUDIT</button>
-        <div class="resbox" id="live-readiness-result"></div>
-      </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">BUSINESS GUARDRAILS</div>
-        <div class="bank-state-box"><strong>Most valuable path:</strong> Launch as financial planning SaaS for irregular-income wealth builders. Add regulated fintech only through approved partners when the legal stack is ready.</div>
-        <div class="setup-list">
-          <div class="setup-step"><div class="setup-num">01</div><div><div class="setup-title">Own the niche</div><div class="setup-copy">Veterans, merchant mariners, union/overtime workers, contractors, travel nurses, and real estate investors.</div><div class="setup-pill">POSITIONING</div></div></div>
-          <div class="setup-step"><div class="setup-num">02</div><div><div class="setup-title">Stay software-first</div><div class="setup-copy">Use planning, calculators, reports, document vault, and AI coaching before launching lending, custody, or managed transfers.</div><div class="setup-pill">LOWER RISK</div></div></div>
-          <div class="setup-step"><div class="setup-num">03</div><div><div class="setup-title">Use partners</div><div class="setup-copy">Plaid for data, Stripe for billing, Alpaca for guarded trading, licensed providers for loans, banking, advisory, and KYC.</div><div class="setup-pill">PARTNERS</div></div></div>
-          <div class="setup-step"><div class="setup-num">04</div><div><div class="setup-title">Protect launch</div><div class="setup-copy">Terms, privacy, security policy, deletion flow, no-guarantee copy, and a human compliance review before public traffic.</div><div class="setup-pill">REQUIRED</div></div></div>
-        </div>
+        <div class="profile-muted-box" id="system-trust-note"><strong>Privacy note:</strong> VaultFlow never asks you to type bank passwords into the app. Bank linking opens Plaid securely.</div>
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">SETTINGS</div>
-        <div style="font-size:11px;color:#8A8070;line-height:1.8">Tune how VaultFlow behaves in this browser preview.</div>
+        <div style="font-size:11px;color:#8A8070;line-height:1.8">Tune how VaultFlow looks, sounds, and feels on this device.</div>
         <div class="settings-grid">
           <label class="setting-row"><input type="checkbox" id="set_anim" onchange="toggleSetting('animations',this.checked)"><span><div class="setting-title">Launch animation</div><div class="setting-copy">Play the break-open dashboard animation.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_sound" onchange="toggleSetting('soundFx',this.checked)"><span><div class="setting-title">Animation sound</div><div class="setting-copy">Play the premium vault crack, glass shimmer, whoosh, and bass hit when the dashboard opens.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_dense" onchange="toggleSetting('dense',this.checked)"><span><div class="setting-title">Dense dashboard</div><div class="setting-copy">Tighter cards for a more command-center feel.</div></span></label>
-          <label class="setting-row"><input type="checkbox" id="set_force_real" onchange="toggleSetting('realPlaid',this.checked)"><span><div class="setting-title">Use Railway Plaid backend</div><div class="setting-copy">When on localhost, call the real backend instead of demo fallback.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_demo_help" onchange="toggleSetting('demoHelp',this.checked)"><span><div class="setting-title">Show demo guidance</div><div class="setting-copy">Keep walkthrough and helper copy visible.</div></span></label>
         </div>
         <button class="btnout" onclick="testLaunchSound()">TEST ANIMATION SOUND</button>
-        <button class="btngold" onclick="syncPreviewStateToBackend()">SYNC PREVIEW STATE TO BACKEND</button>
-        <button class="btnout" onclick="resetPreviewState()">RESET PREVIEW STATE</button>
+        <button class="btnout" onclick="resetPreviewState()">RESET LOCAL DATA</button>
         <div id="settings-msg" class="msgbox"></div>
       </div>
       <div class="card">
@@ -1721,7 +1727,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         </div>
         <button class="btngold" onclick="openVaultFlowCapital()">OPEN VAULTFLOW CAPITAL</button>
         <button class="btnout" onclick="syncCapitalBridge()">SEND SAFE SNAPSHOT</button>
-        <button class="btnout" onclick="checkCapitalReadiness()">CHECK CAPITAL BACKEND</button>
         <div id="capital-msg" class="msgbox"></div>
       </div>
       <div class="report-grid">
@@ -1779,12 +1784,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       <div class="card" data-min-tier="prime" data-lock-text="PRIME REQUIRED · Bank connection and paycheck detection unlock with Prime.">
         <div class="tag" style="margin-bottom:8px">BANK CONNECTION</div>
         <div class="status-grid">
-          <div class="status-cell"><div class="status-label">PLAID LINK SDK</div><div class="status-value" id="plaid-sdk-status">Checking...</div></div>
-          <div class="status-cell"><div class="status-label">BACKEND RAIL</div><div class="status-value" id="plaid-backend-status">Waiting</div></div>
-          <div class="status-cell"><div class="status-label">PLAID APPROVAL</div><div class="status-value" id="plaid-approval-status">Not checked</div></div>
-          <div class="status-cell"><div class="status-label">ADP / PAYROLL</div><div class="status-value" id="payroll-backend-status">Waiting</div></div>
-          <div class="status-cell"><div class="status-label">TRANSFER APPROVAL</div><div class="status-value" id="transfer-approval-status">Not checked</div></div>
-          <div class="status-cell"><div class="status-label">MODE</div><div class="status-value" id="plaid-mode-status">Preview</div></div>
+          <div class="status-cell"><div class="status-label">BANK LINK</div><div class="status-value" id="plaid-mode-status">Ready</div></div>
+          <div class="status-cell"><div class="status-label">PAYROLL</div><div class="status-value" id="payroll-backend-status">Optional</div></div>
           <div class="status-cell"><div class="status-label">LAST EVENT</div><div class="status-value" id="plaid-event-status">None yet</div></div>
         </div>
         <div id="bank-disconnected">
@@ -1792,8 +1793,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div style="font-size:11px;color:#8A8070;line-height:1.8;margin-bottom:14px">Connect your bank to detect paychecks automatically and see your real balance.</div>
           <button class="btngold" onclick="connectBank()">CONNECT YOUR BANK</button>
           <button class="btnout" onclick="connectPayrollProvider()">CONNECT ADP / PAYROLL</button>
-          <button class="btnout" onclick="checkPlaidReadiness()">CHECK PLAID STATUS</button>
-          <button class="btnout" onclick="checkPlaidApprovalStatus()">CHECK PLAID APPROVAL</button>
           <button class="btnout" onclick="demoBankConnect()">USE LOCAL DEMO DATA</button>
           <div id="bank-msg" class="msgbox"></div>
         </div>
@@ -1807,7 +1806,6 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div id="bank-transactions"></div>
           <button class="btngold" style="margin-top:12px" onclick="connectBank()">CONNECT / RECONNECT REAL BANK</button>
           <button class="btnout" onclick="connectPayrollProvider()">CONNECT ADP / PAYROLL</button>
-          <button class="btnout" onclick="checkPlaidApprovalStatus()">CHECK PLAID APPROVAL</button>
           <button class="btnout" onclick="clearBankSession()">CLEAR BANK SESSION</button>
           <button class="btnout" style="margin-top:12px" onclick="detectPaycheck()">DETECT PAYCHECKS</button>
           <div id="paycheck-result" style="margin-top:10px;font-size:11px;color:#8A8070"></div>
@@ -1875,12 +1873,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <div class="owner-stat"><div class="owner-stat-label">BANK CONNECTIONS</div><div class="owner-stat-value" id="own_banks">0</div></div>
           <div class="owner-stat"><div class="owner-stat-label">ADMIN EVENTS</div><div class="owner-stat-value" id="own_audit">0</div></div>
         </div>
-        <div style="font-size:10px;color:#8A8070;line-height:1.8">Owner mode is a private console with audit logging. Production owner access must use server-side admin auth before real customer data is shown.</div>
-        <div class="owner-power-grid">
-          <div class="owner-power"><strong>All Tier Access</strong>Owner access can view Prime/Vault workflows, restricted features, and upgrade gates.</div>
-          <div class="owner-power"><strong>Account Monitor</strong>Review demo users, plan tier, bank state, payday status, and admin events.</div>
-          <div class="owner-power"><strong>Capital Bridge</strong>Open VaultFlow Capital, sync safe snapshots, and check the Capital backend route.</div>
-        </div>
+        <div class="profile-muted-box">Private owner tools are grouped here: account monitoring, launch readiness, Capital bridge, Plaid checks, and admin audit history. Regular members no longer see these backend controls in Profile.</div>
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">ACCOUNT DIRECTORY</div>
@@ -1905,13 +1898,24 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           </table>
         </div>
       </div>
-      <div class="card">
-        <div class="tag" style="margin-bottom:8px">OWNER ALERTS</div>
-        <div id="owner_alerts" class="owner-alerts"></div>
+      <div class="owner-command-layout">
+        <div class="card">
+          <div class="tag" style="margin-bottom:8px">OWNER ALERTS</div>
+          <div id="owner_alerts" class="owner-alerts"></div>
+        </div>
+        <div class="card">
+          <div class="tag" style="margin-bottom:8px">LIVE MONITOR</div>
+          <div id="owner_monitor" style="font-size:10px;color:#8A8070;line-height:1.8">Owner activity will appear here.</div>
+        </div>
       </div>
       <div class="card">
-        <div class="tag" style="margin-bottom:8px">LIVE MONITOR</div>
-        <div id="owner_monitor" style="font-size:10px;color:#8A8070;line-height:1.8">Owner activity will appear here.</div>
+        <div class="tag" style="margin-bottom:8px">LAUNCH READINESS</div>
+        <div class="profile-muted-box"><strong>Owner-only audit:</strong> Check backend build, Plaid approval, payment checkout, AI, Alpaca, transfers, secure vault, reports, and storage before sending public traffic.</div>
+        <div class="profile-action-row">
+          <button class="btngold" onclick="ownerRunAllChecks()">RUN OWNER SYSTEM CHECK</button>
+          <button class="btnout" onclick="ownerRunReadinessAudit()">RUN READINESS AUDIT ONLY</button>
+        </div>
+        <div class="resbox" id="live-readiness-result"></div>
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">ADMIN AUDIT</div>
@@ -1919,16 +1923,29 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       </div>
       <div class="card">
         <div class="tag" style="margin-bottom:8px">OWNER CONTROLS</div>
-        <button class="btngold" onclick="ownerOpenVaultFlow()">OPEN VAULTFLOW COMMAND CENTER</button>
-        <button class="btnout" onclick="ownerOpenCapital()">OPEN VAULTFLOW CAPITAL</button>
-        <button class="btnout" onclick="ownerSyncCapital()">SYNC CAPITAL SNAPSHOT</button>
-        <button class="btnout" onclick="ownerRunAllChecks()">RUN FULL SYSTEM CHECK</button>
-        <button class="btngold" onclick="ownerRefresh()">REFRESH MONITOR</button>
-        <button class="btnout" onclick="ownerRunAudit()">RUN ACCESS AUDIT</button>
-        <button class="btnout" onclick="ownerPlaidHealth()">CHECK PLAID HEALTH</button>
-        <button class="btnout" onclick="ownerDemoEvent()">SIMULATE WEBHOOK EVENT</button>
-        <button class="btnout" onclick="closeOwnerConsole()">CLOSE OWNER CONSOLE</button>
-        <button class="btnout" onclick="ownerLockConsole()">LOCK OWNER CONSOLE</button>
+        <div class="owner-control-grid">
+          <div class="owner-control-group">
+            <strong>Navigation</strong>
+            <span>Jump between the main command center and Capital bridge.</span>
+            <button class="btngold" onclick="ownerOpenVaultFlow()">OPEN VF</button>
+            <button class="btnout" onclick="ownerOpenCapital()">OPEN CAPITAL</button>
+            <button class="btnout" onclick="ownerSyncCapital()">SYNC SNAPSHOT</button>
+          </div>
+          <div class="owner-control-group">
+            <strong>Monitoring</strong>
+            <span>Refresh account state and run admin-only access checks.</span>
+            <button class="btngold" onclick="ownerRefresh()">REFRESH</button>
+            <button class="btnout" onclick="ownerRunAudit()">ACCESS AUDIT</button>
+            <button class="btnout" onclick="ownerPlaidHealth()">PLAID HEALTH</button>
+          </div>
+          <div class="owner-control-group">
+            <strong>Security</strong>
+            <span>Test owner logging, leave the console, or lock the session.</span>
+            <button class="btnout" onclick="ownerDemoEvent()">SIMULATE EVENT</button>
+            <button class="btnout" onclick="closeOwnerConsole()">CLOSE CONSOLE</button>
+            <button class="btnout" onclick="ownerLockConsole()">LOCK OWNER</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2387,6 +2404,7 @@ function updatePlanControls(){
     down.style.display=(!isOwner()&&plan!=='essential')?'block':'none';
     down.textContent=plan==='vault'?'DOWNGRADE TO PRIME':'DOWNGRADE TO ESSENTIAL';
   }
+  putText('profile-summary-plan',isOwner()?'Owner':planName(plan));
 }
 
 function downgradePlan(){
@@ -3297,6 +3315,13 @@ function ownerRunAllChecks(){
   runLiveReadinessAudit();
 }
 
+function ownerRunReadinessAudit(){
+  if(!isOwner())return;
+  recordAdminAudit('LIVE_READINESS','Owner ran live readiness audit.');
+  ownerLog('Live readiness audit started.');
+  runLiveReadinessAudit();
+}
+
 function recordAdminAudit(type,detail){
   ownerAudit.unshift({type:type,detail:detail,time:new Date().toLocaleString()});
   if(ownerAudit.length>30)ownerAudit.pop();
@@ -3350,7 +3375,7 @@ function ownerPlaidHealth(){
   if(!isOwner())return;
   recordAdminAudit('PLAID_HEALTH','Owner ran Plaid health check.');
   checkPlaidReadiness(true);
-  ownerLog('Plaid health check requested. Review the Bank Connection status panel in Profile.');
+  ownerLog('Plaid health check requested from owner controls.');
 }
 
 function ownerLockConsole(){
@@ -5504,7 +5529,7 @@ function runDemoFlow(){
     tourMoment('al','Allocator','Users enter income, bills, goals, or upload screenshots so they do not have to type every number.','Allocator is where users enter income, bills, goals, or upload screenshots so they do not have to type every number.','#C9A84C');
   });
   tourStep(2700,function(){
-    tourMoment('pf','Profile And Integrations','This is where Plaid, payroll, reports, secure files, settings, launch checks, and Capital bridge live.','Profile is where users connect Plaid, manage reports, secure files, settings, and integrations. Connecting local demo bank data now.','#C9A84C',demoBankConnect);
+    tourMoment('pf','Profile And Integrations','This is where plan settings, Plaid, payroll, reports, secure files, themes, and customer tools live.','Profile is where users connect Plaid, manage reports, secure files, settings, and integrations. Connecting local demo bank data now.','#C9A84C',demoBankConnect);
   });
   tourStep(4400,function(){
     setTourOverlay('PAYDAY','Payday Detection','VaultFlow scans deposits like payroll, salary, direct deposit, maritime pay, VA deposits, and recurring income.');
