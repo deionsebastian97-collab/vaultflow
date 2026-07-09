@@ -4,11 +4,12 @@ import hmac
 import json
 import math
 import os
+from pathlib import Path
 import statistics
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 import httpx
 import stripe
 
@@ -513,8 +514,32 @@ def payroll_health_payload():
     }
 
 
+def frontend_file_path():
+    root = Path(__file__).resolve().parent
+    for candidate in [root / "app" / "index.html", root / "index.html"]:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 @app.get("/")
 def root():
+    frontend = frontend_file_path()
+    if frontend:
+        return HTMLResponse(frontend.read_text(encoding="utf-8"))
+    return api_root()
+
+
+@app.get("/app")
+def app_frontend():
+    frontend = frontend_file_path()
+    if not frontend:
+        raise HTTPException(status_code=404, detail="VaultFlow frontend file is missing from this deployment.")
+    return HTMLResponse(frontend.read_text(encoding="utf-8"))
+
+
+@app.get("/api")
+def api_root():
     return {
         "status": "VaultFlow backend running",
         "build_version": BUILD_VERSION,
