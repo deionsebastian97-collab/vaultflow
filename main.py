@@ -1,4 +1,7 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+import hashlib
+import hmac
+import json
 import math
 import os
 import statistics
@@ -19,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-08-ai-alpaca-market-data"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-09-import-vault-scale"
 
 
 def clean_env_value(name, fallback=""):
@@ -36,14 +39,32 @@ def clean_env_value(name, fallback=""):
 def looks_like_client_id(value):
     return bool(value) and len(value) == 24 and all(ch in "0123456789abcdefABCDEF" for ch in value)
 
-STRIPE_SECRET = os.environ.get("STRIPE_SECRET_KEY", "")
-STRIPE_WEBHOOK = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
-PRICE_PRIME = os.environ.get("STRIPE_PRICE_PRIME", "")
-PRICE_VAULT = os.environ.get("STRIPE_PRICE_VAULT", "")
+STRIPE_SECRET = clean_env_value("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = clean_env_value("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK = clean_env_value("STRIPE_WEBHOOK_SECRET")
+PRICE_PRIME = clean_env_value("STRIPE_PRICE_PRIME")
+PRICE_VAULT = clean_env_value("STRIPE_PRICE_VAULT")
 OPENAI_API_KEY = clean_env_value("OPENAI_API_KEY")
 OPENAI_MODEL = clean_env_value("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
 DOC_VAULT_ENCRYPTION_KEY = clean_env_value("DOC_VAULT_ENCRYPTION_KEY")
+DOC_VAULT_STORAGE_PROVIDER = clean_env_value("DOC_VAULT_STORAGE_PROVIDER")
+DOC_VAULT_BUCKET = clean_env_value("DOC_VAULT_BUCKET")
+DOC_VAULT_SIGNING_BASE_URL = clean_env_value("DOC_VAULT_SIGNING_BASE_URL")
+DOC_VAULT_SIGNED_URL_TTL_MINUTES = int(clean_env_value("DOC_VAULT_SIGNED_URL_TTL_MINUTES", "15") or "15")
+MAX_VAULT_DOCUMENTS = int(clean_env_value("MAX_VAULT_DOCUMENTS", "5000") or "5000")
+APP_STORAGE_PROVIDER = clean_env_value("APP_STORAGE_PROVIDER")
+DATABASE_URL = clean_env_value("DATABASE_URL")
+REDIS_URL = clean_env_value("REDIS_URL")
 ENABLE_TRANSFER_RAIL = clean_env_value("ENABLE_TRANSFER_RAIL", "false").lower() == "true"
+TRANSFER_PROVIDER = clean_env_value("TRANSFER_PROVIDER")
+TRANSFER_WEBHOOK_URL = clean_env_value("TRANSFER_WEBHOOK_URL")
+PLAID_TRANSFER_CREATE_ENABLED = clean_env_value("PLAID_TRANSFER_CREATE_ENABLED", "false").lower() == "true"
+PLAID_TRANSFER_NETWORK = clean_env_value("PLAID_TRANSFER_NETWORK", "ach") or "ach"
+PLAID_TRANSFER_ACH_CLASS = clean_env_value("PLAID_TRANSFER_ACH_CLASS", "ppd") or "ppd"
+PLAID_TRANSFER_TYPE = clean_env_value("PLAID_TRANSFER_TYPE", "debit") or "debit"
+PLAID_TRANSFER_MAX_AMOUNT = float(clean_env_value("PLAID_TRANSFER_MAX_AMOUNT", "1000") or "1000")
+REPORT_EXPORTS_ENABLED = clean_env_value("REPORT_EXPORTS_ENABLED", "true").lower() != "false"
+CAPITAL_WAITLIST_WEBHOOK_URL = clean_env_value("CAPITAL_WAITLIST_WEBHOOK_URL")
 
 PLAID_CLIENT_ID = clean_env_value("PLAID_CLIENT_ID")
 PLAID_SECRET = clean_env_value("PLAID_SECRET")
@@ -60,11 +81,18 @@ ALPACA_DATA_BASE_URL = clean_env_value("ALPACA_DATA_BASE_URL", "https://data.alp
 ALPACA_DATA_FEED = clean_env_value("ALPACA_DATA_FEED", "iex")
 ENABLE_ALPACA_PAPER_ORDERS = clean_env_value("ENABLE_ALPACA_PAPER_ORDERS", "false").lower() == "true"
 ENABLE_LIVE_TRADING = clean_env_value("ENABLE_LIVE_TRADING", "false").lower() == "true"
+LIVE_TRADE_MAX_NOTIONAL = float(clean_env_value("LIVE_TRADE_MAX_NOTIONAL", "1000") or "1000")
 
 stripe.api_key = STRIPE_SECRET
 
 PLAID_BASE = f"https://{PLAID_ENV}.plaid.com"
 income_users = {}
+bank_sessions = {}
+capital_waitlist = []
+transfer_requests = []
+report_exports = []
+vault_documents = []
+app_state_store = {}
 
 
 def split_env(value, fallback):
@@ -133,13 +161,35 @@ def plaid_error_detail(result):
     return message
 
 
+def plaid_setup_required(detail):
+    lower_detail = str(detail or "").lower()
+    setup_markers = [
+        "user_token",
+        "user-token",
+        "income requires",
+        "income is enabled",
+        "request user-token",
+        "payroll income",
+        "bank income",
+    ]
+    return any(marker in lower_detail for marker in setup_markers)
+
+
 def plaid_error_response(result, status_code=400):
+    detail = plaid_error_detail(result)
+    setup_required = plaid_setup_required(detail)
     return JSONResponse(
         status_code=status_code,
         content={
             "success": False,
-            "detail": plaid_error_detail(result),
-            "action": "Fix the Railway Plaid variables, redeploy, then retry VaultFlow's live check.",
+            "detail": detail,
+            "setup_required": setup_required,
+            "product": "plaid_income" if setup_required else "plaid",
+            "action": (
+                "Enable Plaid Income user-token access for this Plaid app, then retry ADP/payroll Link."
+                if setup_required
+                else "Fix the Railway Plaid variables, redeploy, then retry VaultFlow's live check."
+            ),
             "plaid_error": {
                 "error_type": result.get("error_type"),
                 "error_code": result.get("error_code"),
@@ -167,6 +217,302 @@ def require_plaid_config():
         )
 
 
+def is_plaid_transfer_provider():
+    return (TRANSFER_PROVIDER or "").strip().lower() in {"plaid", "plaid_transfer", "plaid-transfer", "transfer"}
+
+
+def safe_json_response_body(response):
+    try:
+        return json.loads(response.body.decode())
+    except Exception:
+        return {}
+
+
+def create_bank_session(user_id, access_token, item_id=""):
+    session_id = "bank_" + hashlib.sha256(
+        f"{datetime.utcnow().isoformat()}:{user_id}:{item_id}:{access_token}".encode()
+    ).hexdigest()[:24]
+    bank_sessions[session_id] = {
+        "access_token": access_token,
+        "item_id": item_id,
+        "user_id": str(user_id or "default-user")[:120],
+        "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    if len(bank_sessions) > 500:
+        for key in list(bank_sessions.keys())[:-500]:
+            bank_sessions.pop(key, None)
+    return session_id
+
+
+def resolve_access_token(raw_token):
+    token = str(raw_token or "").strip()
+    if token.startswith("bank_"):
+        session = bank_sessions.get(token)
+        if not session:
+            raise HTTPException(
+                status_code=400,
+                detail="Bank session expired on the backend. Reconnect Plaid Link before using this account.",
+            )
+        return session["access_token"]
+    return token
+
+
+def trim_collection(items, limit):
+    if limit <= 0:
+        return
+    del items[limit:]
+
+
+def storage_scaling_payload():
+    persistent_ready = bool(DATABASE_URL or APP_STORAGE_PROVIDER)
+    cache_ready = bool(REDIS_URL)
+    storage_provider = APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "memory-preview"
+    return {
+        "success": persistent_ready,
+        "configured": persistent_ready,
+        "build_version": BUILD_VERSION,
+        "storage_provider": storage_provider,
+        "database_configured": bool(DATABASE_URL),
+        "redis_configured": cache_ready,
+        "app_storage_provider_configured": bool(APP_STORAGE_PROVIDER),
+        "memory_preview": not persistent_ready,
+        "limits": {
+            "bank_sessions": 500,
+            "transfer_requests": 200,
+            "report_exports": 200,
+            "vault_documents": MAX_VAULT_DOCUMENTS,
+        },
+        "detail": (
+            "Persistent storage env is configured. VaultFlow can be moved from preview memory to scalable storage."
+            if persistent_ready
+            else "Add DATABASE_URL or APP_STORAGE_PROVIDER before production scale. Current backend memory is preview-only."
+        ),
+    }
+
+
+def stripe_health_payload():
+    secret_ready = bool(STRIPE_SECRET)
+    prime_ready = bool(PRICE_PRIME)
+    vault_ready = bool(PRICE_VAULT)
+    publishable_ready = bool(STRIPE_PUBLISHABLE_KEY)
+    fully_ready = bool(secret_ready and prime_ready and vault_ready)
+    if fully_ready:
+        detail = "Stripe checkout backend is configured for Prime and Vault subscriptions."
+    elif secret_ready and (prime_ready or vault_ready):
+        detail = "Stripe backend is partially configured. Add both STRIPE_PRICE_PRIME and STRIPE_PRICE_VAULT before launch."
+    else:
+        detail = "Add STRIPE_SECRET_KEY, STRIPE_PRICE_PRIME, and STRIPE_PRICE_VAULT in Railway before live checkout."
+    return {
+        "success": fully_ready,
+        "configured": fully_ready,
+        "build_version": BUILD_VERSION,
+        "setup_required": not fully_ready,
+        "secret_configured": secret_ready,
+        "publishable_key_configured": publishable_ready,
+        "prime_price_configured": prime_ready,
+        "vault_price_configured": vault_ready,
+        "webhook_configured": bool(STRIPE_WEBHOOK),
+        "detail": detail,
+    }
+
+
+def transfer_health_payload():
+    provider = (TRANSFER_PROVIDER or "").strip().lower()
+    provider_ready = bool(provider and provider not in {"review", "demo", "none", "disabled", "off"})
+    plaid_transfer_ready = bool(is_plaid_transfer_provider() and plaid_configured())
+    webhook_ready = bool(TRANSFER_WEBHOOK_URL)
+    handoff_ready = bool(webhook_ready or plaid_transfer_ready)
+    ready = bool(ENABLE_TRANSFER_RAIL and provider_ready and handoff_ready)
+    if ready and plaid_transfer_ready:
+        detail = (
+            "Transfer rail is enabled for Plaid Transfer. Run Plaid approval status to confirm the Transfer product "
+            "is approved before creating live transfers."
+        )
+    elif ready:
+        detail = "Transfer rail is enabled and a provider handoff webhook is configured. Reviewed auto-transfer requests can be handed to the approved provider workflow."
+    elif not ENABLE_TRANSFER_RAIL:
+        detail = "Real transfer execution is guarded off. Set ENABLE_TRANSFER_RAIL=true only after ACH/Plaid Transfer or another processor approves your account."
+    elif not provider_ready:
+        detail = "Transfer rail is enabled, but TRANSFER_PROVIDER is missing. Add an approved provider name such as plaid_transfer after approval."
+    elif is_plaid_transfer_provider() and not plaid_configured():
+        detail = "Transfer rail is set to Plaid Transfer, but Plaid backend variables are missing."
+    else:
+        detail = "Transfer rail is enabled, but no Plaid Transfer configuration or provider webhook is ready."
+    return {
+        "success": ready,
+        "configured": ready,
+        "build_version": BUILD_VERSION,
+        "enabled": ENABLE_TRANSFER_RAIL,
+        "setup_required": not ready,
+        "provider": provider or "not-configured",
+        "provider_configured": provider_ready,
+        "webhook_configured": webhook_ready,
+        "plaid_transfer_provider": is_plaid_transfer_provider(),
+        "plaid_transfer_configured": plaid_transfer_ready,
+        "plaid_transfer_create_enabled": PLAID_TRANSFER_CREATE_ENABLED,
+        "plaid_transfer_network": PLAID_TRANSFER_NETWORK,
+        "plaid_transfer_ach_class": PLAID_TRANSFER_ACH_CLASS,
+        "plaid_transfer_type": PLAID_TRANSFER_TYPE,
+        "plaid_transfer_max_amount": PLAID_TRANSFER_MAX_AMOUNT,
+        "bank_sessions": len(bank_sessions),
+        "approval_required": not ready,
+        "mode": "plaid-transfer-ready" if ready and plaid_transfer_ready else ("provider-handoff-ready" if ready else "guarded-review"),
+        "review_authorization_required": True,
+        "queued_requests": len(transfer_requests),
+        "detail": detail,
+    }
+
+
+async def plaid_transfer_configuration_status():
+    if not plaid_configured():
+        return {
+            "success": False,
+            "approved": False,
+            "configured": False,
+            "setup_required": True,
+            "detail": "Set PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_ENV before checking Plaid Transfer approval.",
+        }
+    status_code, result = await plaid_post(
+        "/transfer/configuration/get",
+        {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET},
+    )
+    if status_code < 400:
+        summary = {
+            key: result.get(key)
+            for key in ["request_id", "maximum_amount", "minimum_amount", "supported_networks", "enabled"]
+            if key in result
+        }
+        return {
+            "success": True,
+            "approved": True,
+            "configured": True,
+            "setup_required": False,
+            "provider": "plaid_transfer",
+            "create_enabled": PLAID_TRANSFER_CREATE_ENABLED,
+            "network": PLAID_TRANSFER_NETWORK,
+            "ach_class": PLAID_TRANSFER_ACH_CLASS,
+            "transfer_type": PLAID_TRANSFER_TYPE,
+            "max_amount": PLAID_TRANSFER_MAX_AMOUNT,
+            "configuration": summary,
+            "detail": "Plaid Transfer configuration endpoint accepted this backend key pair.",
+        }
+    detail = plaid_error_detail(result)
+    lower = detail.lower()
+    setup_required = any(
+        marker in lower
+        for marker in ["not enabled", "not authorized", "permission", "approval", "product", "transfer"]
+    )
+    return {
+        "success": False,
+        "approved": False,
+        "configured": False,
+        "setup_required": setup_required,
+        "provider": "plaid_transfer",
+        "create_enabled": PLAID_TRANSFER_CREATE_ENABLED,
+        "network": PLAID_TRANSFER_NETWORK,
+        "ach_class": PLAID_TRANSFER_ACH_CLASS,
+        "transfer_type": PLAID_TRANSFER_TYPE,
+        "max_amount": PLAID_TRANSFER_MAX_AMOUNT,
+        "detail": detail,
+        "plaid_error": {
+            "error_type": result.get("error_type"),
+            "error_code": result.get("error_code"),
+            "request_id": result.get("request_id"),
+        },
+    }
+
+
+async def plaid_income_status(user_id):
+    if not plaid_configured():
+        return {
+            "success": False,
+            "approved": False,
+            "setup_required": True,
+            "detail": "Set Plaid backend variables before checking ADP/payroll Income access.",
+        }
+    user_ref, error = await get_income_user_reference(user_id)
+    if user_ref:
+        return {
+            "success": True,
+            "approved": True,
+            "setup_required": False,
+            "detail": "Plaid Income user-token flow is available for ADP/payroll Link.",
+        }
+    body = safe_json_response_body(error) if error else {}
+    return {
+        "success": False,
+        "approved": False,
+        "setup_required": bool(body.get("setup_required", True)),
+        "detail": body.get("detail") or "Plaid Income access could not be confirmed.",
+        "plaid_error": body.get("plaid_error") or {},
+    }
+
+
+def doc_vault_health_payload():
+    encryption_ready = bool(DOC_VAULT_ENCRYPTION_KEY)
+    storage_ready = bool(DOC_VAULT_STORAGE_PROVIDER and (DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL))
+    signed_urls_ready = bool(encryption_ready and storage_ready)
+    scaling = storage_scaling_payload()
+    if signed_urls_ready:
+        detail = "Secure vault encryption and signed URL settings are configured."
+    elif not encryption_ready:
+        detail = "Add DOC_VAULT_ENCRYPTION_KEY before production document uploads."
+    else:
+        detail = "Add DOC_VAULT_STORAGE_PROVIDER plus DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL before production document uploads."
+    return {
+        "success": signed_urls_ready,
+        "configured": signed_urls_ready,
+        "build_version": BUILD_VERSION,
+        "setup_required": not signed_urls_ready,
+        "encryption_key_configured": encryption_ready,
+        "storage_provider_configured": bool(DOC_VAULT_STORAGE_PROVIDER),
+        "bucket_configured": bool(DOC_VAULT_BUCKET),
+        "signing_base_url_configured": bool(DOC_VAULT_SIGNING_BASE_URL),
+        "signed_urls_ready": signed_urls_ready,
+        "signed_url_ttl_minutes": DOC_VAULT_SIGNED_URL_TTL_MINUTES,
+        "max_documents": MAX_VAULT_DOCUMENTS,
+        "registered_documents": len(vault_documents),
+        "scalable_storage_ready": scaling["success"],
+        "storage_mode": scaling["storage_provider"],
+        "database_configured": scaling["database_configured"],
+        "detail": detail,
+    }
+
+
+def reports_health_payload():
+    return {
+        "success": REPORT_EXPORTS_ENABLED,
+        "configured": REPORT_EXPORTS_ENABLED,
+        "build_version": BUILD_VERSION,
+        "setup_required": not REPORT_EXPORTS_ENABLED,
+        "secure_attachments_ready": doc_vault_health_payload()["success"],
+        "registered_exports": len(report_exports),
+        "detail": (
+            "Financial report export route is ready. Secure vault files attach when signed URLs are configured."
+            if REPORT_EXPORTS_ENABLED
+            else "REPORT_EXPORTS_ENABLED=false is set in Railway."
+        ),
+    }
+
+
+def payroll_health_payload():
+    configured = plaid_configured()
+    return {
+        "success": configured,
+        "configured": configured,
+        "build_version": BUILD_VERSION,
+        "setup_required": not configured,
+        "route_available": True,
+        "income_link_supported": True,
+        "adp_supported_through_plaid_income": True,
+        "detail": (
+            "Payroll/ADP route is deployed. A real PASS requires Plaid Income user-token access and a successful Link token."
+            if configured
+            else "Set Plaid backend variables before ADP/payroll income can connect."
+        ),
+    }
+
+
 @app.get("/")
 def root():
     return {
@@ -175,18 +521,58 @@ def root():
         "plaid_env": PLAID_ENV,
         "routes": [
             "GET /plaid/health",
+            "GET /plaid/approval-status",
+            "GET /scaling/health",
+            "GET /billing/health",
+            "GET /bank/transfer/health",
+            "GET /vault/health",
+            "GET /reports/health",
+            "GET /health",
+            "POST /plaid/approval-status",
             "POST /plaid/create-link-token",
             "POST /plaid/create-income-link-token",
             "POST /plaid/exchange-token",
             "POST /plaid/transactions",
             "POST /plaid/balance",
+            "POST /bank/transfer",
+            "POST /bank/transfer/history",
+            "GET /payroll/health",
+            "POST /payroll/health",
+            "POST /scaling/health",
+            "POST /vault/sign-url",
+            "POST /vault/register",
+            "POST /vault/list",
+            "POST /vault/remove",
+            "POST /reports/export",
+            "POST /app/state",
             "POST /investments/holdings",
             "POST /plaid/investments/holdings",
             "POST /market/signals",
             "POST /trading/connect",
             "POST /trading/order",
+            "GET /capital/health",
+            "POST /capital/waitlist",
+            "GET /live/readiness",
             "POST /live/readiness",
         ],
+    }
+
+
+@app.get("/health")
+def health_get():
+    readiness = live_readiness()
+    return {
+        "success": True,
+        "status": "ok",
+        "build_version": BUILD_VERSION,
+        "live_ready": readiness["live_ready"],
+        "plaid_configured": readiness["plaid_backend"]["success"],
+        "billing_configured": readiness["billing"]["success"],
+        "transfer_configured": readiness["transfer"]["success"],
+        "vault_configured": readiness["doc_vault"]["success"],
+        "reports_configured": readiness["report_exports"]["success"],
+        "ai_configured": readiness["ai_configured"],
+        "alpaca_configured": readiness["alpaca_configured"],
     }
 
 
@@ -200,21 +586,155 @@ def plaid_health_post():
     return plaid_health_payload()
 
 
+async def plaid_approval_status_payload(user_id="approval-check"):
+    plaid_backend = plaid_health_payload()
+    income = await plaid_income_status(user_id)
+    transfer = await plaid_transfer_configuration_status()
+    approved_products = []
+    if plaid_backend["success"]:
+        approved_products.append("bank_link")
+    if income.get("approved"):
+        approved_products.append("income_adp_payroll")
+    if transfer.get("approved"):
+        approved_products.append("plaid_transfer")
+    return {
+        "success": bool(plaid_backend["success"]),
+        "build_version": BUILD_VERSION,
+        "plaid_backend": plaid_backend,
+        "income": income,
+        "transfer": transfer,
+        "approved_products": approved_products,
+        "setup_required": bool(
+            (not plaid_backend["success"]) or income.get("setup_required") or transfer.get("setup_required")
+        ),
+        "detail": (
+            "Plaid bank Link is configured. Review Income and Transfer statuses for separate product approvals."
+            if plaid_backend["success"]
+            else plaid_backend["detail"]
+        ),
+    }
+
+
+@app.get("/plaid/approval-status")
+async def plaid_approval_status_get():
+    return await plaid_approval_status_payload("approval-check")
+
+
+@app.post("/plaid/approval-status")
+async def plaid_approval_status_post(request: Request):
+    data = await request.json()
+    user_id = data.get("user_id") or data.get("client_user_id") or "approval-check"
+    return await plaid_approval_status_payload(str(user_id))
+
+
+@app.get("/billing/health")
+def billing_health_get():
+    return stripe_health_payload()
+
+
+@app.post("/billing/health")
+def billing_health_post():
+    return stripe_health_payload()
+
+
+@app.get("/bank/transfer/health")
+def bank_transfer_health_get():
+    return transfer_health_payload()
+
+
+@app.post("/bank/transfer/health")
+def bank_transfer_health_post():
+    return transfer_health_payload()
+
+
+@app.get("/vault/health")
+def vault_health_get():
+    return doc_vault_health_payload()
+
+
+@app.post("/vault/health")
+def vault_health_post():
+    return doc_vault_health_payload()
+
+
+@app.get("/reports/health")
+def reports_health_get():
+    return reports_health_payload()
+
+
+@app.post("/reports/health")
+def reports_health_post():
+    return reports_health_payload()
+
+
+@app.get("/scaling/health")
+def scaling_health_get():
+    return storage_scaling_payload()
+
+
+@app.post("/scaling/health")
+def scaling_health_post():
+    return storage_scaling_payload()
+
+
+@app.get("/payroll/health")
+def payroll_health_get():
+    return payroll_health_payload()
+
+
+@app.post("/payroll/health")
+def payroll_health_post():
+    return payroll_health_payload()
+
+
+@app.get("/live/readiness")
 @app.post("/live/readiness")
 def live_readiness():
+    billing = stripe_health_payload()
+    transfer = transfer_health_payload()
+    vault = doc_vault_health_payload()
+    reports = reports_health_payload()
+    payroll = payroll_health_payload()
+    scaling = storage_scaling_payload()
+    critical_ready = all(
+        [
+            plaid_health_payload()["success"],
+            billing["success"],
+            transfer["success"],
+            vault["success"],
+            reports["success"],
+            payroll["success"],
+            bool(OPENAI_API_KEY),
+            bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
+        ]
+    )
     return {
         "success": True,
+        "live_ready": critical_ready,
         "build_version": BUILD_VERSION,
         "plaid_backend": plaid_health_payload(),
+        "billing": billing,
+        "payment_checkout_configured": billing["success"],
+        "payroll": payroll,
         "plaid_income_link_supported": True,
         "investment_holdings_supported": True,
-        "stripe_configured": bool(STRIPE_SECRET),
+        "stripe_configured": billing["success"],
         "ai_configured": bool(OPENAI_API_KEY),
         "ai_model": OPENAI_MODEL if OPENAI_API_KEY else "",
         "alpaca_configured": bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
         "alpaca_orders_enabled": ENABLE_ALPACA_PAPER_ORDERS or ENABLE_LIVE_TRADING,
-        "transfer_enabled": ENABLE_TRANSFER_RAIL,
-        "doc_vault_key_configured": bool(DOC_VAULT_ENCRYPTION_KEY),
+        "alpaca_live_trading_enabled": ENABLE_LIVE_TRADING,
+        "transfer": transfer,
+        "transfer_enabled": transfer["success"],
+        "doc_vault": vault,
+        "doc_vault_key_configured": vault["encryption_key_configured"],
+        "doc_vault_signed_urls_ready": vault["signed_urls_ready"],
+        "report_exports": reports,
+        "report_exports_enabled": reports["success"],
+        "scaling": scaling,
+        "scalable_storage_ready": scaling["success"],
+        "capital_waitlist_enabled": True,
+        "capital_webhook_configured": bool(CAPITAL_WAITLIST_WEBHOOK_URL),
         "detail": "Backend readiness route is live.",
     }
 
@@ -251,9 +771,13 @@ async def ai_chat(request: Request):
     snapshot = data.get("snapshot") or data.get("context") or {}
     history = data.get("history") or []
     system_prompt = (
-        "You are VaultFlow's AI assistant. Answer normal everyday questions clearly, and answer finance "
-        "questions as an educational financial coach. Be practical, concise, and friendly. Ask users to verify "
-        "numbers before acting. Never claim to provide legal, tax, investment, lending, or trading advice."
+        "You are VaultFlow's AI assistant for veterans, merchant mariners, contractors, overtime workers, "
+        "travel nurses, real estate investors, and other people with irregular or high-variable income. Answer "
+        "normal everyday questions clearly, and answer finance questions as an educational financial coach. "
+        "Help users organize, plan, simulate, and understand tradeoffs. Be practical, concise, and friendly. "
+        "Ask users to verify numbers before acting. Never claim VaultFlow is a bank, broker, lender, investment "
+        "adviser, tax adviser, credit repair company, or money transmitter. Never claim to provide legal, tax, "
+        "investment, lending, or trading advice."
     )
     prior = []
     if isinstance(history, list):
@@ -293,17 +817,496 @@ async def ai_chat(request: Request):
 @app.post("/vault/sign-url")
 async def vault_sign_url(request: Request):
     data = await request.json()
-    filename = data.get("filename") or "document"
-    if not DOC_VAULT_ENCRYPTION_KEY:
+    health = doc_vault_health_payload()
+    filename = str(data.get("filename") or "document")[:180]
+    doc_id = str(data.get("doc_id") or hashlib.sha256(filename.encode()).hexdigest()[:18])
+    user_id = str(data.get("user_id") or "guest")[:120]
+    content_type = str(data.get("type") or data.get("content_type") or "application/octet-stream")[:120]
+    size = max(0, int(float(data.get("size") or 0)))
+    if not health["success"]:
+        return {**health, "success": False}
+    expires = int((datetime.utcnow() + timedelta(minutes=DOC_VAULT_SIGNED_URL_TTL_MINUTES)).timestamp())
+    signing_base = (DOC_VAULT_SIGNING_BASE_URL or f"https://vaultflow-vault/{DOC_VAULT_BUCKET}").rstrip("/")
+    storage_key = f"{user_id}/{doc_id}/{filename}".replace(" ", "_")
+    message = f"{user_id}:{doc_id}:{filename}:{size}:{content_type}:{expires}".encode()
+    token = hmac.new(DOC_VAULT_ENCRYPTION_KEY.encode(), message, hashlib.sha256).hexdigest()
+    return {
+        "success": True,
+        "configured": True,
+        "doc_id": doc_id,
+        "storage_key": storage_key,
+        "download_url": f"{signing_base}/download/{storage_key}?expires={expires}&token={token}",
+        "upload_url": f"{signing_base}/upload/{storage_key}?expires={expires}&token={token}",
+        "upload_method": "PUT",
+        "required_headers": {"Content-Type": content_type, "x-vaultflow-doc-id": doc_id},
+        "storage_provider": DOC_VAULT_STORAGE_PROVIDER or "signed-url-provider",
+        "expires_at": datetime.utcfromtimestamp(expires).isoformat(timespec="seconds") + "Z",
+        "ttl_minutes": DOC_VAULT_SIGNED_URL_TTL_MINUTES,
+        "detail": f"Expiring signed URLs created for {filename}.",
+    }
+
+
+@app.post("/vault/register")
+async def vault_register(request: Request):
+    data = await request.json()
+    health = doc_vault_health_payload()
+    filename = str(data.get("filename") or "document")[:180]
+    doc_id = str(data.get("doc_id") or hashlib.sha256(f"{filename}:{datetime.utcnow().isoformat()}".encode()).hexdigest()[:18])
+    size = max(0, int(float(data.get("size") or 0)))
+    content_type = str(data.get("type") or data.get("content_type") or "document")[:120]
+    digest_source = f"{doc_id}:{filename}:{size}:{content_type}:{data.get('user_id') or 'guest'}"
+    manifest_digest = hmac.new(
+        (DOC_VAULT_ENCRYPTION_KEY or "vaultflow-local-manifest").encode(),
+        digest_source.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    record = {
+        "doc_id": doc_id,
+        "user_id": str(data.get("user_id") or "guest")[:120],
+        "filename": filename,
+        "type": content_type,
+        "size": size,
+        "category": str(data.get("category") or "document")[:80],
+        "include_in_report": bool(data.get("include_in_report", True)),
+        "file_hash": str(data.get("file_hash") or data.get("sha256") or "")[:128],
+        "encrypted_client_side": bool(data.get("encrypted") or data.get("encrypted_client_side")),
+        "storage_key": str(data.get("storage_key") or "")[:260],
+        "source": str(data.get("source") or "vaultflow-web")[:80],
+        "manifest_digest": manifest_digest,
+        "signed_urls_ready": health["success"],
+        "registered_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    vault_documents.insert(0, record)
+    trim_collection(vault_documents, MAX_VAULT_DOCUMENTS)
+    return {
+        "success": True,
+        "registered": True,
+        "encrypted_manifest_ready": bool(DOC_VAULT_ENCRYPTION_KEY),
+        "signed_urls_ready": health["success"],
+        "scalable_storage_ready": health["scalable_storage_ready"],
+        "detail": (
+            "Document registered in the secure vault manifest. Use the signed upload URL for production file bytes."
+            if health["success"]
+            else "Document registered locally. Add vault encryption/storage env vars before production file-byte uploads."
+        ),
+        **record,
+    }
+
+
+@app.post("/vault/list")
+async def vault_list(request: Request):
+    data = await request.json()
+    user_id = str(data.get("user_id") or "").strip()
+    docs = vault_documents
+    if user_id:
+        docs = [doc for doc in vault_documents if doc.get("user_id") == user_id]
+    return {"success": True, "count": len(docs), "documents": docs[:200], "health": doc_vault_health_payload()}
+
+
+@app.post("/vault/remove")
+async def vault_remove(request: Request):
+    data = await request.json()
+    doc_id = str(data.get("doc_id") or "").strip()
+    user_id = str(data.get("user_id") or "").strip()
+    if not doc_id:
+        raise HTTPException(status_code=400, detail="doc_id is required.")
+    before = len(vault_documents)
+    vault_documents[:] = [
+        doc for doc in vault_documents
+        if not (doc.get("doc_id") == doc_id and (not user_id or doc.get("user_id") == user_id))
+    ]
+    removed = before - len(vault_documents)
+    return {
+        "success": True,
+        "removed": removed,
+        "doc_id": doc_id,
+        "detail": "Document manifest removed. Delete the actual object in your storage provider if file bytes were uploaded.",
+    }
+
+
+@app.post("/reports/export")
+async def reports_export(request: Request):
+    if not REPORT_EXPORTS_ENABLED:
+        return JSONResponse(
+            status_code=503,
+            content={"success": False, "detail": "REPORT_EXPORTS_ENABLED=false is set in Railway."},
+        )
+    data = await request.json()
+    documents = data.get("documents") or []
+    doc_manifest = [
+        {
+            "id": str(doc.get("id") or doc.get("doc_id") or "")[:120],
+            "name": str(doc.get("name") or doc.get("filename") or "document")[:180],
+            "size": int(float(doc.get("size") or 0)),
+            "type": str(doc.get("type") or "document")[:120],
+            "category": str(doc.get("category") or "document")[:80],
+            "include_in_report": bool(doc.get("includeInReport", doc.get("include_in_report", True))),
+            "signed_url_ready": bool(doc.get("signedUrlReady") or doc.get("signed_url_ready")),
+        }
+        for doc in documents[:100]
+        if isinstance(doc, dict)
+    ]
+    report_id = "vf_report_" + hashlib.sha256(
+        f"{datetime.utcnow().isoformat()}:{data.get('user_id') or 'guest'}".encode()
+    ).hexdigest()[:14]
+    manifest_digest = hashlib.sha256(str(doc_manifest).encode()).hexdigest()[:18]
+    record = {
+        "report_id": report_id,
+        "user_id": str(data.get("user_id") or "guest")[:120],
+        "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "doc_count": len(doc_manifest),
+        "paystub_count": len([doc for doc in doc_manifest if doc["category"] == "paystub"]),
+        "manifest_digest": manifest_digest,
+        "vault_signed_urls_ready": doc_vault_health_payload()["success"],
+    }
+    report_exports.insert(0, record)
+    del report_exports[200:]
+    return {
+        "success": True,
+        "report_id": report_id,
+        "detail": "Report export registered. The browser print/PDF and CSV exports are ready.",
+        **record,
+    }
+
+
+@app.post("/bank/transfer")
+async def bank_transfer(request: Request):
+    data = await request.json()
+    health = transfer_health_payload()
+    try:
+        amount = round(float(data.get("amount") or 0), 2)
+    except Exception:
+        amount = 0
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="amount must be greater than zero.")
+    if not data.get("access_token"):
+        raise HTTPException(status_code=400, detail="access_token is required.")
+    resolved_access_token = resolve_access_token(data.get("access_token"))
+    if not data.get("review_authorized"):
         return {
             "success": False,
-            "configured": False,
-            "detail": "Add DOC_VAULT_ENCRYPTION_KEY and a real storage provider before production document uploads.",
+            "guarded": True,
+            "review_only": True,
+            "detail": "A reviewed authorization is required before VaultFlow can queue an auto-transfer request.",
+            "health": health,
         }
+    transfer_id = "vf_transfer_" + hashlib.sha256(
+        f"{datetime.utcnow().isoformat()}:{data.get('user_id') or 'guest'}:{amount}".encode()
+    ).hexdigest()[:14]
+    if not health["success"]:
+        record = {
+            "transfer_id": transfer_id,
+            "user_id": str(data.get("user_id") or "guest")[:120],
+            "destination": str(data.get("destination") or "Vault")[:120],
+            "amount": amount,
+            "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "provider": health["provider"],
+            "status": "review_only_guarded",
+            "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
+        }
+        transfer_requests.insert(0, record)
+        del transfer_requests[200:]
+        return {
+            "success": False,
+            "transfer_id": transfer_id,
+            "guarded": True,
+            "review_only": True,
+            "status": "review_only_guarded",
+            "detail": health["detail"] + " The reviewed request was saved as a guarded queue entry; no money moved.",
+            "health": health,
+        }
+    if is_plaid_transfer_provider():
+        account_id = str(data.get("account_id") or "").strip()
+        if not account_id:
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "status": "missing_account_id",
+                "detail": "Reconnect the bank through Plaid and choose a checking account before creating a Plaid Transfer.",
+                "health": health,
+            }
+        if amount > PLAID_TRANSFER_MAX_AMOUNT:
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "status": "amount_over_transfer_limit",
+                "detail": f"Amount exceeds PLAID_TRANSFER_MAX_AMOUNT (${PLAID_TRANSFER_MAX_AMOUNT:,.2f}). Lower the amount or raise the backend limit after review.",
+                "health": health,
+            }
+        legal_name = str(
+            data.get("legal_name")
+            or data.get("user_name")
+            or data.get("customer_name")
+            or "VaultFlow User"
+        )[:120]
+        authorization_payload = {
+            "client_id": PLAID_CLIENT_ID,
+            "secret": PLAID_SECRET,
+            "access_token": resolved_access_token,
+            "account_id": account_id,
+            "type": str(data.get("transfer_type") or PLAID_TRANSFER_TYPE),
+            "network": str(data.get("network") or PLAID_TRANSFER_NETWORK),
+            "amount": f"{amount:.2f}",
+            "ach_class": str(data.get("ach_class") or PLAID_TRANSFER_ACH_CLASS),
+            "user": {"legal_name": legal_name},
+        }
+        status_code, auth_result = await plaid_post("/transfer/authorization/create", authorization_payload)
+        if status_code >= 400:
+            record = {
+                "transfer_id": transfer_id,
+                "user_id": str(data.get("user_id") or "guest")[:120],
+                "destination": str(data.get("destination") or "Vault")[:120],
+                "amount": amount,
+                "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                "provider": "plaid_transfer",
+                "status": "plaid_authorization_failed",
+                "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
+                "plaid_request_id": auth_result.get("request_id"),
+            }
+            transfer_requests.insert(0, record)
+            del transfer_requests[200:]
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "transfer_id": transfer_id,
+                "status": "plaid_authorization_failed",
+                "detail": plaid_error_detail(auth_result),
+                "plaid_error": {
+                    "error_type": auth_result.get("error_type"),
+                    "error_code": auth_result.get("error_code"),
+                    "request_id": auth_result.get("request_id"),
+                },
+            }
+        authorization = auth_result.get("authorization") or auth_result
+        authorization_id = authorization.get("id") or auth_result.get("authorization_id")
+        decision = str(authorization.get("decision") or auth_result.get("decision") or "").lower()
+        if not authorization_id or (decision and decision not in {"approved", "allowed", "approve"}):
+            record = {
+                "transfer_id": transfer_id,
+                "user_id": str(data.get("user_id") or "guest")[:120],
+                "destination": str(data.get("destination") or "Vault")[:120],
+                "amount": amount,
+                "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                "provider": "plaid_transfer",
+                "status": "plaid_authorization_not_approved",
+                "decision": decision or "unknown",
+                "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
+                "plaid_request_id": auth_result.get("request_id"),
+            }
+            transfer_requests.insert(0, record)
+            del transfer_requests[200:]
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "transfer_id": transfer_id,
+                "status": "plaid_authorization_not_approved",
+                "decision": decision or "unknown",
+                "detail": "Plaid did not approve this transfer authorization, so no money moved.",
+            }
+        record = {
+            "transfer_id": transfer_id,
+            "user_id": str(data.get("user_id") or "guest")[:120],
+            "destination": str(data.get("destination") or "Vault")[:120],
+            "amount": amount,
+            "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "provider": "plaid_transfer",
+            "status": "plaid_authorized_review_only",
+            "authorization_id": authorization_id,
+            "decision": decision or "approved",
+            "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
+            "source": str(data.get("source") or "vaultflow")[:80],
+        }
+        if not PLAID_TRANSFER_CREATE_ENABLED or not data.get("execute_live_transfer"):
+            transfer_requests.insert(0, record)
+            del transfer_requests[200:]
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "transfer_id": transfer_id,
+                "authorization_id": authorization_id,
+                "status": "plaid_authorized_review_only",
+                "detail": (
+                    "Plaid approved the transfer authorization. Live transfer creation is still guarded off, "
+                    "so no money moved. Enable PLAID_TRANSFER_CREATE_ENABLED and check the live-transfer box "
+                    "to create the transfer."
+                ),
+            }
+        create_payload = {
+            "client_id": PLAID_CLIENT_ID,
+            "secret": PLAID_SECRET,
+            "authorization_id": authorization_id,
+            "description": str(data.get("description") or f"VaultFlow {data.get('destination') or 'Transfer'}")[:80],
+            "metadata": {
+                "vaultflow_transfer_id": transfer_id,
+                "destination": str(data.get("destination") or "Vault")[:120],
+            },
+        }
+        status_code, create_result = await plaid_post("/transfer/create", create_payload)
+        if status_code >= 400:
+            record["status"] = "plaid_create_failed"
+            record["plaid_request_id"] = create_result.get("request_id")
+            transfer_requests.insert(0, record)
+            del transfer_requests[200:]
+            return {
+                "success": False,
+                "guarded": True,
+                "review_only": True,
+                "transfer_id": transfer_id,
+                "authorization_id": authorization_id,
+                "status": "plaid_create_failed",
+                "detail": plaid_error_detail(create_result),
+                "plaid_error": {
+                    "error_type": create_result.get("error_type"),
+                    "error_code": create_result.get("error_code"),
+                    "request_id": create_result.get("request_id"),
+                },
+            }
+        transfer = create_result.get("transfer") or create_result
+        record["status"] = str(transfer.get("status") or "plaid_transfer_created")
+        record["plaid_transfer_id"] = transfer.get("id") or create_result.get("transfer_id")
+        record["plaid_request_id"] = create_result.get("request_id")
+        transfer_requests.insert(0, record)
+        del transfer_requests[200:]
+        return {
+            "success": True,
+            "provider": "plaid_transfer",
+            "transfer_id": transfer_id,
+            "plaid_transfer_id": record["plaid_transfer_id"],
+            "authorization_id": authorization_id,
+            "status": record["status"],
+            "detail": "Plaid Transfer was created. Confirm settlement and final status in the Plaid dashboard.",
+        }
+    record = {
+        "transfer_id": transfer_id,
+        "user_id": str(data.get("user_id") or "guest")[:120],
+        "destination": str(data.get("destination") or "Vault")[:120],
+        "amount": amount,
+        "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "provider": health["provider"],
+        "status": "queued_for_provider_handoff",
+        "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
+        "source": str(data.get("source") or "vaultflow")[:80],
+    }
+    webhook_sent = False
+    webhook_error = ""
+    if TRANSFER_WEBHOOK_URL:
+        try:
+            async with httpx.AsyncClient(timeout=12) as client:
+                response = await client.post(TRANSFER_WEBHOOK_URL, json=record)
+            webhook_sent = response.status_code < 400
+            if not webhook_sent:
+                webhook_error = f"Provider handoff returned HTTP {response.status_code}."
+        except Exception as exc:
+            webhook_error = str(exc)
+    transfer_requests.insert(0, {**record, "webhook_sent": webhook_sent, "webhook_error": webhook_error})
+    del transfer_requests[200:]
     return {
-        "success": False,
+        "success": webhook_sent,
+        "transfer_id": transfer_id,
+        "status": "queued_for_provider_handoff" if webhook_sent else "handoff_failed",
+        "webhook_sent": webhook_sent,
+        "webhook_error": webhook_error,
+        "detail": (
+            "Transfer request was handed to the approved provider workflow. Confirm settlement in the provider dashboard."
+            if webhook_sent
+            else "Transfer request was built, but provider handoff failed. No money moved."
+        ),
+    }
+
+
+@app.post("/bank/transfer/history")
+def bank_transfer_history():
+    return {"success": True, "count": len(transfer_requests), "transfers": transfer_requests[:50]}
+
+
+@app.post("/app/state")
+async def app_state(request: Request):
+    data = await request.json()
+    user_id = str(data.get("user_id") or "guest")[:120]
+    app_state_store[user_id] = {
+        "state": data.get("state") or {},
+        "updated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    if len(app_state_store) > 1000:
+        for key in list(app_state_store.keys())[:-1000]:
+            app_state_store.pop(key, None)
+    return {"success": True, "stored": True, "detail": "VaultFlow app state saved for this backend session."}
+
+
+@app.get("/capital/health")
+def capital_health_get():
+    return {
+        "success": True,
         "configured": True,
-        "detail": f"Encryption key is present, but secure object storage is not connected yet for {filename}.",
+        "build_version": BUILD_VERSION,
+        "webhook_configured": bool(CAPITAL_WAITLIST_WEBHOOK_URL),
+        "mode": "waitlist-marketplace",
+        "detail": "VaultFlow Capital backend route is live. Waitlist mode is enabled; no loan decisions are made here.",
+    }
+
+
+@app.post("/capital/health")
+def capital_health_post():
+    return capital_health_get()
+
+
+@app.post("/capital/waitlist")
+async def capital_waitlist_join(request: Request):
+    data = await request.json()
+    name = str(data.get("name") or "").strip()[:120]
+    email = str(data.get("email") or "").strip()[:160]
+    capital_type = str(data.get("type") or data.get("capital_type") or "General capital").strip()[:80]
+    goal = str(data.get("goal") or "").strip()[:500]
+    source = str(data.get("source") or "vaultflow-capital").strip()[:80]
+    consent = bool(data.get("consent"))
+    try:
+        need = max(0, min(1000000, int(float(data.get("need") or data.get("amount") or 0))))
+    except Exception:
+        need = 0
+
+    if not email or "@" not in email or "." not in email.split("@")[-1]:
+        raise HTTPException(status_code=400, detail="A valid email is required.")
+    if not consent:
+        raise HTTPException(status_code=400, detail="Consent is required before joining the Capital waitlist.")
+
+    lead = {
+        "name": name,
+        "email": email,
+        "type": capital_type,
+        "need": need,
+        "goal": goal,
+        "source": source,
+        "bridge_connected": bool(data.get("bridgeConnected") or data.get("bridge_connected")),
+        "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "compliance_mode": "waitlist_only_no_credit_decision",
+    }
+    capital_waitlist.insert(0, lead)
+    del capital_waitlist[200:]
+
+    webhook_sent = False
+    webhook_error = ""
+    if CAPITAL_WAITLIST_WEBHOOK_URL:
+        try:
+            async with httpx.AsyncClient(timeout=12) as client:
+                response = await client.post(CAPITAL_WAITLIST_WEBHOOK_URL, json=lead)
+            webhook_sent = response.status_code < 400
+            if not webhook_sent:
+                webhook_error = f"Webhook returned HTTP {response.status_code}."
+        except Exception as exc:
+            webhook_error = str(exc)
+
+    return {
+        "success": True,
+        "stored": True,
+        "webhook_sent": webhook_sent,
+        "webhook_configured": bool(CAPITAL_WAITLIST_WEBHOOK_URL),
+        "webhook_error": webhook_error,
+        "detail": "Capital waitlist entry saved. This is not a loan application, approval, or offer.",
     }
 
 
@@ -455,11 +1458,15 @@ async def exchange_token(request: Request):
         {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET, "public_token": public_token},
     )
     if "access_token" in result:
+        session_id = create_bank_session(user_id, result["access_token"], result.get("item_id"))
         return {
             "success": True,
-            "access_token": result["access_token"],
+            "access_token": session_id,
+            "bank_session_id": session_id,
             "item_id": result.get("item_id"),
             "request_id": result.get("request_id"),
+            "session_storage": "backend-memory",
+            "detail": "Plaid token exchanged and stored as an opaque backend bank session.",
         }
     return plaid_error_response(result, status_code)
 
@@ -471,6 +1478,7 @@ async def get_transactions(request: Request):
     access_token = data.get("access_token")
     if not access_token:
         raise HTTPException(status_code=400, detail="access_token is required.")
+    access_token = resolve_access_token(access_token)
     today = date.today()
     start = data.get("start_date") or (today - timedelta(days=120)).isoformat()
     end = data.get("end_date") or today.isoformat()
@@ -517,6 +1525,7 @@ async def get_balance(request: Request):
     access_token = data.get("access_token")
     if not access_token:
         raise HTTPException(status_code=400, detail="access_token is required.")
+    access_token = resolve_access_token(access_token)
     status_code, result = await plaid_post(
         "/accounts/balance/get",
         {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET, "access_token": access_token},
@@ -551,6 +1560,7 @@ async def investment_holdings_payload(request):
     access_token = data.get("access_token")
     if not access_token:
         raise HTTPException(status_code=400, detail="access_token is required.")
+    access_token = resolve_access_token(access_token)
     status_code, result = await plaid_post(
         "/investments/holdings/get",
         {"client_id": PLAID_CLIENT_ID, "secret": PLAID_SECRET, "access_token": access_token},
@@ -684,36 +1694,134 @@ async def market_signals(request: Request):
 @app.post("/trading/connect")
 def trading_connect():
     configured = bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY)
+    live_endpoint = "paper-api" not in ALPACA_TRADING_BASE_URL
+    live_guarded = live_endpoint and not ENABLE_LIVE_TRADING
     return {
         "success": configured,
         "configured": configured,
-        "mode": "paper-ready" if configured and ENABLE_ALPACA_PAPER_ORDERS else "paper-keys-only" if configured else "missing-keys",
+        "mode": (
+            "live-ready"
+            if configured and ENABLE_LIVE_TRADING and live_endpoint
+            else "live-endpoint-guarded"
+            if configured and live_guarded
+            else "paper-ready"
+            if configured and ENABLE_ALPACA_PAPER_ORDERS
+            else "paper-keys-only"
+            if configured
+            else "missing-keys"
+        ),
         "paper_orders_enabled": ENABLE_ALPACA_PAPER_ORDERS,
         "live_trading_enabled": ENABLE_LIVE_TRADING,
+        "live_endpoint_guarded": live_guarded,
+        "live_order_confirmation_required": bool(configured and ENABLE_LIVE_TRADING and live_endpoint),
+        "live_trade_max_notional": LIVE_TRADE_MAX_NOTIONAL,
         "base_url": ALPACA_TRADING_BASE_URL,
         "data_base_url": ALPACA_DATA_BASE_URL,
         "data_feed": ALPACA_DATA_FEED,
         "detail": (
-            "Alpaca keys are configured. Paper order submission is enabled."
+            "Alpaca live endpoint is configured and live trading is explicitly enabled."
+            if configured and ENABLE_LIVE_TRADING and live_endpoint
+            else "Alpaca base URL looks live, but ENABLE_LIVE_TRADING is false. Orders are guarded to prevent accidental real trades."
+            if configured and live_guarded
+            else "Alpaca keys are configured. Paper order submission is enabled and notional dollar orders are supported."
             if configured and ENABLE_ALPACA_PAPER_ORDERS
-            else "Alpaca keys are configured. Add ENABLE_ALPACA_PAPER_ORDERS=true in Railway to submit paper orders."
+            else "Alpaca keys are configured. Add ENABLE_ALPACA_PAPER_ORDERS=true in Railway to submit paper notional orders."
             if configured
             else "Add ALPACA_KEY_ID and ALPACA_SECRET_KEY in Railway."
         ),
     }
 
 
+def build_alpaca_order_payload(data):
+    symbol = str(data.get("symbol") or "SPY").strip().upper()
+    side = str(data.get("side") or "buy").strip().lower()
+    order_type = str(data.get("type") or "market").strip().lower()
+    time_in_force = str(data.get("time_in_force") or "day").strip().lower()
+    if not symbol or not symbol.replace(".", "").replace("-", "").isalnum():
+        raise HTTPException(status_code=400, detail="A valid trading symbol is required.")
+    if side not in {"buy", "sell"}:
+        raise HTTPException(status_code=400, detail="side must be buy or sell.")
+    allowed_types = {"market", "limit", "stop", "stop_limit", "trailing_stop"}
+    if order_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Unsupported Alpaca order type.")
+    allowed_tif = {"day", "gtc", "opg", "cls", "ioc", "fok"}
+    if time_in_force not in allowed_tif:
+        raise HTTPException(status_code=400, detail="Unsupported time_in_force.")
+
+    payload = {
+        "symbol": symbol,
+        "side": side,
+        "type": order_type,
+        "time_in_force": time_in_force,
+    }
+    qty = data.get("qty") or data.get("quantity")
+    notional = data.get("notional") or data.get("amount")
+    if qty not in {None, ""}:
+        qty_value = float(qty)
+        if qty_value <= 0:
+            raise HTTPException(status_code=400, detail="qty must be greater than zero.")
+        payload["qty"] = str(qty_value).rstrip("0").rstrip(".")
+    elif notional not in {None, ""}:
+        notional_value = round(float(notional), 2)
+        if notional_value <= 0:
+            raise HTTPException(status_code=400, detail="notional must be greater than zero.")
+        if order_type != "market":
+            raise HTTPException(status_code=400, detail="Alpaca notional orders must use market type.")
+        payload["notional"] = f"{notional_value:.2f}"
+    else:
+        payload["qty"] = "1"
+
+    if order_type in {"limit", "stop_limit"}:
+        limit_price = data.get("limit_price")
+        if limit_price in {None, ""}:
+            raise HTTPException(status_code=400, detail="limit_price is required for limit orders.")
+        payload["limit_price"] = str(round(float(limit_price), 4))
+    if order_type in {"stop", "stop_limit"}:
+        stop_price = data.get("stop_price")
+        if stop_price in {None, ""}:
+            raise HTTPException(status_code=400, detail="stop_price is required for stop orders.")
+        payload["stop_price"] = str(round(float(stop_price), 4))
+    client_order_id = str(data.get("client_order_id") or "").strip()
+    if client_order_id:
+        payload["client_order_id"] = client_order_id[:48]
+    return payload
+
+
 @app.post("/trading/order")
 async def trading_order(request: Request):
+    data = await request.json()
+    live_endpoint = "paper-api" not in ALPACA_TRADING_BASE_URL
+    if live_endpoint and not ENABLE_LIVE_TRADING:
+        return {
+            "success": False,
+            "guarded": True,
+            "detail": "Alpaca base URL looks live, but ENABLE_LIVE_TRADING is false. Switch ALPACA_TRADING_BASE_URL to paper-api or explicitly enable live trading after compliance review.",
+        }
     if not (ENABLE_ALPACA_PAPER_ORDERS or ENABLE_LIVE_TRADING):
         return {
             "success": False,
             "guarded": True,
-            "detail": "Real order placement is disabled. Turn on ENABLE_ALPACA_PAPER_ORDERS only after you confirm paper trading.",
+            "detail": "Order placement is disabled. Turn on ENABLE_ALPACA_PAPER_ORDERS only after you confirm paper trading.",
         }
     if not (ALPACA_KEY_ID and ALPACA_SECRET_KEY):
         raise HTTPException(status_code=400, detail="Alpaca keys are missing.")
-    data = await request.json()
+    order_payload = build_alpaca_order_payload(data)
+    if live_endpoint:
+        if not data.get("live_authorized"):
+            return {
+                "success": False,
+                "guarded": True,
+                "requires_live_authorization": True,
+                "detail": "Live Alpaca trading is enabled, but this order needs explicit live-order authorization from the user.",
+            }
+        if "notional" in order_payload and LIVE_TRADE_MAX_NOTIONAL > 0:
+            notional_value = float(order_payload["notional"])
+            if notional_value > LIVE_TRADE_MAX_NOTIONAL:
+                return {
+                    "success": False,
+                    "guarded": True,
+                    "detail": f"Live order blocked by max notional risk limit (${LIVE_TRADE_MAX_NOTIONAL:,.2f}). Lower the amount or update LIVE_TRADE_MAX_NOTIONAL after review.",
+                }
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(
             f"{ALPACA_TRADING_BASE_URL}/v2/orders",
@@ -721,13 +1829,7 @@ async def trading_order(request: Request):
                 "APCA-API-KEY-ID": ALPACA_KEY_ID,
                 "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY,
             },
-            json={
-                "symbol": (data.get("symbol") or "SPY").upper(),
-                "qty": str(data.get("qty") or data.get("quantity") or 1),
-                "side": data.get("side", "buy"),
-                "type": data.get("type", "market"),
-                "time_in_force": data.get("time_in_force", "day"),
-            },
+            json=order_payload,
         )
     try:
         result = response.json()
@@ -735,7 +1837,14 @@ async def trading_order(request: Request):
         result = {"detail": response.text}
     if response.status_code >= 400:
         return JSONResponse(status_code=response.status_code, content={"success": False, "detail": result})
-    return {"success": True, "order": result}
+    return {
+        "success": True,
+        "mode": "live" if live_endpoint else "paper",
+        "order_id": result.get("id"),
+        "status": result.get("status") or "submitted",
+        "order": result,
+        "submitted": order_payload,
+    }
 
 
 @app.post("/webhook")
