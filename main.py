@@ -9,9 +9,10 @@ import statistics
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 import httpx
 import stripe
+from urllib.parse import urlencode
 
 
 app = FastAPI(title="VaultFlow Backend", version="2026.07.06")
@@ -23,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-09-import-vault-scale"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-10-ai-storage-health"
 
 
 def clean_env_value(name, fallback=""):
@@ -47,6 +48,8 @@ PRICE_PRIME = clean_env_value("STRIPE_PRICE_PRIME")
 PRICE_VAULT = clean_env_value("STRIPE_PRICE_VAULT")
 OPENAI_API_KEY = clean_env_value("OPENAI_API_KEY")
 OPENAI_MODEL = clean_env_value("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
+OPENAI_BASE_URL = clean_env_value("OPENAI_BASE_URL", "https://api.openai.com").rstrip("/") or "https://api.openai.com"
+OPENAI_TIMEOUT_SECONDS = float(clean_env_value("OPENAI_TIMEOUT_SECONDS", "45") or "45")
 DOC_VAULT_ENCRYPTION_KEY = clean_env_value("DOC_VAULT_ENCRYPTION_KEY")
 DOC_VAULT_STORAGE_PROVIDER = clean_env_value("DOC_VAULT_STORAGE_PROVIDER")
 DOC_VAULT_BUCKET = clean_env_value("DOC_VAULT_BUCKET")
@@ -54,6 +57,7 @@ DOC_VAULT_SIGNING_BASE_URL = clean_env_value("DOC_VAULT_SIGNING_BASE_URL")
 DOC_VAULT_SIGNED_URL_TTL_MINUTES = int(clean_env_value("DOC_VAULT_SIGNED_URL_TTL_MINUTES", "15") or "15")
 MAX_VAULT_DOCUMENTS = int(clean_env_value("MAX_VAULT_DOCUMENTS", "5000") or "5000")
 APP_STORAGE_PROVIDER = clean_env_value("APP_STORAGE_PROVIDER")
+APP_DATA_DIR = clean_env_value("APP_DATA_DIR") or clean_env_value("RAILWAY_VOLUME_MOUNT_PATH")
 DATABASE_URL = clean_env_value("DATABASE_URL")
 REDIS_URL = clean_env_value("REDIS_URL")
 ENABLE_TRANSFER_RAIL = clean_env_value("ENABLE_TRANSFER_RAIL", "false").lower() == "true"
@@ -66,6 +70,9 @@ PLAID_TRANSFER_TYPE = clean_env_value("PLAID_TRANSFER_TYPE", "debit") or "debit"
 PLAID_TRANSFER_MAX_AMOUNT = float(clean_env_value("PLAID_TRANSFER_MAX_AMOUNT", "1000") or "1000")
 REPORT_EXPORTS_ENABLED = clean_env_value("REPORT_EXPORTS_ENABLED", "true").lower() != "false"
 CAPITAL_WAITLIST_WEBHOOK_URL = clean_env_value("CAPITAL_WAITLIST_WEBHOOK_URL")
+OWNER_USERNAME = clean_env_value("OWNER_USERNAME", "deion").lower() or "deion"
+OWNER_EMAIL = clean_env_value("OWNER_EMAIL", "deion@vaultflow.owner") or "deion@vaultflow.owner"
+OWNER_ACCESS_CODE = clean_env_value("OWNER_ACCESS_CODE")
 
 PLAID_CLIENT_ID = clean_env_value("PLAID_CLIENT_ID")
 PLAID_SECRET = clean_env_value("PLAID_SECRET")
@@ -264,18 +271,174 @@ def trim_collection(items, limit):
     del items[limit:]
 
 
+FILE_STORAGE_PROVIDERS = {"file", "local", "local_file", "railway_volume", "volume", "filesystem"}
+
+
+def safe_storage_name(value, fallback="item"):
+    cleaned = "".join(ch if ch.isalnum() or ch in {"-", "_", "."} else "_" for ch in str(value or ""))
+    cleaned = cleaned.strip("._")[:180]
+    return cleaned or fallback
+
+
+def file_storage_requested():
+    provider = (APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "").strip().lower()
+    return bool(APP_DATA_DIR or provider in FILE_STORAGE_PROVIDERS)
+
+
+def file_storage_dir():
+    return Path(APP_DATA_DIR or "/data/vaultflow").expanduser()
+
+
+def file_storage_health():
+    if not file_storage_requested():
+        return {
+            "success": False,
+            "requested": False,
+            "provider": APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "",
+            "data_dir": APP_DATA_DIR or "",
+            "detail": "File storage is not configured.",
+        }
+    data_dir = file_storage_dir()
+    try:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        probe = data_dir / ".vaultflow-storage-check.json"
+        payload = {"ok": True, "checked_at": datetime.utcnow().isoformat(timespec="seconds") + "Z"}
+        probe.write_text(json.dumps(payload), encoding="utf-8")
+        loaded = json.loads(probe.read_text(encoding="utf-8"))
+        try:
+            probe.unlink()
+        except Exception:
+            pass
+        return {
+            "success": bool(loaded.get("ok")),
+            "requested": True,
+            "provider": APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "file",
+            "data_dir": str(data_dir),
+            "detail": "File storage is configured and writable.",
+        }
+    except Exception as exc:
+        return {
+            "success": False,
+            "requested": True,
+            "provider": APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "file",
+            "data_dir": str(data_dir),
+            "detail": f"File storage is configured but not writable: {exc}",
+        }
+
+
+def storage_file_path(name):
+    return file_storage_dir() / "state" / f"{safe_storage_name(name)}.json"
+
+
+def storage_read_json(name, fallback):
+    if not file_storage_health()["success"]:
+        return fallback
+    path = storage_file_path(name)
+    if not path.exists():
+        return fallback
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return fallback
+
+
+def storage_write_json(name, value):
+    if not file_storage_health()["success"]:
+        return False
+    try:
+        path = storage_file_path(name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value, indent=2, default=str), encoding="utf-8")
+        return True
+    except Exception:
+        return False
+
+
+def hydrate_persistent_state():
+    if not file_storage_health()["success"]:
+        return
+    stored_lists = {
+        "capital_waitlist": capital_waitlist,
+        "transfer_requests": transfer_requests,
+        "report_exports": report_exports,
+        "vault_documents": vault_documents,
+    }
+    for name, target in stored_lists.items():
+        stored = storage_read_json(name, [])
+        if isinstance(stored, list):
+            target[:] = stored
+    stored_state = storage_read_json("app_state_store", {})
+    if isinstance(stored_state, dict):
+        app_state_store.update(stored_state)
+
+
+def persist_state(name, value):
+    storage_write_json(name, value)
+
+
+def vault_objects_dir():
+    return file_storage_dir() / "vault_objects"
+
+
+def backend_vault_storage_ready():
+    return bool(DOC_VAULT_ENCRYPTION_KEY and file_storage_health()["success"])
+
+
+def vault_object_token(user_id, doc_id, expires):
+    message = f"{user_id}:{doc_id}:{expires}:vault-object".encode()
+    return hmac.new(DOC_VAULT_ENCRYPTION_KEY.encode(), message, hashlib.sha256).hexdigest()
+
+
+def verify_vault_object_request(request, doc_id):
+    if not backend_vault_storage_ready():
+        raise HTTPException(status_code=503, detail="Secure vault file storage is not configured.")
+    user_id = str(request.query_params.get("user_id") or "guest")[:120]
+    filename = str(request.query_params.get("filename") or "document")[:180]
+    content_type = str(request.query_params.get("content_type") or "application/octet-stream")[:120]
+    try:
+        expires = int(request.query_params.get("expires") or 0)
+    except Exception:
+        expires = 0
+    if expires < int(datetime.utcnow().timestamp()):
+        raise HTTPException(status_code=403, detail="Signed vault URL expired.")
+    token = str(request.query_params.get("token") or "")
+    expected = vault_object_token(user_id, doc_id, expires)
+    if not hmac.compare_digest(token, expected):
+        raise HTTPException(status_code=403, detail="Invalid signed vault URL.")
+    return user_id, filename, content_type, expires
+
+
+def vault_object_path(user_id, doc_id):
+    safe_user = safe_storage_name(user_id, "guest")
+    safe_doc = safe_storage_name(doc_id, "document")
+    return vault_objects_dir() / safe_user / safe_doc
+
+
+hydrate_persistent_state()
+
+
 def storage_scaling_payload():
-    persistent_ready = bool(DATABASE_URL or APP_STORAGE_PROVIDER)
+    file_health = file_storage_health()
+    database_ready = bool(DATABASE_URL)
+    persistent_ready = bool(database_ready or file_health["success"])
     cache_ready = bool(REDIS_URL)
-    storage_provider = APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "memory-preview"
+    if database_ready:
+        storage_provider = "database"
+    elif file_health["success"]:
+        storage_provider = file_health["provider"] or "file"
+    else:
+        storage_provider = APP_STORAGE_PROVIDER or DOC_VAULT_STORAGE_PROVIDER or "memory-preview"
     return {
         "success": persistent_ready,
         "configured": persistent_ready,
         "build_version": BUILD_VERSION,
         "storage_provider": storage_provider,
-        "database_configured": bool(DATABASE_URL),
+        "database_configured": database_ready,
         "redis_configured": cache_ready,
         "app_storage_provider_configured": bool(APP_STORAGE_PROVIDER),
+        "file_storage_requested": file_health["requested"],
+        "file_storage_ready": file_health["success"],
+        "file_storage_dir": file_health["data_dir"],
         "memory_preview": not persistent_ready,
         "limits": {
             "bank_sessions": 500,
@@ -284,9 +447,13 @@ def storage_scaling_payload():
             "vault_documents": MAX_VAULT_DOCUMENTS,
         },
         "detail": (
-            "Persistent storage env is configured. VaultFlow can be moved from preview memory to scalable storage."
-            if persistent_ready
-            else "Add DATABASE_URL or APP_STORAGE_PROVIDER before production scale. Current backend memory is preview-only."
+            "Persistent database storage is configured."
+            if database_ready
+            else (
+                "Railway/file storage is configured and writable."
+                if file_health["success"]
+                else "Add DATABASE_URL, or set APP_STORAGE_PROVIDER=file and APP_DATA_DIR=/data/vaultflow with a Railway volume. Current backend memory is preview-only."
+            )
         ),
     }
 
@@ -451,15 +618,20 @@ async def plaid_income_status(user_id):
 
 def doc_vault_health_payload():
     encryption_ready = bool(DOC_VAULT_ENCRYPTION_KEY)
-    storage_ready = bool(DOC_VAULT_STORAGE_PROVIDER and (DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL))
+    file_health = file_storage_health()
+    external_storage_ready = bool(DOC_VAULT_STORAGE_PROVIDER and (DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL))
+    backend_file_ready = bool(file_health["success"])
+    storage_ready = bool(external_storage_ready or backend_file_ready)
     signed_urls_ready = bool(encryption_ready and storage_ready)
     scaling = storage_scaling_payload()
-    if signed_urls_ready:
-        detail = "Secure vault encryption and signed URL settings are configured."
+    if signed_urls_ready and external_storage_ready:
+        detail = "Secure vault encryption and external signed URL settings are configured."
+    elif signed_urls_ready:
+        detail = "Secure vault encryption and backend file signed URLs are configured."
     elif not encryption_ready:
         detail = "Add DOC_VAULT_ENCRYPTION_KEY before production document uploads."
     else:
-        detail = "Add DOC_VAULT_STORAGE_PROVIDER plus DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL before production document uploads."
+        detail = "Add DOC_VAULT_STORAGE_PROVIDER plus DOC_VAULT_BUCKET or DOC_VAULT_SIGNING_BASE_URL, or set APP_STORAGE_PROVIDER=file and APP_DATA_DIR=/data/vaultflow with a Railway volume."
     return {
         "success": signed_urls_ready,
         "configured": signed_urls_ready,
@@ -467,6 +639,8 @@ def doc_vault_health_payload():
         "setup_required": not signed_urls_ready,
         "encryption_key_configured": encryption_ready,
         "storage_provider_configured": bool(DOC_VAULT_STORAGE_PROVIDER),
+        "backend_file_storage_ready": backend_file_ready,
+        "external_signed_url_storage_ready": external_storage_ready,
         "bucket_configured": bool(DOC_VAULT_BUCKET),
         "signing_base_url_configured": bool(DOC_VAULT_SIGNING_BASE_URL),
         "signed_urls_ready": signed_urls_ready,
@@ -496,6 +670,12 @@ def reports_health_payload():
     }
 
 
+def remember_transfer_record(record):
+    transfer_requests.insert(0, record)
+    del transfer_requests[200:]
+    persist_state("transfer_requests", transfer_requests)
+
+
 def payroll_health_payload():
     configured = plaid_configured()
     return {
@@ -510,6 +690,24 @@ def payroll_health_payload():
             "Payroll/ADP route is deployed. A real PASS requires Plaid Income user-token access and a successful Link token."
             if configured
             else "Set Plaid backend variables before ADP/payroll income can connect."
+        ),
+    }
+
+
+def owner_health_payload():
+    configured = bool(OWNER_ACCESS_CODE)
+    return {
+        "success": configured,
+        "configured": configured,
+        "build_version": BUILD_VERSION,
+        "auth_route_available": True,
+        "setup_required": not configured,
+        "owner_username_configured": bool(OWNER_USERNAME),
+        "owner_email_configured": bool(OWNER_EMAIL),
+        "detail": (
+            "Owner authentication is configured. Use the owner username plus OWNER_ACCESS_CODE from Railway."
+            if configured
+            else "Add OWNER_ACCESS_CODE in Railway variables, then redeploy/restart before using the owner account."
         ),
     }
 
@@ -552,7 +750,10 @@ def api_root():
             "GET /bank/transfer/health",
             "GET /vault/health",
             "GET /reports/health",
+            "GET /owner/health",
             "GET /health",
+            "POST /owner/auth",
+            "POST /owner/health",
             "POST /plaid/approval-status",
             "POST /plaid/create-link-token",
             "POST /plaid/create-income-link-token",
@@ -583,6 +784,57 @@ def api_root():
     }
 
 
+@app.post("/owner/auth")
+async def owner_auth(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+
+    username = str(data.get("username") or data.get("email") or "").strip().lower()
+    code = str(data.get("code") or data.get("owner_code") or data.get("password") or "").strip()
+
+    if not OWNER_ACCESS_CODE:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "success": False,
+                "setup_required": True,
+                "detail": "Set OWNER_ACCESS_CODE in Railway variables to enable production owner login.",
+            },
+        )
+
+    owner_ok = hmac.compare_digest(username, OWNER_USERNAME)
+    code_ok = hmac.compare_digest(code, OWNER_ACCESS_CODE)
+    if not (owner_ok and code_ok):
+        return JSONResponse(
+            status_code=401,
+            content={"success": False, "detail": "Owner username or private code was not accepted."},
+        )
+
+    stamp = datetime.utcnow().isoformat()
+    session_id = "owner_" + hashlib.sha256(f"{stamp}:{username}".encode("utf-8")).hexdigest()[:18]
+    return {
+        "success": True,
+        "owner": True,
+        "owner_name": OWNER_USERNAME,
+        "owner_id": "owner-console",
+        "email": OWNER_EMAIL,
+        "session_id": session_id,
+        "detail": "Owner access approved.",
+    }
+
+
+@app.get("/owner/health")
+def owner_health_get():
+    return owner_health_payload()
+
+
+@app.post("/owner/health")
+def owner_health_post():
+    return owner_health_payload()
+
+
 @app.get("/health")
 def health_get():
     readiness = live_readiness()
@@ -596,6 +848,7 @@ def health_get():
         "transfer_configured": readiness["transfer"]["success"],
         "vault_configured": readiness["doc_vault"]["success"],
         "reports_configured": readiness["report_exports"]["success"],
+        "owner_auth_configured": readiness["owner_auth"]["success"],
         "ai_configured": readiness["ai_configured"],
         "alpaca_configured": readiness["alpaca_configured"],
     }
@@ -721,6 +974,7 @@ def live_readiness():
     reports = reports_health_payload()
     payroll = payroll_health_payload()
     scaling = storage_scaling_payload()
+    owner_auth = owner_health_payload()
     critical_ready = all(
         [
             plaid_health_payload()["success"],
@@ -729,6 +983,7 @@ def live_readiness():
             vault["success"],
             reports["success"],
             payroll["success"],
+            owner_auth["success"],
             bool(OPENAI_API_KEY),
             bool(ALPACA_KEY_ID and ALPACA_SECRET_KEY),
         ]
@@ -741,6 +996,8 @@ def live_readiness():
         "billing": billing,
         "payment_checkout_configured": billing["success"],
         "payroll": payroll,
+        "owner_auth": owner_auth,
+        "owner_auth_configured": owner_auth["success"],
         "plaid_income_link_supported": True,
         "investment_holdings_supported": True,
         "stripe_configured": billing["success"],
@@ -766,16 +1023,45 @@ def live_readiness():
 
 @app.post("/ai/health")
 def ai_health():
+    configured = bool(OPENAI_API_KEY)
     return {
         "success": True,
-        "configured": bool(OPENAI_API_KEY),
-        "model": OPENAI_MODEL if OPENAI_API_KEY else "",
+        "configured": configured,
+        "route_available": True,
+        "mode": "openai" if configured else "local-fallback",
+        "model": OPENAI_MODEL if configured else "",
+        "base_url": OPENAI_BASE_URL if configured else "",
+        "setup_required": not configured,
         "detail": (
             "OpenAI backend key is configured."
-            if OPENAI_API_KEY
+            if configured
             else "Add OPENAI_API_KEY and optionally OPENAI_MODEL in Railway to enable real AI answers."
         ),
     }
+
+
+def openai_error_detail(result):
+    if isinstance(result, dict):
+        error = result.get("error")
+        if isinstance(error, dict):
+            return error.get("message") or str(error)
+        if error:
+            return str(error)
+    return "OpenAI request failed."
+
+
+def parse_openai_response_text(result):
+    if not isinstance(result, dict):
+        return ""
+    if result.get("output_text"):
+        return str(result.get("output_text") or "").strip()
+    for item in result.get("output") or []:
+        if not isinstance(item, dict):
+            continue
+        for content in item.get("content") or []:
+            if isinstance(content, dict) and content.get("text"):
+                return str(content.get("text") or "").strip()
+    return ""
 
 
 @app.post("/ai/chat")
@@ -786,7 +1072,9 @@ async def ai_chat(request: Request):
             content={
                 "success": False,
                 "configured": False,
+                "mode": "local-fallback",
                 "detail": "Add OPENAI_API_KEY in Railway to enable real AI answers.",
+                "answer": "I can help with the local VaultFlow guide, but real AI answers need OPENAI_API_KEY configured on the backend.",
             },
         )
     data = await request.json()
@@ -807,24 +1095,48 @@ async def ai_chat(request: Request):
     prior = []
     if isinstance(history, list):
         for item in history[-8:]:
-            role = "assistant" if item.get("from") == "ai" else "user"
+            raw_role = str(item.get("from") or item.get("role") or "").lower()
+            role = "assistant" if raw_role in {"ai", "assistant", "bot"} else "user"
             text = str(item.get("text") or "")[:900]
             if text:
                 prior.append({"role": role, "content": text})
     user_prompt = f"User question: {question}\n\nSafe VaultFlow context JSON: {snapshot}"
     messages = [{"role": "system", "content": system_prompt}] + prior + [{"role": "user", "content": user_prompt}]
-    async with httpx.AsyncClient(timeout=45) as client:
+    async with httpx.AsyncClient(timeout=OPENAI_TIMEOUT_SECONDS) as client:
+        headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
         response = await client.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+            f"{OPENAI_BASE_URL}/v1/chat/completions",
+            headers=headers,
             json={
                 "model": OPENAI_MODEL,
                 "messages": messages,
                 "temperature": 0.4,
-                "max_tokens": 500,
+                "max_tokens": 700,
             },
         )
-    result = response.json()
+        try:
+            result = response.json()
+        except Exception:
+            result = {"error": {"message": response.text or "OpenAI returned a non-JSON response."}}
+        if response.status_code < 400:
+            answer = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            if answer:
+                return {"success": True, "configured": True, "mode": "openai-chat", "model": OPENAI_MODEL, "answer": answer}
+        chat_error = openai_error_detail(result)
+        response = await client.post(
+            f"{OPENAI_BASE_URL}/v1/responses",
+            headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "model": OPENAI_MODEL,
+                "input": messages,
+                "temperature": 0.4,
+                "max_output_tokens": 700,
+            },
+        )
+    try:
+        result = response.json()
+    except Exception:
+        result = {"error": {"message": response.text or "OpenAI returned a non-JSON response."}}
     if response.status_code >= 400:
         return JSONResponse(
             status_code=response.status_code,
@@ -832,10 +1144,20 @@ async def ai_chat(request: Request):
                 "success": False,
                 "configured": True,
                 "mode": "openai-error",
-                "detail": result.get("error", {}).get("message") or "OpenAI request failed.",
+                "detail": f"Chat completions failed: {chat_error}. Responses API failed: {openai_error_detail(result)}",
             },
         )
-    answer = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+    answer = parse_openai_response_text(result)
+    if not answer:
+        return JSONResponse(
+            status_code=502,
+            content={
+                "success": False,
+                "configured": True,
+                "mode": "openai-error",
+                "detail": "OpenAI responded but no answer text was returned.",
+            },
+        )
     return {"success": True, "configured": True, "mode": "openai-responses", "model": OPENAI_MODEL, "answer": answer}
 
 
@@ -851,6 +1173,34 @@ async def vault_sign_url(request: Request):
     if not health["success"]:
         return {**health, "success": False}
     expires = int((datetime.utcnow() + timedelta(minutes=DOC_VAULT_SIGNED_URL_TTL_MINUTES)).timestamp())
+    if backend_vault_storage_ready() and not DOC_VAULT_SIGNING_BASE_URL:
+        safe_doc_id = safe_storage_name(doc_id, "document")
+        token = vault_object_token(user_id, safe_doc_id, expires)
+        query = urlencode(
+            {
+                "user_id": user_id,
+                "filename": filename,
+                "content_type": content_type,
+                "expires": expires,
+                "token": token,
+            }
+        )
+        base_url = str(request.base_url).rstrip("/")
+        storage_key = f"vault_objects/{safe_storage_name(user_id, 'guest')}/{safe_doc_id}"
+        return {
+            "success": True,
+            "configured": True,
+            "doc_id": doc_id,
+            "storage_key": storage_key,
+            "download_url": f"{base_url}/vault/object/{safe_doc_id}?{query}",
+            "upload_url": f"{base_url}/vault/object/{safe_doc_id}?{query}",
+            "upload_method": "PUT",
+            "required_headers": {"Content-Type": "application/octet-stream", "x-vaultflow-doc-id": doc_id},
+            "storage_provider": "vaultflow-backend-file",
+            "expires_at": datetime.utcfromtimestamp(expires).isoformat(timespec="seconds") + "Z",
+            "ttl_minutes": DOC_VAULT_SIGNED_URL_TTL_MINUTES,
+            "detail": f"Expiring backend signed URLs created for {filename}.",
+        }
     signing_base = (DOC_VAULT_SIGNING_BASE_URL or f"https://vaultflow-vault/{DOC_VAULT_BUCKET}").rstrip("/")
     storage_key = f"{user_id}/{doc_id}/{filename}".replace(" ", "_")
     message = f"{user_id}:{doc_id}:{filename}:{size}:{content_type}:{expires}".encode()
@@ -869,6 +1219,47 @@ async def vault_sign_url(request: Request):
         "ttl_minutes": DOC_VAULT_SIGNED_URL_TTL_MINUTES,
         "detail": f"Expiring signed URLs created for {filename}.",
     }
+
+
+@app.put("/vault/object/{doc_id}")
+async def vault_object_upload(doc_id: str, request: Request):
+    safe_doc = safe_storage_name(doc_id, "document")
+    user_id, filename, content_type, expires = verify_vault_object_request(request, safe_doc)
+    body = await request.body()
+    if not body:
+        raise HTTPException(status_code=400, detail="No file bytes were uploaded.")
+    target = vault_object_path(user_id, safe_doc)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(body)
+    for doc in vault_documents:
+        if doc.get("doc_id") == safe_doc:
+            doc["object_uploaded"] = True
+            doc["object_size"] = len(body)
+            doc["storage_key"] = f"vault_objects/{safe_storage_name(user_id, 'guest')}/{safe_doc}"
+            doc["uploaded_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+            doc["backend_content_type"] = content_type
+            doc["expires_at"] = datetime.utcfromtimestamp(expires).isoformat(timespec="seconds") + "Z"
+            break
+    persist_state("vault_documents", vault_documents)
+    return {
+        "success": True,
+        "uploaded": True,
+        "doc_id": safe_doc,
+        "filename": filename,
+        "bytes": len(body),
+        "storage_key": f"vault_objects/{safe_storage_name(user_id, 'guest')}/{safe_doc}",
+        "detail": "Encrypted document bytes were uploaded to secure backend file storage.",
+    }
+
+
+@app.get("/vault/object/{doc_id}")
+def vault_object_download(doc_id: str, request: Request):
+    safe_doc = safe_storage_name(doc_id, "document")
+    user_id, filename, content_type, _expires = verify_vault_object_request(request, safe_doc)
+    target = vault_object_path(user_id, safe_doc)
+    if not target.exists():
+        raise HTTPException(status_code=404, detail="Vault object was not found in backend storage.")
+    return FileResponse(target, media_type=content_type or "application/octet-stream", filename=filename)
 
 
 @app.post("/vault/register")
@@ -903,6 +1294,7 @@ async def vault_register(request: Request):
     }
     vault_documents.insert(0, record)
     trim_collection(vault_documents, MAX_VAULT_DOCUMENTS)
+    persist_state("vault_documents", vault_documents)
     return {
         "success": True,
         "registered": True,
@@ -921,6 +1313,9 @@ async def vault_register(request: Request):
 @app.post("/vault/list")
 async def vault_list(request: Request):
     data = await request.json()
+    stored = storage_read_json("vault_documents", None)
+    if isinstance(stored, list):
+        vault_documents[:] = stored
     user_id = str(data.get("user_id") or "").strip()
     docs = vault_documents
     if user_id:
@@ -941,6 +1336,14 @@ async def vault_remove(request: Request):
         if not (doc.get("doc_id") == doc_id and (not user_id or doc.get("user_id") == user_id))
     ]
     removed = before - len(vault_documents)
+    if user_id:
+        object_path = vault_object_path(user_id, safe_storage_name(doc_id, "document"))
+        if object_path.exists():
+            try:
+                object_path.unlink()
+            except Exception:
+                pass
+    persist_state("vault_documents", vault_documents)
     return {
         "success": True,
         "removed": removed,
@@ -986,6 +1389,7 @@ async def reports_export(request: Request):
     }
     report_exports.insert(0, record)
     del report_exports[200:]
+    persist_state("report_exports", report_exports)
     return {
         "success": True,
         "report_id": report_id,
@@ -1029,8 +1433,7 @@ async def bank_transfer(request: Request):
             "status": "review_only_guarded",
             "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
         }
-        transfer_requests.insert(0, record)
-        del transfer_requests[200:]
+        remember_transfer_record(record)
         return {
             "success": False,
             "transfer_id": transfer_id,
@@ -1090,8 +1493,7 @@ async def bank_transfer(request: Request):
                 "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
                 "plaid_request_id": auth_result.get("request_id"),
             }
-            transfer_requests.insert(0, record)
-            del transfer_requests[200:]
+            remember_transfer_record(record)
             return {
                 "success": False,
                 "guarded": True,
@@ -1121,8 +1523,7 @@ async def bank_transfer(request: Request):
                 "autopilot": bool(data.get("autopilot") or data.get("auto_transfer")),
                 "plaid_request_id": auth_result.get("request_id"),
             }
-            transfer_requests.insert(0, record)
-            del transfer_requests[200:]
+            remember_transfer_record(record)
             return {
                 "success": False,
                 "guarded": True,
@@ -1146,8 +1547,7 @@ async def bank_transfer(request: Request):
             "source": str(data.get("source") or "vaultflow")[:80],
         }
         if not PLAID_TRANSFER_CREATE_ENABLED or not data.get("execute_live_transfer"):
-            transfer_requests.insert(0, record)
-            del transfer_requests[200:]
+            remember_transfer_record(record)
             return {
                 "success": False,
                 "guarded": True,
@@ -1175,8 +1575,7 @@ async def bank_transfer(request: Request):
         if status_code >= 400:
             record["status"] = "plaid_create_failed"
             record["plaid_request_id"] = create_result.get("request_id")
-            transfer_requests.insert(0, record)
-            del transfer_requests[200:]
+            remember_transfer_record(record)
             return {
                 "success": False,
                 "guarded": True,
@@ -1195,8 +1594,7 @@ async def bank_transfer(request: Request):
         record["status"] = str(transfer.get("status") or "plaid_transfer_created")
         record["plaid_transfer_id"] = transfer.get("id") or create_result.get("transfer_id")
         record["plaid_request_id"] = create_result.get("request_id")
-        transfer_requests.insert(0, record)
-        del transfer_requests[200:]
+        remember_transfer_record(record)
         return {
             "success": True,
             "provider": "plaid_transfer",
@@ -1228,8 +1626,7 @@ async def bank_transfer(request: Request):
                 webhook_error = f"Provider handoff returned HTTP {response.status_code}."
         except Exception as exc:
             webhook_error = str(exc)
-    transfer_requests.insert(0, {**record, "webhook_sent": webhook_sent, "webhook_error": webhook_error})
-    del transfer_requests[200:]
+    remember_transfer_record({**record, "webhook_sent": webhook_sent, "webhook_error": webhook_error})
     return {
         "success": webhook_sent,
         "transfer_id": transfer_id,
@@ -1246,6 +1643,9 @@ async def bank_transfer(request: Request):
 
 @app.post("/bank/transfer/history")
 def bank_transfer_history():
+    stored = storage_read_json("transfer_requests", None)
+    if isinstance(stored, list):
+        transfer_requests[:] = stored
     return {"success": True, "count": len(transfer_requests), "transfers": transfer_requests[:50]}
 
 
@@ -1260,7 +1660,13 @@ async def app_state(request: Request):
     if len(app_state_store) > 1000:
         for key in list(app_state_store.keys())[:-1000]:
             app_state_store.pop(key, None)
-    return {"success": True, "stored": True, "detail": "VaultFlow app state saved for this backend session."}
+    persist_state("app_state_store", app_state_store)
+    return {
+        "success": True,
+        "stored": True,
+        "persistent": storage_scaling_payload()["success"],
+        "detail": "VaultFlow app state saved for this backend session.",
+    }
 
 
 @app.get("/capital/health")
@@ -1312,6 +1718,7 @@ async def capital_waitlist_join(request: Request):
     }
     capital_waitlist.insert(0, lead)
     del capital_waitlist[200:]
+    persist_state("capital_waitlist", capital_waitlist)
 
     webhook_sent = False
     webhook_error = ""
