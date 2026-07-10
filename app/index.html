@@ -349,6 +349,16 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .chart-card{padding:15px;min-height:254px}
 .chart-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
 .chart-title{font-size:10px;letter-spacing:2px;color:#F5F0E8;text-transform:uppercase}
+.strategy-head{align-items:flex-start;margin-bottom:16px}
+.strategy-copy{max-width:680px}
+.strategy-copy .chart-title{font-family:'Cormorant Garamond',serif;font-size:24px;letter-spacing:0;text-transform:none;font-weight:300;line-height:1.1;margin-bottom:5px}
+.strategy-copy .chart-sub{font-size:10px;line-height:1.7;letter-spacing:.5px;color:#9EA7B8;max-width:620px}
+.strategy-action{white-space:nowrap;margin-top:2px}
+.strategy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.strategy-item{position:relative;overflow:hidden;border:1px solid rgba(214,183,101,0.14);border-radius:12px;background:linear-gradient(145deg,rgba(255,255,255,0.055),rgba(14,74,55,0.08));padding:15px 16px 16px;min-height:116px}
+.strategy-item::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:2px;background:linear-gradient(180deg,var(--gold),var(--green2));opacity:.85}
+.strategy-item strong{display:block;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:9px}
+.strategy-item span{display:block;font-size:11px;line-height:1.75;color:#D8D4CA;letter-spacing:.15px}
 .chart-sub{font-size:8px;color:#9EA7B8;letter-spacing:1px}
 .canvas-chart{width:100%;height:185px;display:block;border-radius:12px;background:linear-gradient(145deg,rgba(7,17,31,0.72),rgba(5,7,12,0.52));border:1px solid rgba(255,255,255,0.07)}
 .mini-bars{display:grid;gap:9px;margin-top:8px}
@@ -435,6 +445,61 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .card,.chart-card,.metric-tile,.exclusive-panel,.start-panel,.coach-panel,.mode-panel,.mode-card,.trust-chip,.pc,.login-copy,.lcard,.dash-hero{box-shadow:0 16px 48px rgba(0,0,0,0.22);border-color:rgba(255,255,255,0.1)}
 .chart-card,.metric-tile,.action-card,.trust-chip,.mode-card,.start-panel,.coach-panel{border-radius:18px}
 .premium-grid,.chart-grid,.command-grid,.coach-grid,.start-grid,.trust-ribbon{gap:14px}
+.readable-copy-card,
+.action-card,.start-step,.tab-info-card,.elite-lab,.fos-tile,.integration-tile,
+.mode-card,.trust-chip,.wealth-os-card,.timeline-item,.intel-item,
+.task-item,.doc-item,.holding-row,.command-item,.signal-metric{
+  overflow:hidden;
+}
+.action-card strong,.elite-lab strong,.fos-tile strong,.integration-tile strong,
+.tab-info-card strong,.timeline-item strong,.intel-item strong,
+.task-item > div strong,.doc-item > div strong,.holding-row > div strong,
+.command-item strong,.start-step strong{
+  display:block;
+  font-size:11px;
+  line-height:1.28;
+  letter-spacing:.35px;
+  color:#F5F0E8;
+  margin:0 0 7px;
+}
+.action-card span,.elite-lab span,.fos-tile span,.integration-tile span,
+.tab-info-card small,.timeline-item span,.intel-item span,
+.task-item > div span,.doc-item > div span,.holding-row > div span,
+.command-item span,.start-step small{
+  display:block;
+  font-size:9.5px;
+  line-height:1.65;
+  color:#9EA7B8;
+  margin:0;
+}
+.mode-card span,.trust-chip span,.wealth-os-card span,.signal-metric span,.tab-info-card > span{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  max-width:100%;
+  border-radius:999px;
+  letter-spacing:2px;
+  line-height:1;
+  margin:0 0 9px;
+}
+.mode-card strong,.trust-chip strong,.wealth-os-card strong,.signal-metric strong{
+  display:block;
+  line-height:1.14;
+  margin:0;
+}
+.mode-card small,.wealth-os-card small,.dash-mini small{
+  display:block;
+  line-height:1.55;
+  margin-top:7px;
+}
+.elite-lab em,.fos-tile em,.integration-status,.timeline-pill,.intel-level,.doc-status,.move-status{
+  line-height:1;
+}
+.start-step{padding:12px;min-height:96px}
+.start-step > span{margin-bottom:10px}
+.action-card,.tab-info-card,.elite-lab,.fos-tile,.integration-tile{padding:15px}
+.task-item,.doc-item,.holding-row{align-items:start}
+.holding-value,.doc-actions,.doc-item > .doc-status,.task-item > span,.doc-item > span{align-self:start}
 .metric-tile{min-height:104px;padding:14px}
 .metric-value{font-size:28px}
 .dash-hero,.exclusive-panel{margin-bottom:16px}
@@ -558,6 +623,11 @@ body.hide-demo-help .start-grid{display:none}
 .signal-metric{border:1px solid rgba(214,183,101,0.08);border-radius:6px;background:#0D1010;padding:8px}
 .signal-metric span{display:block;font-size:7px;letter-spacing:2px;color:#8B6914;margin-bottom:4px}
 .signal-metric strong{display:block;font-size:11px;color:#F5F0E8;font-weight:500}
+.tab-info-card strong{line-height:1.32;margin-bottom:7px;letter-spacing:.35px}
+.tab-info-card small{font-size:9.5px;line-height:1.65;color:#9EA7B8}
+.tab-info-card > span{margin-bottom:10px;line-height:1}
+.signal-metric span{margin-bottom:7px;line-height:1}
+.signal-metric strong{line-height:1.22}
 .signal-copy{font-size:10px;color:#8A8070;line-height:1.65;margin-bottom:10px}
 .signal-factors{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .signal-factor{border:1px solid rgba(214,183,101,0.12);border-radius:999px;padding:4px 7px;font-size:7px;letter-spacing:1px;color:#C9A84C;background:rgba(214,183,101,0.05)}
@@ -770,6 +840,9 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
   .dash-mini-grid{grid-template-columns:1fr 1fr}
   .premium-grid{grid-template-columns:1fr 1fr}
   .chart-grid,.report-grid{grid-template-columns:1fr}
+  .strategy-head{display:grid;grid-template-columns:1fr;gap:12px}
+  .strategy-action{width:100%}
+  .strategy-grid{grid-template-columns:1fr}
   .action-grid,.integration-grid{grid-template-columns:1fr 1fr}
   .wealth-os-grid,.elite-lab-grid,.fos-grid{grid-template-columns:1fr 1fr}
   .twin-grid{grid-template-columns:1fr}
@@ -828,6 +901,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
   .dmain{padding-top:70px;padding-bottom:86px}
   .mobile-action-bar{display:grid}
   .premium-grid,.action-grid,.integration-grid,.exclusive-grid{grid-template-columns:1fr}
+  .strategy-copy .chart-title{font-size:22px}
+  .strategy-item{min-height:auto}
   .wealth-os-grid,.elite-lab-grid,.twin-controls,.fos-grid,.gps-meta{grid-template-columns:1fr}
   .timeline-item,.intel-item{grid-template-columns:1fr}
   .health-wrap{grid-template-columns:1fr}
@@ -1227,13 +1302,19 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="trust-chip"><span>BILLING</span><strong>Stripe checkout ready</strong></div>
         <div class="trust-chip"><span>MODE</span><strong id="trust-mode">Preview guardrails on</strong></div>
       </div>
-      <div class="chart-card" style="margin-bottom:14px">
-        <div class="chart-head"><div><div class="chart-title">VaultFlow Company Strategy</div><div class="chart-sub">Sandbox build: plan as SaaS first, keep fintech rails guarded until the backend is reactivated.</div></div><button class="mini-action" onclick="dtab('pf')">CHECK SANDBOX RAILS</button></div>
-        <div class="fos-grid">
-          <div class="fos-item"><strong>Core niche</strong><span>Veterans, merchant mariners, contractors, overtime workers, travel nurses, and real estate investors.</span></div>
-          <div class="fos-item"><strong>MVP promise</strong><span>Organize, plan, simulate, export, and coach. Do not claim to manage money or guarantee outcomes.</span></div>
-          <div class="fos-item"><strong>Fintech path</strong><span>Plaid for data, Stripe for billing, Alpaca for guarded trading, licensed partners for lending or advisory later.</span></div>
-          <div class="fos-item"><strong>Launch guardrail</strong><span>No real transfers, loans, or direct investment advice unless approvals, contracts, and compliance are complete.</span></div>
+      <div class="chart-card strategy-card" style="margin-bottom:14px">
+        <div class="chart-head strategy-head">
+          <div class="strategy-copy">
+            <div class="chart-title">VaultFlow Company Strategy</div>
+            <div class="chart-sub">Sandbox build: plan as SaaS first, keep fintech rails guarded until the backend is reactivated.</div>
+          </div>
+          <button class="mini-action strategy-action" onclick="dtab('pf')">CHECK SANDBOX RAILS</button>
+        </div>
+        <div class="strategy-grid">
+          <div class="strategy-item"><strong>Core niche</strong><span>Veterans, merchant mariners, contractors, overtime workers, travel nurses, and real estate investors.</span></div>
+          <div class="strategy-item"><strong>MVP promise</strong><span>Organize, plan, simulate, export, and coach. Do not claim to manage money or guarantee outcomes.</span></div>
+          <div class="strategy-item"><strong>Fintech path</strong><span>Plaid for data, Stripe for billing, Alpaca for guarded trading, licensed partners for lending or advisory later.</span></div>
+          <div class="strategy-item"><strong>Launch guardrail</strong><span>No real transfers, loans, or direct investment advice unless approvals, contracts, and compliance are complete.</span></div>
         </div>
       </div>
       <div class="premium-grid">
@@ -1698,6 +1779,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
           <label class="setting-row"><input type="checkbox" id="set_sound" onchange="toggleSetting('soundFx',this.checked)"><span><div class="setting-title">Animation sound</div><div class="setting-copy">Play the premium vault crack, glass shimmer, whoosh, and bass hit when the dashboard opens.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_dense" onchange="toggleSetting('dense',this.checked)"><span><div class="setting-title">Dense dashboard</div><div class="setting-copy">Tighter cards for a more command-center feel.</div></span></label>
           <label class="setting-row"><input type="checkbox" id="set_demo_help" onchange="toggleSetting('demoHelp',this.checked)"><span><div class="setting-title">Show demo guidance</div><div class="setting-copy">Keep walkthrough and helper copy visible.</div></span></label>
+          <label class="setting-row"><input type="checkbox" id="set_force_real" onchange="toggleSetting('realPlaid',this.checked)"><span><div class="setting-title">Live Plaid data mode</div><div class="setting-copy">Use the active Railway backend for real Plaid bank and ADP Link. This does not enable money movement.</div></span></label>
         </div>
         <button class="btnout" onclick="testLaunchSound()">TEST ANIMATION SOUND</button>
         <button class="btnout" onclick="resetPreviewState()">RESET LOCAL DATA</button>
@@ -2219,7 +2301,16 @@ function isSandboxMode(){
   return !!SANDBOX_BUILD||APP_MODE==='sandbox'||isLocalPreview();
 }
 
+function isLocalBackendRoute(){
+  return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/i.test(String(RAIL||''));
+}
+
+function livePlaidDataMode(){
+  return !!(uiSettings&&uiSettings.realPlaid)&&!isLocalBackendRoute();
+}
+
 function usePlaidDemoFallback(){
+  if(livePlaidDataMode())return false;
   return isSandboxMode()||(!FORCE_REAL_PLAID&&isLocalPreview());
 }
 
@@ -2238,8 +2329,7 @@ function tierLockedTheme(){
 }
 
 function applyUiSettings(){
-  if(isSandboxMode())uiSettings.realPlaid=false;
-  FORCE_REAL_PLAID=!isSandboxMode()&&!!uiSettings.realPlaid;
+  FORCE_REAL_PLAID=livePlaidDataMode();
   if(uiSettings.theme==='purple')uiSettings.theme='ruby';
   var lockedTheme=tierLockedTheme();
   document.body.classList.toggle('no-motion',!uiSettings.animations);
@@ -2260,7 +2350,7 @@ function applyUiSettings(){
   if(sound)sound.checked=!!uiSettings.soundFx;
   if(dense)dense.checked=!!uiSettings.dense;
   if(real)real.checked=!!uiSettings.realPlaid;
-  if(real)real.disabled=isSandboxMode();
+  if(real)real.disabled=false;
   if(help)help.checked=!!uiSettings.demoHelp;
   if(light)light.checked=!!uiSettings.lightMode;
   if(haptics)haptics.checked=!!uiSettings.haptics;
@@ -2276,10 +2366,18 @@ function applyUiSettings(){
 }
 
 function toggleSetting(key,value){
+  if(key==='realPlaid'&&value&&isLocalBackendRoute()){
+    uiSettings.realPlaid=false;
+    applyUiSettings();
+    saveState();
+    msg('settings-msg','Set the owner backend route to Railway before enabling live Plaid data mode.','#C9A84C');
+    return;
+  }
   uiSettings[key]=!!value;
   applyUiSettings();
   saveState();
-  msg('settings-msg','Settings saved for this browser.','#00ff88');
+  if(key==='realPlaid'&&value)msg('settings-msg','Live Plaid data mode is on. Bank and ADP Link will call Railway; money movement remains guarded.','#00ff88');
+  else msg('settings-msg','Settings saved for this browser.','#00ff88');
   if(key==='soundFx'&&value)unlockVaultAudio();
   if(key==='realPlaid')checkPlaidReadiness();
 }
