@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-10-sandbox-owner-login"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-10-storage-ai-transfer-rails"
 
 
 def clean_env_value(name, fallback=""):
@@ -50,6 +50,9 @@ OPENAI_API_KEY = clean_env_value("OPENAI_API_KEY")
 OPENAI_MODEL = clean_env_value("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
 OPENAI_BASE_URL = clean_env_value("OPENAI_BASE_URL", "https://api.openai.com").rstrip("/") or "https://api.openai.com"
 OPENAI_TIMEOUT_SECONDS = float(clean_env_value("OPENAI_TIMEOUT_SECONDS", "45") or "45")
+OPENAI_MAX_OUTPUT_TOKENS = int(clean_env_value("OPENAI_MAX_OUTPUT_TOKENS", "1200") or "1200")
+OPENAI_TEMPERATURE = float(clean_env_value("OPENAI_TEMPERATURE", "0.45") or "0.45")
+OPENAI_SYSTEM_EXTRA = clean_env_value("OPENAI_SYSTEM_EXTRA")
 DOC_VAULT_ENCRYPTION_KEY = clean_env_value("DOC_VAULT_ENCRYPTION_KEY")
 DOC_VAULT_STORAGE_PROVIDER = clean_env_value("DOC_VAULT_STORAGE_PROVIDER")
 DOC_VAULT_BUCKET = clean_env_value("DOC_VAULT_BUCKET")
@@ -68,6 +71,8 @@ PLAID_TRANSFER_NETWORK = clean_env_value("PLAID_TRANSFER_NETWORK", "ach") or "ac
 PLAID_TRANSFER_ACH_CLASS = clean_env_value("PLAID_TRANSFER_ACH_CLASS", "ppd") or "ppd"
 PLAID_TRANSFER_TYPE = clean_env_value("PLAID_TRANSFER_TYPE", "debit") or "debit"
 PLAID_TRANSFER_MAX_AMOUNT = float(clean_env_value("PLAID_TRANSFER_MAX_AMOUNT", "1000") or "1000")
+AUTO_TRANSFER_RULES_ENABLED = clean_env_value("AUTO_TRANSFER_RULES_ENABLED", "true").lower() == "true"
+MAX_AUTO_TRANSFER_RULES = int(clean_env_value("MAX_AUTO_TRANSFER_RULES", "500") or "500")
 REPORT_EXPORTS_ENABLED = clean_env_value("REPORT_EXPORTS_ENABLED", "true").lower() != "false"
 CAPITAL_WAITLIST_WEBHOOK_URL = clean_env_value("CAPITAL_WAITLIST_WEBHOOK_URL")
 OWNER_USERNAME = clean_env_value("OWNER_USERNAME", "deion").lower() or "deion"
@@ -101,6 +106,7 @@ income_users = {}
 bank_sessions = {}
 capital_waitlist = []
 transfer_requests = []
+auto_transfer_rules = []
 report_exports = []
 vault_documents = []
 app_state_store = {}
@@ -363,6 +369,7 @@ def hydrate_persistent_state():
     stored_lists = {
         "capital_waitlist": capital_waitlist,
         "transfer_requests": transfer_requests,
+        "auto_transfer_rules": auto_transfer_rules,
         "report_exports": report_exports,
         "vault_documents": vault_documents,
     }
@@ -446,8 +453,17 @@ def storage_scaling_payload():
         "limits": {
             "bank_sessions": 500,
             "transfer_requests": 200,
+            "auto_transfer_rules": MAX_AUTO_TRANSFER_RULES,
             "report_exports": 200,
             "vault_documents": MAX_VAULT_DOCUMENTS,
+        },
+        "collections": {
+            "bank_sessions": len(bank_sessions),
+            "transfer_requests": len(transfer_requests),
+            "auto_transfer_rules": len(auto_transfer_rules),
+            "report_exports": len(report_exports),
+            "vault_documents": len(vault_documents),
+            "app_state_users": len(app_state_store),
         },
         "detail": (
             "Persistent database storage is configured."
@@ -530,6 +546,9 @@ def transfer_health_payload():
         "mode": "plaid-transfer-ready" if ready and plaid_transfer_ready else ("provider-handoff-ready" if ready else "guarded-review"),
         "review_authorization_required": True,
         "queued_requests": len(transfer_requests),
+        "auto_transfer_rules_enabled": AUTO_TRANSFER_RULES_ENABLED,
+        "auto_transfer_rules": len(auto_transfer_rules),
+        "auto_transfer_rule_limit": MAX_AUTO_TRANSFER_RULES,
         "detail": detail,
     }
 
@@ -756,6 +775,7 @@ def api_root():
             "GET /plaid/health",
             "GET /plaid/approval-status",
             "GET /scaling/health",
+            "GET /storage/health",
             "GET /billing/health",
             "GET /bank/transfer/health",
             "GET /vault/health",
@@ -772,9 +792,15 @@ def api_root():
             "POST /plaid/balance",
             "POST /bank/transfer",
             "POST /bank/transfer/history",
+            "POST /bank/transfer/rule",
+            "POST /bank/transfer/rules",
             "GET /payroll/health",
             "POST /payroll/health",
             "POST /scaling/health",
+            "POST /storage/health",
+            "POST /storage/save",
+            "POST /storage/load",
+            "POST /storage/list",
             "POST /vault/sign-url",
             "POST /vault/register",
             "POST /vault/list",
@@ -790,6 +816,9 @@ def api_root():
             "POST /capital/waitlist",
             "GET /live/readiness",
             "POST /live/readiness",
+            "GET /ai/health",
+            "POST /ai/health",
+            "POST /ai/chat",
         ],
     }
 
@@ -982,6 +1011,71 @@ def scaling_health_post():
     return storage_scaling_payload()
 
 
+@app.get("/storage/health")
+def storage_health_get():
+    payload = storage_scaling_payload()
+    payload["route_available"] = True
+    payload["storage_ready_for_launch"] = payload["success"]
+    payload["recommended_railway_env"] = {
+        "APP_STORAGE_PROVIDER": "file",
+        "APP_DATA_DIR": "/data/vaultflow",
+        "DOC_VAULT_STORAGE_PROVIDER": "file",
+    }
+    return payload
+
+
+@app.post("/storage/health")
+def storage_health_post():
+    return storage_health_get()
+
+
+@app.post("/storage/save")
+async def storage_save(request: Request):
+    data = await request.json()
+    key = safe_storage_name(data.get("key") or data.get("name") or "vaultflow_state", "vaultflow_state")
+    value = data.get("value") if "value" in data else data.get("state", {})
+    if key in {"bank_sessions"}:
+        raise HTTPException(status_code=400, detail="This storage key cannot be written directly.")
+    saved = storage_write_json(key, value)
+    return {
+        "success": saved,
+        "stored": saved,
+        "key": key,
+        "persistent": storage_scaling_payload()["success"],
+        "detail": "Stored in persistent backend storage." if saved else "Persistent backend storage is not configured or not writable.",
+    }
+
+
+@app.post("/storage/load")
+async def storage_load(request: Request):
+    data = await request.json()
+    key = safe_storage_name(data.get("key") or data.get("name") or "vaultflow_state", "vaultflow_state")
+    fallback = data.get("fallback", {})
+    value = storage_read_json(key, fallback)
+    return {
+        "success": True,
+        "key": key,
+        "value": value,
+        "persistent": storage_scaling_payload()["success"],
+    }
+
+
+@app.post("/storage/list")
+def storage_list():
+    health = storage_scaling_payload()
+    keys = []
+    if file_storage_health()["success"]:
+        state_dir = storage_file_path("x").parent
+        if state_dir.exists():
+            keys = sorted(path.stem for path in state_dir.glob("*.json"))[:200]
+    return {
+        "success": True,
+        "persistent": health["success"],
+        "keys": keys,
+        "health": health,
+    }
+
+
 @app.get("/payroll/health")
 def payroll_health_get():
     return payroll_health_payload()
@@ -1054,6 +1148,7 @@ def live_readiness():
     }
 
 
+@app.get("/ai/health")
 @app.post("/ai/health")
 def ai_health():
     configured = bool(OPENAI_API_KEY)
@@ -1064,9 +1159,11 @@ def ai_health():
         "mode": "openai" if configured else "local-fallback",
         "model": OPENAI_MODEL if configured else "",
         "base_url": OPENAI_BASE_URL if configured else "",
+        "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
+        "temperature": OPENAI_TEMPERATURE,
         "setup_required": not configured,
         "detail": (
-            "OpenAI backend key is configured."
+            "OpenAI backend key is configured. ChatGPT-style answers are enabled through the backend AI rail."
             if configured
             else "Add OPENAI_API_KEY and optionally OPENAI_MODEL in Railway to enable real AI answers."
         ),
@@ -1117,14 +1214,17 @@ async def ai_chat(request: Request):
     snapshot = data.get("snapshot") or data.get("context") or {}
     history = data.get("history") or []
     system_prompt = (
-        "You are VaultFlow's AI assistant for veterans, merchant mariners, contractors, overtime workers, "
-        "travel nurses, real estate investors, and other people with irregular or high-variable income. Answer "
-        "normal everyday questions clearly, and answer finance questions as an educational financial coach. "
-        "Help users organize, plan, simulate, and understand tradeoffs. Be practical, concise, and friendly. "
+        "You are VaultFlow's AI assistant. Answer broad everyday questions like a helpful general-purpose "
+        "assistant, and answer finance questions as an educational financial coach for veterans, merchant "
+        "mariners, contractors, overtime workers, travel nurses, real estate investors, and other people with "
+        "irregular or high-variable income. Help users organize, plan, simulate, and understand tradeoffs. "
+        "Be practical, concise, friendly, and willing to explain step by step when useful. "
         "Ask users to verify numbers before acting. Never claim VaultFlow is a bank, broker, lender, investment "
         "adviser, tax adviser, credit repair company, or money transmitter. Never claim to provide legal, tax, "
         "investment, lending, or trading advice."
     )
+    if OPENAI_SYSTEM_EXTRA:
+        system_prompt = system_prompt + "\n\nAdditional VaultFlow operator instruction: " + OPENAI_SYSTEM_EXTRA[:2000]
     prior = []
     if isinstance(history, list):
         for item in history[-8:]:
@@ -1143,8 +1243,8 @@ async def ai_chat(request: Request):
             json={
                 "model": OPENAI_MODEL,
                 "messages": messages,
-                "temperature": 0.4,
-                "max_tokens": 700,
+                "temperature": OPENAI_TEMPERATURE,
+                "max_tokens": OPENAI_MAX_OUTPUT_TOKENS,
             },
         )
         try:
@@ -1162,8 +1262,8 @@ async def ai_chat(request: Request):
             json={
                 "model": OPENAI_MODEL,
                 "input": messages,
-                "temperature": 0.4,
-                "max_output_tokens": 700,
+                "temperature": OPENAI_TEMPERATURE,
+                "max_output_tokens": OPENAI_MAX_OUTPUT_TOKENS,
             },
         )
     try:
@@ -1680,6 +1780,79 @@ def bank_transfer_history():
     if isinstance(stored, list):
         transfer_requests[:] = stored
     return {"success": True, "count": len(transfer_requests), "transfers": transfer_requests[:50]}
+
+
+@app.post("/bank/transfer/rule")
+async def bank_transfer_rule(request: Request):
+    data = await request.json()
+    if not AUTO_TRANSFER_RULES_ENABLED:
+        return {
+            "success": False,
+            "guarded": True,
+            "detail": "Auto-transfer rule storage is disabled on this backend.",
+        }
+    try:
+        amount = round(float(data.get("amount") or data.get("max_amount") or 0), 2)
+    except Exception:
+        amount = 0
+    try:
+        percent = round(float(data.get("percent") or 0), 2)
+    except Exception:
+        percent = 0
+    if amount <= 0 and percent <= 0:
+        raise HTTPException(status_code=400, detail="amount or percent is required for an auto-transfer rule.")
+    if percent > 100:
+        raise HTTPException(status_code=400, detail="percent cannot exceed 100.")
+    if not data.get("review_authorized"):
+        return {
+            "success": False,
+            "guarded": True,
+            "detail": "Review authorization is required before saving an auto-transfer rule.",
+        }
+    rule_id = "vf_rule_" + hashlib.sha256(
+        f"{datetime.utcnow().isoformat()}:{data.get('user_id') or 'guest'}:{amount}:{percent}".encode()
+    ).hexdigest()[:14]
+    rule = {
+        "rule_id": rule_id,
+        "user_id": str(data.get("user_id") or "guest")[:120],
+        "destination": str(data.get("destination") or "Vault")[:120],
+        "amount": amount,
+        "percent": percent,
+        "cadence": str(data.get("cadence") or "payday")[:40],
+        "source_account_id": str(data.get("account_id") or "")[:180],
+        "provider": (TRANSFER_PROVIDER or "guarded-review")[:80],
+        "enabled": bool(data.get("enabled", True)),
+        "live_execution_requested": bool(data.get("execute_live_transfer")),
+        "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "status": "stored_review_rule",
+        "guarded": True,
+        "detail": "Auto-transfer rule stored. Real money movement still requires approved transfer rails, user authorization, and backend live-transfer flags.",
+    }
+    auto_transfer_rules.insert(0, rule)
+    trim_collection(auto_transfer_rules, MAX_AUTO_TRANSFER_RULES)
+    persist_state("auto_transfer_rules", auto_transfer_rules)
+    return {
+        "success": True,
+        "guarded": True,
+        "review_only": True,
+        "rule_id": rule_id,
+        "rule": rule,
+        "health": transfer_health_payload(),
+        "detail": rule["detail"],
+    }
+
+
+@app.post("/bank/transfer/rules")
+def bank_transfer_rules():
+    stored = storage_read_json("auto_transfer_rules", None)
+    if isinstance(stored, list):
+        auto_transfer_rules[:] = stored
+    return {
+        "success": True,
+        "count": len(auto_transfer_rules),
+        "rules": auto_transfer_rules[:100],
+        "health": transfer_health_payload(),
+    }
 
 
 @app.post("/app/state")
