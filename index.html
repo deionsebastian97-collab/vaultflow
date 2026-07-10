@@ -2097,7 +2097,7 @@ var RAIL='https://vaultflow-production.up.railway.app';
 var CAPITAL_LOCAL='../outputs/vaultflow-capital.html?from=vaultflow';
 var CAPITAL_PUBLIC='https://vaultflow-rust.vercel.app/vaultflow-capital.html?from=vaultflow';
 var FORCE_REAL_PLAID=true;
-var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-09-import-vault-scale';
+var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-10-ai-storage-health';
 var PLAID_ENDPOINTS={
   linkToken:'/plaid/create-link-token',
   incomeLinkToken:'/plaid/create-income-link-token',
@@ -3139,25 +3139,48 @@ function isOwnerUsername(value){
   return String(value||'').trim().toLowerCase()==='deion';
 }
 
-function ownerLoginFromUsername(username){
-  username=String(username||'').trim().toLowerCase();
-  if(!allowPreviewOwnerLogin()){
-    msg('lmsg','This account requires secure admin authentication.','#ff4444');
-    return;
-  }
-  if(!isOwnerUsername(username)){
-    msg('lmsg','Access denied.','#ff4444');
-    return;
-  }
-  var e='deion@vaultflow.owner';
+function finishOwnerAccess(username,data){
+  data=data||{};
+  var ownerName=String(data.owner_name||username||'deion').trim().toLowerCase();
+  var e=data.email||'deion@vaultflow.owner';
   var session=makeSession(e,'vault');
   session.owner=true;
-  session.ownerName='deion';
-  session.user.id='owner-console';
+  session.ownerName=ownerName;
+  session.user.id=data.owner_id||'owner-console';
+  session.ownerSessionId=data.session_id||'';
   msg('lmsg','Opening secure workspace.','#00ff88');
   finishAuth(session);
   recordAdminAudit('OWNER_LOGIN','Owner console opened.');
   setTimeout(function(){openOwnerConsole();},500);
+}
+
+function ownerLoginFromUsername(username){
+  username=String(username||'').trim().toLowerCase();
+  if(!isOwnerUsername(username)){
+    msg('lmsg','Access denied.','#ff4444');
+    return;
+  }
+  if(allowPreviewOwnerLogin()){
+    finishOwnerAccess(username,{email:'deion@vaultflow.owner',owner_name:'deion',owner_id:'owner-console'});
+    return;
+  }
+  var codeEl=document.getElementById('sip');
+  var code=codeEl?codeEl.value.trim():'';
+  if(!code){
+    msg('lmsg','Enter your private owner code in the password field.','#C9A84C');
+    if(codeEl)codeEl.focus();
+    return;
+  }
+  msg('lmsg','Checking secure owner access...','#C9A84C');
+  postBackend('/owner/auth',{username:username,code:code}).then(function(d){
+    if(d&&d.success&&d.owner){
+      finishOwnerAccess(username,d);
+    }else{
+      msg('lmsg',(d&&d.detail)||'Owner access was not approved.','#ff4444');
+    }
+  }).catch(function(){
+    msg('lmsg','Owner authentication is not reachable yet.','#ff4444');
+  });
 }
 
 function ownerLogin(){
@@ -5139,6 +5162,7 @@ function registerVaultDocWithBackend(doc){
     doc.manifestDigest=d.manifest_digest||doc.manifestDigest;
     doc.signedUrlReady=!!d.signed_urls_ready;
     doc.encrypted=!!d.encrypted_manifest_ready||doc.encrypted;
+    doc.backendRegisteredAt=new Date().toISOString();
     renderVaultDocs();
     saveState();
     if(d.detail)msg('doc-upload-status',d.detail,d.signed_urls_ready?'#00ff88':'#C9A84C');
@@ -5204,7 +5228,7 @@ function renderVaultDocs(){
     return;
   }
   el.innerHTML=vaultDocs.map(function(d,i){
-    var status=d.encrypted?'Encrypted':(d.signedUrlReady||d.signedUrl?'Signed':'Queued');
+    var status=d.backendUploaded?'Uploaded':(d.encrypted?'Encrypted':(d.signedUrlReady||d.signedUrl?'Signed':'Queued'));
     var report=d.includeInReport!==false?'Included in report':'Excluded from report';
     var preview=vaultDocPreviews[d.id]?'<img class="doc-preview" src="'+vaultDocPreviews[d.id]+'" alt="">':'';
     var hash=d.sha256?' · SHA-256 '+esc(String(d.sha256).slice(0,12)):'';
@@ -5216,6 +5240,42 @@ function renderVaultDocs(){
 
 function createLocalVaultSignedUrl(docId){
   return 'vaultflow://signed-document/'+encodeURIComponent(docId)+'?expires='+(Date.now()+15*60*1000);
+}
+
+function vaultUploadPayload(doc){
+  var payload=vaultDocFiles[doc.id];
+  if(!payload)return null;
+  if(payload.encryptedBlob)return payload.encryptedBlob;
+  if(payload instanceof Blob)return payload;
+  if(payload instanceof File)return payload;
+  return null;
+}
+
+function uploadVaultDocBytes(doc,silent){
+  if(!doc||!doc.uploadUrl||!/^https?:\/\//i.test(doc.uploadUrl))return Promise.resolve(false);
+  var payload=vaultUploadPayload(doc);
+  if(!payload)return Promise.resolve(false);
+  var headers={'Content-Type':'application/octet-stream','x-vaultflow-doc-id':doc.id};
+  return withTimeout(fetch(doc.uploadUrl,{method:doc.uploadMethod||'PUT',headers:headers,body:payload}),25000).then(function(r){
+    return r.json().catch(function(){return {success:false,detail:'Vault upload returned a non-JSON response.'};});
+  }).then(function(d){
+    if(d&&d.success){
+      doc.backendUploaded=true;
+      doc.uploadedAt=new Date().toISOString();
+      doc.backendBytes=d.bytes||payload.size||doc.size;
+      doc.storageKey=d.storage_key||doc.storageKey;
+      doc.security=doc.encrypted?'client-encrypted + backend vault':'backend vault';
+      renderVaultDocs();
+      saveState();
+      if(!silent)msg('doc-upload-status','Uploaded encrypted file bytes for '+doc.name+' to the secure backend vault.','#00ff88');
+      return true;
+    }
+    if(!silent)msg('doc-upload-status','Vault byte upload needs setup: '+((d&&d.detail)||'unknown error'),'#C9A84C');
+    return false;
+  }).catch(function(){
+    if(!silent)msg('doc-upload-status','Signed URL was created, but the file-byte upload could not reach the backend.','#C9A84C');
+    return false;
+  });
 }
 
 function refreshVaultDocSignature(i,silent){
@@ -5231,13 +5291,16 @@ function refreshVaultDocSignature(i,silent){
       if(d&&d.success){
         doc.signedUrl=d.download_url;
         doc.uploadUrl=d.upload_url;
+        doc.uploadMethod=d.upload_method||'PUT';
         doc.signedUrlReady=true;
         doc.storageProvider=d.storage_provider||doc.storageProvider;
         doc.storageKey=d.storage_key||doc.storageKey;
         doc.expiresAt=d.expires_at;
         renderVaultDocs();
         saveState();
-        if(!silent)msg('report-msg','Backend signed URL ready for '+doc.name+'.','#00ff88');
+        uploadVaultDocBytes(doc,true).then(function(uploaded){
+          if(!silent)msg('report-msg',(uploaded?'Backend signed URL and secure upload ready for ':'Backend signed URL ready for ')+doc.name+'.','#00ff88');
+        });
       }else if(d&&d.detail){
         msg('doc-upload-status','Backend vault setup needed: '+d.detail,'#C9A84C');
       }
@@ -5911,12 +5974,14 @@ function runLiveReadinessAudit(){
   var vault=postBackend('/vault/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Secure vault health route unavailable.'};});
   var reports=postBackend('/reports/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Report export health route unavailable.'};});
   var scaling=postBackend('/scaling/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Scaling health route unavailable.'};});
-  Promise.all([readiness,plaid,approval,payroll,trading,ai,capital,billing,transfer,vault,reports,scaling]).then(function(results){
+  var owner=postBackend('/owner/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Owner auth health route unavailable.'};});
+  Promise.all([readiness,plaid,approval,payroll,trading,ai,capital,billing,transfer,vault,reports,scaling,owner]).then(function(results){
     var ready=results[0]||{},plaidHealth=results[1]||{},approvalHealth=results[2]||{},payrollHealth=results[3]||{},trade=results[4]||{},aiHealth=results[5]||{},capitalHealth=results[6]||{};
     var billingHealth=results[7]||ready.billing||{},transferHealth=results[8]||ready.transfer||{},vaultHealth=results[9]||ready.doc_vault||{},reportsHealth=results[10]||ready.report_exports||{};
     var scalingHealth=results[11]||ready.scaling||{};
+    var ownerHealth=results[12]||ready.owner_auth||{};
     var backendBuild=ready.build_version||'unknown';
-    var backendCurrent=backendBuild===EXPECTED_BACKEND_BUILD||backendBuild.indexOf('import-vault-scale')>-1;
+    var backendCurrent=backendBuild===EXPECTED_BACKEND_BUILD;
     function detailText(data){
       return String((data&&data.detail)||'');
     }
@@ -5954,6 +6019,7 @@ function runLiveReadinessAudit(){
       staleRows.push(auditLine('Secure document vault',legacyVaultOk?'pass':'setup',legacyVaultOk?'Old backend reports vault encryption key is configured. New signed URL health route will verify storage after redeploy.':'Add DOC_VAULT_ENCRYPTION_KEY and storage settings in Railway before production uploads.'));
       staleRows.push(auditLine('Scalable storage','deploy','Redeploy the newest backend before checking DATABASE_URL, Redis, or storage-provider readiness.'));
       staleRows.push(auditLine('Report exports','hold','Browser report and CSV exports work locally. Backend export tracking waits for the latest Railway deploy.'));
+      staleRows.push(auditLine('Owner authentication','deploy','Redeploy the newest backend before checking OWNER_ACCESS_CODE and private owner login.'));
       staleRows.push(auditLine('Live launch decision','deploy','Only one fix is required before rerunning this audit: redeploy the latest VaultFlow backend package. After that, the audit will check setup items one by one.'));
       el.innerHTML=staleRows.join('');
       el.style.display='block';
@@ -5967,7 +6033,8 @@ function runLiveReadinessAudit(){
     var incomeApprovalOk=!!(approvalHealth&&approvalHealth.income&&approvalHealth.income.approved);
     var vaultOk=!!(vaultHealth.success||ready.doc_vault_signed_urls_ready);
     var reportsOk=!!(reportsHealth.success||ready.report_exports_enabled);
-    var liveReady=!!(backendCurrent&&plaidHealth.success&&incomeApprovalOk&&payrollHealth.success&&trade.success&&aiHealth.configured&&capitalHealth.success&&billingOk&&transferOk&&transferApprovalOk&&vaultOk&&reportsOk);
+    var ownerAuthOk=!!(ownerHealth.success||ready.owner_auth_configured);
+    var liveReady=!!(backendCurrent&&plaidHealth.success&&incomeApprovalOk&&payrollHealth.success&&trade.success&&aiHealth.configured&&capitalHealth.success&&billingOk&&transferOk&&transferApprovalOk&&vaultOk&&reportsOk&&ownerAuthOk);
     var launchState=liveReady?'pass':(!backendCurrent||!plaidHealth.success?'fail':'setup');
     var launchDetail=liveReady?'All critical backend rails are configured. Run one real Plaid sandbox link, one Stripe test payment, one paper Alpaca order, and one transfer-provider dry run before public traffic.':(!backendCurrent?'Redeploy the latest backend first. The current live Railway build is missing the new readiness routes.':'Finish the SETUP rows, then rerun the audit before taking real users.');
     var rows=[];
@@ -5987,6 +6054,7 @@ function runLiveReadinessAudit(){
     rows.push(auditLine('Secure document vault',configState(vaultOk,vaultHealth),routeDetail(vaultHealth,'Secure vault')||'Secure vault signed URL health checked.'));
     rows.push(auditLine('Scalable storage',scalingHealth.success?'pass':'setup',scalingHealth.detail||'Scaling storage route checked.'));
     rows.push(auditLine('Report exports',configState(reportsOk,reportsHealth),routeDetail(reportsHealth,'Report export')||(vaultDocs.length?'Secure vault manifest will include selected files.':'Report export works without attachments.')));
+    rows.push(auditLine('Owner authentication',configState(ownerAuthOk,ownerHealth),routeDetail(ownerHealth,'Owner auth')||'Owner auth health checked.'));
     rows.push(auditLine('Live launch decision',launchState,launchDetail));
     el.innerHTML=rows.join('');
     el.style.display='block';
