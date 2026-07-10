@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BUILD_VERSION = "vaultflow-fastapi-2026-07-10-ai-storage-health"
+BUILD_VERSION = "vaultflow-fastapi-2026-07-10-sandbox-owner-login"
 
 
 def clean_env_value(name, fallback=""):
@@ -73,6 +73,9 @@ CAPITAL_WAITLIST_WEBHOOK_URL = clean_env_value("CAPITAL_WAITLIST_WEBHOOK_URL")
 OWNER_USERNAME = clean_env_value("OWNER_USERNAME", "deion").lower() or "deion"
 OWNER_EMAIL = clean_env_value("OWNER_EMAIL", "deion@vaultflow.owner") or "deion@vaultflow.owner"
 OWNER_ACCESS_CODE = clean_env_value("OWNER_ACCESS_CODE")
+APP_MODE = clean_env_value("APP_MODE", "sandbox").lower() or "sandbox"
+SANDBOX_BUILD = APP_MODE == "sandbox"
+SANDBOX_OWNER_USERNAME_LOGIN = clean_env_value("SANDBOX_OWNER_USERNAME_LOGIN", "true").lower() == "true"
 
 PLAID_CLIENT_ID = clean_env_value("PLAID_CLIENT_ID")
 PLAID_SECRET = clean_env_value("PLAID_SECRET")
@@ -695,19 +698,26 @@ def payroll_health_payload():
 
 
 def owner_health_payload():
-    configured = bool(OWNER_ACCESS_CODE)
+    sandbox_owner_ready = bool(SANDBOX_BUILD and SANDBOX_OWNER_USERNAME_LOGIN and OWNER_USERNAME)
+    configured = bool(OWNER_ACCESS_CODE or sandbox_owner_ready)
     return {
         "success": configured,
         "configured": configured,
         "build_version": BUILD_VERSION,
         "auth_route_available": True,
         "setup_required": not configured,
+        "sandbox_mode": SANDBOX_BUILD,
+        "username_only_owner_login": sandbox_owner_ready,
         "owner_username_configured": bool(OWNER_USERNAME),
         "owner_email_configured": bool(OWNER_EMAIL),
         "detail": (
-            "Owner authentication is configured. Use the owner username plus OWNER_ACCESS_CODE from Railway."
-            if configured
-            else "Add OWNER_ACCESS_CODE in Railway variables, then redeploy/restart before using the owner account."
+            "Sandbox owner login is enabled. Use the owner username only; no password is required in sandbox mode."
+            if sandbox_owner_ready
+            else (
+                "Owner authentication is configured. Use the owner username plus OWNER_ACCESS_CODE from Railway."
+                if configured
+                else "Add OWNER_ACCESS_CODE in Railway variables, then redeploy/restart before using the owner account."
+            )
         ),
     }
 
@@ -794,6 +804,24 @@ async def owner_auth(request: Request):
     username = str(data.get("username") or data.get("email") or "").strip().lower()
     code = str(data.get("code") or data.get("owner_code") or data.get("password") or "").strip()
 
+    owner_ok = hmac.compare_digest(username, OWNER_USERNAME)
+    sandbox_username_only_ok = bool(SANDBOX_BUILD and SANDBOX_OWNER_USERNAME_LOGIN and owner_ok and not code)
+
+    if sandbox_username_only_ok:
+        stamp = datetime.utcnow().isoformat()
+        session_id = "owner_sandbox_" + hashlib.sha256(f"{stamp}:{username}".encode("utf-8")).hexdigest()[:18]
+        return {
+            "success": True,
+            "owner": True,
+            "sandbox_mode": True,
+            "username_only_owner_login": True,
+            "owner_name": OWNER_USERNAME,
+            "owner_id": "owner-console",
+            "email": OWNER_EMAIL,
+            "session_id": session_id,
+            "detail": "Sandbox owner access approved with username only.",
+        }
+
     if not OWNER_ACCESS_CODE:
         return JSONResponse(
             status_code=503,
@@ -804,7 +832,6 @@ async def owner_auth(request: Request):
             },
         )
 
-    owner_ok = hmac.compare_digest(username, OWNER_USERNAME)
     code_ok = hmac.compare_digest(code, OWNER_ACCESS_CODE)
     if not (owner_ok and code_ok):
         return JSONResponse(
@@ -975,7 +1002,7 @@ def live_readiness():
     payroll = payroll_health_payload()
     scaling = storage_scaling_payload()
     owner_auth = owner_health_payload()
-    critical_ready = all(
+    critical_ready = (not SANDBOX_BUILD) and all(
         [
             plaid_health_payload()["success"],
             billing["success"],
@@ -991,6 +1018,8 @@ def live_readiness():
     return {
         "success": True,
         "live_ready": critical_ready,
+        "sandbox_mode": SANDBOX_BUILD,
+        "live_disabled": SANDBOX_BUILD,
         "build_version": BUILD_VERSION,
         "plaid_backend": plaid_health_payload(),
         "billing": billing,
@@ -1017,7 +1046,11 @@ def live_readiness():
         "scalable_storage_ready": scaling["success"],
         "capital_waitlist_enabled": True,
         "capital_webhook_configured": bool(CAPITAL_WAITLIST_WEBHOOK_URL),
-        "detail": "Backend readiness route is live.",
+        "detail": (
+            "Sandbox mode is active. Live launch is intentionally disabled while VaultFlow is being edited and tested."
+            if SANDBOX_BUILD
+            else "Backend readiness route is live."
+        ),
     }
 
 
