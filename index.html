@@ -1937,6 +1937,9 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
             <button class="btngold" onclick="ownerRefresh()">REFRESH</button>
             <button class="btnout" onclick="ownerRunAudit()">ACCESS AUDIT</button>
             <button class="btnout" onclick="ownerPlaidHealth()">PLAID HEALTH</button>
+            <button class="btnout" onclick="ownerPlaidApproval()">PLAID APPROVAL</button>
+            <button class="btnout" onclick="ownerStorageHealth()">STORAGE RAIL</button>
+            <button class="btnout" onclick="ownerTransferRailHealth()">TRANSFER RAIL</button>
           </div>
           <div class="owner-control-group">
             <strong>Security</strong>
@@ -2101,7 +2104,7 @@ var SANDBOX_OWNER_USERNAME_LOGIN=true;
 var CAPITAL_LOCAL='../outputs/vaultflow-capital.html?from=vaultflow';
 var CAPITAL_PUBLIC='https://vaultflow-rust.vercel.app/vaultflow-capital.html?from=vaultflow';
 var FORCE_REAL_PLAID=false;
-var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-10-sandbox-owner-login';
+var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-10-storage-ai-transfer-rails';
 var PLAID_ENDPOINTS={
   linkToken:'/plaid/create-link-token',
   incomeLinkToken:'/plaid/create-income-link-token',
@@ -2514,7 +2517,8 @@ function withTimeout(promise,ms){
 }
 
 function postBackend(path,payload){
-  if(isSandboxMode()){
+  var options=arguments.length>2&&arguments[2]?arguments[2]:{};
+  if(isSandboxMode()&&!options.allowSandboxProbe){
     return Promise.reject(new Error('sandbox backend disabled'));
   }
   return withTimeout(fetch(RAIL+path,{
@@ -3009,12 +3013,12 @@ function setAiMode(label,mode){
 }
 
 function checkAiHealth(){
-  postBackend('/ai/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).then(function(d){
+  return postBackend('/ai/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'},{allowSandboxProbe:true}).then(function(d){
     if(d&&d.configured)setAiMode('Real AI · '+(d.model||'OpenAI'),d.mode||'openai');
     else setAiMode('Fallback mode · add OpenAI key','fallback');
     return d;
   }).catch(function(){
-    setAiMode('AI backend not deployed','missing');
+    setAiMode(isSandboxMode()?'AI rail offline · local mode':'AI backend not deployed','missing');
     return {success:false};
   });
 }
@@ -3025,7 +3029,7 @@ function askVaultAssistant(question){
     message:question,
     history:aiChatHistory.filter(function(x){return x.text!=='Thinking...';}).slice(-8),
     context:assistantContext()
-  }).then(function(d){
+  },{allowSandboxProbe:true}).then(function(d){
     if(d&&((d.mode==='openai-responses')||(d.success&&d.configured&&d.answer))){
       setAiMode('Real AI · '+(d.model||'OpenAI'),'openai');
       return d.answer||localAnswer;
@@ -3041,7 +3045,7 @@ function askVaultAssistant(question){
     setAiMode('Fallback mode','fallback');
     return localAnswer;
   }).catch(function(){
-    setAiMode('AI backend not deployed','missing');
+    setAiMode(isSandboxMode()?'AI rail offline · local mode':'AI backend not deployed','missing');
     return localAnswer;
   });
 }
@@ -3049,6 +3053,21 @@ function askVaultAssistant(question){
 function localVaultAnswer(question){
   var q=String(question||'').toLowerCase();
   var plan=planName(currentPlan());
+  if(/who are you|are you chatgpt|chat gpt|ai assistant|regular question|any question/.test(q)){
+    return 'I am the VaultFlow AI assistant. When the backend has OPENAI_API_KEY and Railway is online, I answer through the real OpenAI rail. While the backend is offline, I use a local fallback that can still help with VaultFlow setup, finance workflows, transfers, Plaid, uploads, reports, and general planning questions.';
+  }
+  if(/storage|database|save|persist|railway volume|volume|data lost|localstorage|local storage/.test(q)){
+    return 'VaultFlow now has a storage rail design: browser sandbox storage for preview, backend /storage/health for readiness, /storage/save and /storage/load for persisted app state, and secure vault signed URLs for documents. For Railway production, add a volume and set APP_STORAGE_PROVIDER=file, APP_DATA_DIR=/data/vaultflow, DOC_VAULT_STORAGE_PROVIDER=file, and DOC_VAULT_ENCRYPTION_KEY.';
+  }
+  if(/approved|approval|plaid product|income enabled|transfer enabled|adp approved/.test(q)){
+    return 'Plaid approval has to be checked from the backend because Plaid secrets must stay server-side. The owner readiness check calls /plaid/approval-status, which reports Bank Link, Income/ADP, and Plaid Transfer status. If Railway is offline, the app cannot confirm approval yet, but the route is ready for redeploy.';
+  }
+  if(/what should i do|next step|roadmap|plan for me|help me decide/.test(q)){
+    return 'Best next move: keep VaultFlow in sandbox, redeploy the newest backend package when Railway is active, run the owner readiness audit, confirm Plaid Bank Link/Income/Transfer status, then test one Stripe test checkout, one Plaid sandbox bank link, one guarded transfer rule, one secure document upload, and one AI chat response before going live.';
+  }
+  if(/how are you|what's up|whats up|tell me a joke|weather|sports|recipe|write|essay|email|resume/.test(q)){
+    return 'I can help with regular questions too. The fully open-ended ChatGPT-style answers require the OpenAI backend rail to be online. Right now, Railway is offline, so I am in local fallback mode. Ask the question anyway and I will give the best practical answer I can from the app.';
+  }
   if(/plaid|bank|connect|sandbox/.test(q)){
     return 'To connect a bank, go to Profile, use CONNECT / RECONNECT REAL BANK, and complete Plaid Link. Prime or Vault is required. In local preview, Plaid must use the Railway backend with PLAID_CLIENT_ID and PLAID_SECRET saved on the backend, never inside this HTML file. For sandbox, use Plaid sandbox credentials and sandbox institutions.';
   }
@@ -3056,7 +3075,7 @@ function localVaultAnswer(question){
     return 'VaultFlow has three tiers: Essential is free for manual allocation, goals, and net worth tracking. Prime is $9.99/mo and unlocks Plaid bank connect, payday detection, auto-allocation monitoring, stock signals, and paper trading. Vault is $24.99/mo and adds transfer review, transfer history, and deal pipeline tools. Your current plan is '+plan+'.';
   }
   if(/transfer|move money|ach|auto bank|real money/.test(q)){
-    return 'Auto transfers are a Vault feature. The preview can queue reviewed transfer requests, but real money movement must stay behind an approved backend transfer rail, user authorization, compliance checks, and a processor such as Plaid Transfer or another ACH provider.';
+    return 'Auto transfers are a Vault feature. The app can now store reviewed auto-transfer rules and queue transfer requests, but real money movement stays behind approved backend rails, user authorization, Plaid Transfer or another processor, max amount limits, and audit history.';
   }
   if(/payday|paycheck|deposit|direct deposit|salary|payroll/.test(q)){
     return 'Payday detection works by scanning recent connected transactions for deposit patterns like payroll, salary, direct deposit, maritime pay, VA deposits, and large recurring income. Connect a bank in Profile, then press DETECT PAYCHECKS. It detects the paycheck before allocation workflows run.';
@@ -3343,12 +3362,18 @@ function ownerSyncCapital(){
 
 function ownerRunAllChecks(){
   if(!isOwner())return;
-  recordAdminAudit('OWNER_FULL_CHECK','Owner ran Plaid, AI, trading, Capital, and launch readiness checks.');
+  recordAdminAudit('OWNER_FULL_CHECK','Owner ran Plaid, AI, storage, transfer, Capital, and launch readiness checks.');
   ownerLog('Full owner system check started.');
-  checkPlaidReadiness(true);
-  checkAiHealth();
-  checkCapitalReadiness();
-  runLiveReadinessAudit();
+  Promise.all([
+    checkPlaidReadiness(true).catch(function(e){return {success:false};}),
+    checkPlaidApprovalStatus(true).catch(function(e){return {success:false};}),
+    checkAiHealth().catch(function(e){return {success:false};}),
+    checkStorageRail(true).catch(function(e){return {success:false};}),
+    checkTransferRailHealth(true).catch(function(e){return {success:false};}),
+    checkCapitalReadiness().catch(function(e){return {success:false};})
+  ]).then(function(){
+    runLiveReadinessAudit();
+  });
 }
 
 function ownerRunReadinessAudit(){
@@ -3412,6 +3437,30 @@ function ownerPlaidHealth(){
   recordAdminAudit('PLAID_HEALTH','Owner ran Plaid health check.');
   checkPlaidReadiness(true);
   ownerLog('Plaid health check requested from owner controls.');
+}
+
+function ownerPlaidApproval(){
+  if(!isOwner())return;
+  recordAdminAudit('PLAID_APPROVAL','Owner requested Plaid product approval status.');
+  checkPlaidApprovalStatus(true).then(function(d){
+    ownerLog((d&&d.success)?'Plaid approval probe completed.':'Plaid approval probe could not confirm approval.');
+  });
+}
+
+function ownerStorageHealth(){
+  if(!isOwner())return;
+  recordAdminAudit('STORAGE_HEALTH','Owner checked persistent storage rail.');
+  checkStorageRail(true).then(function(d){
+    ownerLog((d&&d.success)?'Storage rail is persistent: '+(d.storage_provider||'configured')+'.':'Storage rail is not persistent yet.');
+  });
+}
+
+function ownerTransferRailHealth(){
+  if(!isOwner())return;
+  recordAdminAudit('TRANSFER_HEALTH','Owner checked auto-transfer rail.');
+  checkTransferRailHealth(true).then(function(d){
+    ownerLog((d&&d.success)?'Transfer rail reports enabled.':'Transfer rail is guarded or offline.');
+  });
 }
 
 function ownerLockConsole(){
@@ -5711,8 +5760,8 @@ function syncPreviewStateToBackend(){
     return;
   }
   msg('settings-msg','Syncing preview state to backend...','#C9A84C');
-  postBackend('/app/state',{user_id:currentSession.user.id,state:currentPreviewState()}).then(function(d){
-    if(d&&d.success)msg('settings-msg','Backend state sync complete: '+(d.storage||'ready')+'.','#00ff88');
+  postBackend('/app/state',{user_id:currentSession.user.id,state:currentPreviewState()},{allowSandboxProbe:true}).then(function(d){
+    if(d&&d.success)msg('settings-msg','Backend state sync complete: '+(d.persistent?'persistent storage':'backend session storage')+'.','#00ff88');
     else msg('settings-msg',(d&&d.detail)||'Backend state route is not ready yet.','#C9A84C');
   }).catch(function(){
     msg('settings-msg','Backend state route unavailable. Browser preview state is still saved locally.','#C9A84C');
@@ -5727,6 +5776,7 @@ var plaidApprovalState = {bank:'unknown',income:'unknown',transfer:'unknown',det
 var paydayDetected = false;
 var lastPaycheckAmount = null;
 var transferRailState = {label:'Review only',kind:'warn',note:'Backend transfer rails disabled until approved'};
+var storageRailState = {label:'Browser sandbox storage',kind:'warn',note:'Persistent backend storage waits for Railway volume or database'};
 
 function setStatus(id,text,kind){
   var el=document.getElementById(id);
@@ -5741,6 +5791,48 @@ function setStatus(id,text,kind){
 
 function updatePlaidEvent(text,kind){
   setStatus('plaid-event-status',text||'None yet',kind||'warn');
+}
+
+function checkStorageRail(ownerRequested){
+  storageRailState={label:'Checking storage',kind:'warn',note:'Probing backend storage health.'};
+  refreshSystemStatus();
+  return postBackend('/storage/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'},{allowSandboxProbe:true}).then(function(d){
+    var ok=!!(d&&d.success);
+    storageRailState={
+      label:ok?'Persistent storage ready':'Storage setup needed',
+      kind:ok?'good':'warn',
+      note:(d&&d.detail)||'Storage health checked.'
+    };
+    if(ownerRequested)recordAdminAudit('STORAGE_HEALTH',storageRailState.note);
+    refreshSystemStatus();
+    return d||{success:false};
+  }).catch(function(){
+    storageRailState={label:'Railway offline',kind:'bad',note:'Storage cannot be confirmed while Railway is offline.'};
+    if(ownerRequested)recordAdminAudit('STORAGE_HEALTH','Railway offline; persistent storage could not be confirmed.');
+    refreshSystemStatus();
+    return {success:false,detail:'Railway offline; storage health route unavailable.'};
+  });
+}
+
+function checkTransferRailHealth(ownerRequested){
+  transferRailState={label:'Checking transfer rail',kind:'warn',note:'Probing guarded transfer health.'};
+  refreshSystemStatus();
+  return postBackend('/bank/transfer/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'},{allowSandboxProbe:true}).then(function(d){
+    var ok=!!(d&&d.success);
+    transferRailState={
+      label:ok?'Transfer rail enabled':'Guarded review',
+      kind:ok?'good':'warn',
+      note:(d&&d.detail)||'Transfer rail health checked.'
+    };
+    if(ownerRequested)recordAdminAudit('TRANSFER_HEALTH',transferRailState.note);
+    refreshSystemStatus();
+    return d||{success:false};
+  }).catch(function(){
+    transferRailState={label:'Railway offline',kind:'bad',note:'Transfer rail cannot be confirmed while Railway is offline.'};
+    if(ownerRequested)recordAdminAudit('TRANSFER_HEALTH','Railway offline; transfer rail could not be confirmed.');
+    refreshSystemStatus();
+    return {success:false,detail:'Railway offline; transfer health route unavailable.'};
+  });
 }
 
 function putText(id,text){
@@ -5835,7 +5927,7 @@ function refreshSystemStatus(){
   putText('system-transfer',hasTier('vault')?transferRailState.label:'Vault required');
   putText('system-payday',paydayDetected?'Detected'+(lastPaycheckAmount?' · '+fmt(lastPaycheckAmount):''):(bank.connected?'Ready to scan':'Waiting on bank'));
   putText('system-trading',tradingConnected?'Paper connected':'Paper mode ready');
-  putText('system-storage',isSandboxMode()?'Browser sandbox storage':'Backend state route ready');
+  putText('system-storage',storageRailState.label||'Browser sandbox storage');
   putText('system-ai',aiBackendState.label||'Checking AI backend');
   putText('trust-plaid',plaidBackendState&&plaidBackendState.label?plaidBackendState.label:'Link status checking');
   putText('trust-mode',isSandboxMode()?'Sandbox mode active':(usePlaidDemoFallback()?'Demo fallback mode':'Backend mode active'));
@@ -5896,14 +5988,14 @@ function normalizePlaidAuditResult(result){
   return result;
 }
 
-function auditPlaidBackend(){
-  if(usePlaidDemoFallback()){
+function auditPlaidBackend(forceBackend){
+  if(usePlaidDemoFallback()&&!forceBackend){
     return Promise.resolve({success:true,legacy:false,detail:'Local sandbox demo fallback is active.'});
   }
   var userId=currentSession&&currentSession.user?currentSession.user.id:'guest';
-  return postBackend(PLAID_ENDPOINTS.health,{user_id:userId}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.health,{user_id:userId},{allowSandboxProbe:!!forceBackend}).then(function(d){
     if(d&&d.success){
-      return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId,products:['auth','transactions']}).then(function(link){
+      return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId,products:['auth','transactions']},{allowSandboxProbe:!!forceBackend}).then(function(link){
         if(link&&link.link_token){
           return {success:true,detail:'Plaid backend created a real sandbox bank Link token.'};
         }
@@ -5915,7 +6007,7 @@ function auditPlaidBackend(){
       });
     }
     if(d&&String(d.detail||'').toLowerCase().indexOf('not found')>-1){
-      return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId}).then(function(link){
+      return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId},{allowSandboxProbe:!!forceBackend}).then(function(link){
         if(link&&link.link_token){
           return {
             success:true,
@@ -5930,7 +6022,7 @@ function auditPlaidBackend(){
     }
     return normalizePlaidAuditResult(d||{success:false,detail:'Plaid backend health check failed.'});
   }).catch(function(){
-    return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId}).then(function(link){
+    return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:userId},{allowSandboxProbe:!!forceBackend}).then(function(link){
       if(link&&link.link_token){
         return {
           success:true,
@@ -5945,12 +6037,12 @@ function auditPlaidBackend(){
   });
 }
 
-function auditPayrollBackend(){
-  if(usePlaidDemoFallback()){
+function auditPayrollBackend(forceBackend){
+  if(usePlaidDemoFallback()&&!forceBackend){
     return Promise.resolve({success:true,detail:'Local payroll demo fallback is active.'});
   }
   var userId=currentSession&&currentSession.user?currentSession.user.id:'guest';
-  return postBackend(PLAID_ENDPOINTS.incomeLinkToken,{user_id:userId,income_source_types:['payroll']}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.incomeLinkToken,{user_id:userId,income_source_types:['payroll']},{allowSandboxProbe:!!forceBackend}).then(function(d){
     if(d&&d.link_token){
       setStatus('payroll-backend-status','Payroll Link ready','good');
       return {success:true,detail:'ADP / payroll Plaid Income Link token route is ready.'};
@@ -5979,14 +6071,15 @@ function runLiveReadinessAudit(){
     sandboxRows.push(auditLine('Sandbox mode','pass','VaultFlow is intentionally off live mode. No production bank transfer, live trade, or paid checkout will run from this build.'));
     sandboxRows.push(auditLine('Private workspace access',isOwner()?'pass':'warn',isOwner()?'Private command workspace is open.':'Open the private workspace before running owner checks.'));
     sandboxRows.push(auditLine('Bank account link','pass',sandboxBank.connected?sandboxBank.copy:'Sandbox demo bank data is available from Profile without touching real accounts.'));
+    sandboxRows.push(auditLine('Plaid product approval',plaidApprovalState.bank==='good'||plaidApprovalState.transfer==='good'?'pass':'hold',plaidApprovalState.detail||'Run Plaid approval from owner controls when Railway is online.'));
     sandboxRows.push(auditLine('ADP / payroll income','pass','Sandbox payroll uses demo income events. Real ADP/Plaid Income waits until Railway is reactivated.'));
-    sandboxRows.push(auditLine('AI assistant','hold','Local assistant fallback is active in sandbox. Real OpenAI answers require backend hosting and OPENAI_API_KEY.'));
+    sandboxRows.push(auditLine('AI assistant',aiBackendState.mode==='openai'?'pass':'hold',(aiBackendState.label||'Local assistant fallback is active')+'. Real OpenAI answers require backend hosting and OPENAI_API_KEY.'));
     sandboxRows.push(auditLine('Payment checkout','pass','Stripe is in demo/test mode only. No live charge is submitted from sandbox.'));
     sandboxRows.push(auditLine('Trading integration','pass','Trading is guarded paper/demo mode. Live Alpaca orders are off while sandbox mode is active.'));
-    sandboxRows.push(auditLine('Auto bank transfer rail','hold','Real ACH/Plaid Transfer execution is off. Sandbox can only queue/review local transfer examples.'));
+    sandboxRows.push(auditLine('Auto bank transfer rail',transferRailState.kind==='good'?'pass':'hold',transferRailState.note||'Real ACH/Plaid Transfer execution is off. Sandbox can only queue/review local transfer examples.'));
     sandboxRows.push(auditLine('Secure document vault','pass','Uploads are client-encrypted/local in sandbox. Backend signed storage resumes when Railway storage is back online.'));
     sandboxRows.push(auditLine('Report exports','pass',(vaultDocs.length?vaultDocs.length+' secure file(s) can be included in local report manifests.':'Local report export works without attachments.')));
-    sandboxRows.push(auditLine('Scalable storage','hold','Persistent backend storage is offline until Railway is upgraded/reactivated. Sandbox saves in this browser.'));
+    sandboxRows.push(auditLine('Scalable storage',storageRailState.kind==='good'?'pass':'hold',storageRailState.note||'Persistent backend storage is offline until Railway is upgraded/reactivated. Sandbox saves in this browser.'));
     sandboxRows.push(auditLine('Live launch decision','hold','Live mode is disabled on purpose. Use sandbox for fixes; reactivate Railway only when you are ready for backend testing.'));
     el.innerHTML=sandboxRows.join('');
     el.style.display='block';
@@ -6008,7 +6101,7 @@ function runLiveReadinessAudit(){
   var transfer=postBackend('/bank/transfer/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Transfer health route unavailable.'};});
   var vault=postBackend('/vault/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Secure vault health route unavailable.'};});
   var reports=postBackend('/reports/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Report export health route unavailable.'};});
-  var scaling=postBackend('/scaling/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Scaling health route unavailable.'};});
+  var scaling=postBackend('/storage/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Storage health route unavailable.'};});
   var owner=postBackend('/owner/health',{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).catch(function(){return {success:false,detail:'Owner auth health route unavailable.'};});
   Promise.all([readiness,plaid,approval,payroll,trading,ai,capital,billing,transfer,vault,reports,scaling,owner]).then(function(results){
     var ready=results[0]||{},plaidHealth=results[1]||{},approvalHealth=results[2]||{},payrollHealth=results[3]||{},trade=results[4]||{},aiHealth=results[5]||{},capitalHealth=results[6]||{};
@@ -6135,14 +6228,14 @@ function checkPlaidReadiness(ownerRequested){
   var sdkLoaded=!!window.Plaid;
   setStatus('plaid-sdk-status',sdkLoaded?'Loaded from cdn.plaid.com':'Not loaded yet',sdkLoaded?'good':'warn');
   setStatus('plaid-mode-status',plaidModeLabel(),usePlaidDemoFallback()?'warn':'good');
-  if(usePlaidDemoFallback()){
+  if(usePlaidDemoFallback()&&!ownerRequested){
     setStatus('plaid-backend-status','Demo fallback active','warn');
     updatePlaidEvent('Ready for sandbox demo','good');
     if(ownerRequested)recordAdminAudit('PLAID_STATUS','Local preview is using sandbox demo data; production calls '+RAIL+'.');
     return Promise.resolve({mode:'local',sdk:sdkLoaded});
   }
   setStatus('plaid-backend-status','Checking backend...','warn');
-  return postBackend(PLAID_ENDPOINTS.health,{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.health,{user_id:currentSession&&currentSession.user?currentSession.user.id:'guest'},{allowSandboxProbe:!!ownerRequested}).then(function(d){
     var ok=!!(d&&d.success);
     setStatus('plaid-backend-status',ok?'Backend healthy':(d&&d.detail?d.detail:'Backend returned warning'),ok?'good':'warn');
     updatePlaidEvent(ok?'Plaid backend ready':'Plaid backend warning',ok?'good':'warn');
@@ -6157,7 +6250,7 @@ function checkPlaidReadiness(ownerRequested){
 }
 
 function checkPlaidApprovalStatus(ownerRequested){
-  if(usePlaidDemoFallback()){
+  if(usePlaidDemoFallback()&&!ownerRequested){
     setStatus('plaid-approval-status','Demo fallback','warn');
     setStatus('transfer-approval-status','Demo only','warn');
     setStatus('payroll-backend-status','Demo payroll','warn');
@@ -6168,7 +6261,7 @@ function checkPlaidApprovalStatus(ownerRequested){
   var uid=currentSession&&currentSession.user&&currentSession.user.id?currentSession.user.id:'approval-check';
   setStatus('plaid-approval-status','Checking...','warn');
   setStatus('transfer-approval-status','Checking...','warn');
-  return postBackend(PLAID_ENDPOINTS.approval,{user_id:uid}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.approval,{user_id:uid},{allowSandboxProbe:!!ownerRequested}).then(function(d){
     var bankOk=!!(d&&d.plaid_backend&&d.plaid_backend.success);
     var incomeOk=!!(d&&d.income&&d.income.approved);
     var transferOk=!!(d&&d.transfer&&d.transfer.approved);
@@ -6186,17 +6279,17 @@ function checkPlaidApprovalStatus(ownerRequested){
     if(ownerRequested)recordAdminAudit('PLAID_APPROVAL',bankDetail+' Payroll: '+incomeDetail+' Transfer: '+transferDetail);
     return d;
   }).catch(function(){
-    setStatus('plaid-approval-status','Approval route missing','bad');
-    setStatus('transfer-approval-status','Approval route missing','bad');
+    setStatus('plaid-approval-status',isSandboxMode()?'Railway offline':'Approval route missing','bad');
+    setStatus('transfer-approval-status',isSandboxMode()?'Railway offline':'Approval route missing','bad');
     updatePlaidEvent('Approval route failed','bad');
-    return {success:false,detail:'Plaid approval status route unavailable. Redeploy the latest backend package.'};
+    return {success:false,detail:isSandboxMode()?'Plaid approval cannot be confirmed while Railway is offline. The approval route is ready for the next backend deploy.':'Plaid approval status route unavailable. Redeploy the latest backend package.'};
   });
 }
 
 function verifyPlaidLinkRoute(ownerRequested){
   var uid=currentSession&&currentSession.user&&currentSession.user.id?currentSession.user.id:'health-check';
   setStatus('plaid-backend-status','Checking Link route...','warn');
-  return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:uid,products:['auth','transactions']}).then(function(d){
+  return postBackend(PLAID_ENDPOINTS.linkToken,{user_id:uid,products:['auth','transactions']},{allowSandboxProbe:!!ownerRequested}).then(function(d){
     var ok=!!(d&&d.link_token);
     var normalized=ok?{success:true,detail:'Link route ready'}:normalizePlaidAuditResult(d||{success:false,detail:'Link token missing'});
     setStatus('plaid-backend-status',ok?'Link route ready':(normalized.detail||'Backend route warning'),ok?'good':'warn');
@@ -6204,7 +6297,7 @@ function verifyPlaidLinkRoute(ownerRequested){
     if(ownerRequested)recordAdminAudit('PLAID_STATUS',ok?'Plaid Link token route is ready.':'Plaid Link token route returned a warning.');
     return {success:ok,link_ready:ok,detail:normalized.detail||'Link token missing'};
   }).catch(function(){
-    setStatus('plaid-backend-status','Backend unavailable','bad');
+    setStatus('plaid-backend-status',isSandboxMode()?'Railway offline':'Backend unavailable','bad');
     updatePlaidEvent('Link route failed','bad');
     if(ownerRequested)recordAdminAudit('PLAID_STATUS','Plaid backend Link route failed.');
     return {success:false};
@@ -6562,6 +6655,21 @@ function renderTransferHistory(){
   }).join('');
 }
 
+function saveBackendTransferRule(payload,destination,amount){
+  if(!payload||!payload.autopilot||usePlaidDemoFallback()||plaidAccessToken==='demo')return;
+  postBackend('/bank/transfer/rule',Object.assign({},payload,{
+    destination:destination,
+    amount:amount,
+    cadence:'payday',
+    enabled:true,
+    review_authorized:true
+  })).then(function(d){
+    if(d&&d.success){
+      addWebhookEvent({type:'AUTO_TRANSFER_RULE',msg:'Auto-transfer rule stored for '+destination,color:'#C9A84C'});
+    }
+  }).catch(function(){});
+}
+
 function executeBankTransfer(){
   if(!requireTier('vault','Auto bank transfer'))return;
   var dest=document.getElementById('transfer_dest').value;
@@ -6610,6 +6718,7 @@ function executeBankTransfer(){
       var plaidLine=d.plaid_transfer_id?'<br>Plaid transfer: <span class="rv">'+esc(d.plaid_transfer_id)+'</span>':'';
       setBox('transfer_result','Transfer submitted: <span class="rv">'+esc(d.transfer_id||'pending')+'</span>'+plaidLine,'#00ff88');
       recordTransferHistory({id:d.transfer_id||'submitted',destination:dest,amount:amt,status:d.status||'submitted',autopilot:payload.autopilot});
+      saveBackendTransferRule(payload,dest,amt);
       if(reviewed)reviewed.checked=false;
       if(liveRule)liveRule.checked=false;
       addWebhookEvent({type:'TRANSFER_SUBMITTED',msg:fmt(amt)+' submitted to '+dest,color:'#00ff88'});
@@ -6619,6 +6728,7 @@ function executeBankTransfer(){
       var authLine=d.authorization_id?'<br>Plaid authorization: <span class="rv">'+esc(d.authorization_id)+'</span>':'';
       setBox('transfer_result','Reviewed transfer saved safely: <span class="rv">'+esc(d.transfer_id)+'</span>'+authLine+'<br>'+esc(d.detail||'No money moved.'),'#C9A84C');
       recordTransferHistory({id:d.transfer_id,destination:dest,amount:amt,status:d.status||'review_only_guarded',autopilot:payload.autopilot});
+      saveBackendTransferRule(payload,dest,amt);
       if(reviewed)reviewed.checked=false;
       if(liveRule)liveRule.checked=false;
       addWebhookEvent({type:'TRANSFER_REVIEW_ONLY',msg:fmt(amt)+' reviewed for '+dest+'; no money moved',color:'#C9A84C'});
