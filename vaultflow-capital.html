@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaultFlow Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --black:#060707;
+      --panel:#0D1010;
+      --panel2:#11151A;
+      --line:rgba(214,183,101,0.12);
+      --gold:#D6B765;
+      --gold2:#8B6914;
+      --purple:#7C4DFF;
+      --purple2:#6E49B8;
+      --green:#1BA672;
+      --greenDark:#0E4A37;
+      --text:#F7F3EA;
+      --muted:#918777;
+      --danger:#FF6B6B;
+      --shadow:0 24px 80px rgba(0,0,0,0.44);
+      --radius:8px;
+      --soft:rgba(27,166,114,0.16);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family:'Inter','Montserrat',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%,rgba(27,166,114,0.20),transparent 32%),
+        radial-gradient(circle at 86% 8%,rgba(110,73,184,0.22),transparent 31%),
+        linear-gradient(145deg,#07111F,#05070C 58%,#020306);
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,select{font:inherit}
+    .shell{width:min(1180px,calc(100% - 36px));margin:0 auto}
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      background:rgba(6,7,7,0.94);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 34px rgba(0,0,0,0.26);
+    }
+    .nav-in{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;text-transform:uppercase}
+    .mark{
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg,var(--greenDark),var(--green));
+      display:grid;place-items:center;color:#F5F0E8;font:800 11px 'Montserrat',sans-serif;letter-spacing:1px;
+      box-shadow:0 0 24px rgba(27,166,114,0.24);
+      border:1px solid rgba(214,183,101,0.22);
+    }
+    .nav-links{display:flex;align-items:center;gap:18px;color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase}
+    .nav-links a:hover{color:var(--gold)}
+    .nav-cta{display:flex;align-items:center;gap:10px}
+    .btn{
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:4px;
+      padding:11px 16px;
+      background:rgba(14,74,55,0.08);
+      cursor:pointer;
+      font:700 9px 'Montserrat',sans-serif;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      transition:transform .18s ease,border-color .18s ease,background .18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(214,183,101,0.55);background:rgba(255,255,255,0.12)}
+    .btn.primary{border:0;color:#F5F0E8;background:linear-gradient(135deg,var(--greenDark),var(--green));box-shadow:0 10px 28px rgba(27,166,114,0.18)}
+    .btn.purple{border-color:rgba(110,73,184,0.45);background:linear-gradient(135deg,rgba(51,32,93,0.58),rgba(110,73,184,0.15))}
+    .btn.small{padding:9px 12px;font-size:12px}
+    .hero{position:relative;overflow:hidden;padding:90px 0 72px;background:#080808}
+    .hero:before{
+      content:"";
+      position:absolute;inset:0;
+      background:
+        linear-gradient(90deg,rgba(8,8,8,0.22),rgba(8,8,8,0.86)),
+        linear-gradient(rgba(214,183,101,0.045) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(214,183,101,0.045) 1px,transparent 1px);
+      background-size:auto,80px 80px,80px 80px;
+      opacity:.95;
+    }
+    .hero:after{content:"";position:absolute;right:-120px;top:-140px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(110,73,184,0.22),transparent 64%);filter:blur(6px);pointer-events:none}
+    .hero-in{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(214,183,101,0.24);padding:8px 12px;color:var(--gold);background:rgba(20,20,20,0.78);font:700 8px 'Montserrat',sans-serif;letter-spacing:4px;text-transform:uppercase}
+    h1{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,7vw,92px);font-weight:300;line-height:.96;letter-spacing:0;margin:18px 0 20px;max-width:760px}
+    h1 em{color:var(--gold);font-style:italic}
+    .lead{font-size:13px;line-height:1.9;color:#8A8070;max-width:620px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px;max-width:680px}
+    .trust{border:1px solid rgba(214,183,101,0.08);background:#101010;padding:12px}
+    .trust strong{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold)}
+    .trust span{display:block;color:var(--muted);font-size:9px;letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+    .glass{
+      border:1px solid var(--line);
+      background:linear-gradient(145deg,rgba(17,21,26,0.96),rgba(8,10,10,0.98));
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .command-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+    .command-tile{border:1px solid rgba(214,183,101,0.08);background:#101416;padding:12px;min-height:86px}
+    .command-tile span{display:block;font-size:7px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin-bottom:8px}
+    .command-tile strong{display:block;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#F5F0E8;line-height:1}
+    .command-tile small{display:block;font-size:9px;color:#8A8070;margin-top:6px;line-height:1.4}
+    .loan-card{padding:24px}
+    .loan-card h2{font-family:'Cormorant Garamond',serif;margin:0 0 6px;font-size:30px;font-weight:300}
+    .loan-card p{margin:0 0 18px;color:var(--muted);line-height:1.6}
+    .field{display:grid;gap:7px;margin-bottom:14px}
+    .field label{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+    .field input,.field select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:4px;
+      background:#121619;
+      color:var(--text);
+      padding:13px 14px;
+      outline:none;
+    }
+    .field input:focus,.field select:focus{border-color:rgba(214,183,101,0.62)}
+    .calc-result{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+    .result-box{border:1px solid rgba(214,183,101,0.09);border-radius:6px;background:#101416;padding:14px}
+    .result-box span{display:block;color:var(--muted);font-size:12px}
+    .result-box strong{display:block;font-size:24px;margin-top:4px}
+    .fine{font-size:12px;line-height:1.6;color:var(--muted)}
+    .bridge-card{padding:16px;margin-bottom:14px;border:1px solid rgba(214,183,101,0.16);background:radial-gradient(circle at 0% 0%,rgba(27,166,114,0.16),transparent 48%),#101416;border-radius:8px}
+    .bridge-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .bridge-title{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+    .status-pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;background:rgba(255,255,255,0.08);border:1px solid var(--line);color:var(--muted)}
+    .status-pill.good{color:#92F1C8;border-color:rgba(27,166,114,0.34);background:rgba(27,166,114,0.1)}
+    .status-pill.warn{color:#E8D59A;border-color:rgba(214,183,101,0.34);background:rgba(214,183,101,0.1)}
+    .bridge-copy{color:#D5DDEB;line-height:1.6;margin:0 0 12px;font-size:13px}
+    .metric-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .metric-card{border:1px solid rgba(214,183,101,0.10);background:#101416;border-radius:8px;padding:16px;position:relative;overflow:hidden}
+    .metric-card:after{content:"";position:absolute;right:-22px;top:-22px;width:64px;height:64px;border-radius:50%;background:rgba(214,183,101,0.06)}
+    .metric-card span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+    .metric-card strong{display:block;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-top:8px}
+    .capital-os{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+    .timeline{display:grid;gap:10px}
+    .timeline-row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,0.05);border-radius:14px;padding:12px}
+    .timeline-dot{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:rgba(27,166,114,0.15);color:#92F1C8;font-weight:900}
+    .timeline-row b{display:block;font-size:14px}
+    .timeline-row span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    .timeline-row em{font-style:normal;color:var(--gold);font-weight:900;font-size:12px}
+    .route-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .route-card{border:1px solid var(--line);background:rgba(255,255,255,0.05);border-radius:16px;padding:16px}
+    .route-card b{display:block;margin-bottom:8px}
+    .route-card p{margin:0;color:var(--muted);line-height:1.6;font-size:13px}
+    section{padding:72px 0;border-top:1px solid rgba(214,183,101,0.06)}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
+    .section-head h2{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;line-height:1;margin:0}
+    .section-head p{color:var(--muted);line-height:1.7;max-width:520px;margin:0}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .feature{padding:22px;border-radius:8px;border:1px solid rgba(214,183,101,0.10);background:linear-gradient(145deg,rgba(17,21,26,0.96),rgba(8,10,10,0.98))}
+    .feature b{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:10px}
+    .feature p{color:var(--muted);line-height:1.7;margin:0}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .step{padding:18px;border-radius:8px;background:#101416;border:1px solid rgba(214,183,101,0.10)}
+    .num{width:30px;height:30px;border-radius:50%;background:rgba(27,166,114,0.14);border:1px solid rgba(27,166,114,0.30);color:var(--green);display:grid;place-items:center;font-weight:900;margin-bottom:14px}
+    .step b{display:block;margin-bottom:8px}
+    .step p{color:var(--muted);line-height:1.6;margin:0;font-size:14px}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .panel{padding:24px}
+    .panel h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;margin:0 0 12px}
+    .panel ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+    .panel li{display:flex;gap:10px;align-items:flex-start;color:#D5DDEB;line-height:1.5}
+    .check{width:20px;height:20px;border-radius:8px;background:rgba(27,166,114,0.2);color:var(--green);display:grid;place-items:center;flex:0 0 auto;font-size:13px;font-weight:900}
+    .warning{border-color:rgba(255,107,107,0.32);background:rgba(255,107,107,0.08)}
+    .warning .check{background:rgba(255,107,107,0.14);color:var(--danger)}
+    .waitlist{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .waitlist .wide{grid-column:1/-1}
+    .consent{grid-column:1/-1;display:flex;gap:10px;align-items:flex-start;color:#D5DDEB;font-size:13px;line-height:1.55}
+    .consent input{margin-top:3px}
+    .notice{border:1px solid rgba(214,183,101,0.20);background:rgba(214,183,101,0.06);border-radius:8px;padding:16px;color:#E8D59A;line-height:1.6;margin-top:16px}
+    footer{padding:30px 0 52px;color:var(--muted);border-top:1px solid var(--line)}
+    .toast{display:none;margin-top:12px;border-radius:14px;padding:12px;border:1px solid rgba(27,166,114,0.28);background:rgba(27,166,114,0.1);color:#92F1C8}
+    .toast.error{border-color:rgba(255,107,107,0.32);background:rgba(255,107,107,0.09);color:#FFB8B8}
+    @media(max-width:900px){
+      .hero-in,.split,.waitlist,.capital-os{grid-template-columns:1fr}
+      .grid-3,.steps,.trust-row,.metric-strip,.route-grid{grid-template-columns:1fr}
+      .command-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .nav-cta .btn:not(.primary){display:none}
+      .hero{padding-top:54px}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="shell nav-in">
+      <a class="brand" href="#top"><span class="mark">VF</span><span>VaultFlow Capital</span></a>
+      <div class="nav-links">
+        <a href="#bridge">Bridge</a>
+        <a href="#products">Capital Lanes</a>
+        <a href="#process">Readiness</a>
+        <a href="#compliance">Guardrails</a>
+      </div>
+      <div class="nav-cta">
+        <button class="btn small" onclick="openVaultFlow()">Open VaultFlow</button>
+        <a class="btn primary small" href="#waitlist">Join Waitlist</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="shell hero-in">
+      <div>
+        <span class="eyebrow">VF Capital // Connected Capital Layer</span>
+        <h1>Capital <em>Command</em> Center</h1>
+        <p class="lead">VaultFlow Capital is the premium capital-readiness layer for members who want borrowing prep, debt strategy, cash-flow review, and partner handoff without turning the main app into a lender.</p>
+        <div class="hero-actions">
+          <button class="btn primary" onclick="connectVaultFlow()">Connect VF Profile</button>
+          <button class="btn purple" onclick="openVaultFlow()">Open VaultFlow</button>
+          <a class="btn" href="#calculator">Estimate Payment</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust"><strong>Partner</strong><span>Marketplace first</span></div>
+          <div class="trust"><strong>No pull</strong><span>No credit check here</span></div>
+          <div class="trust"><strong id="vf-connect-word">Ready</strong><span id="vf-connect-copy">Connects with VaultFlow preview</span></div>
+        </div>
+      </div>
+      <div class="glass loan-card" id="calculator">
+        <div class="command-grid">
+          <div class="command-tile"><span>Readiness Score</span><strong id="capital-score">742</strong><small>Estimate from amount, term, and bridge state</small></div>
+          <div class="command-tile"><span>Capital Lane</span><strong id="capital-lane">Prep</strong><small>Waitlist and partner matching mode</small></div>
+          <div class="command-tile"><span>Risk Guard</span><strong id="capital-guard">On</strong><small>No loan offer or credit decision</small></div>
+        </div>
+        <div class="bridge-card">
+          <div class="bridge-top">
+            <div class="bridge-title">VaultFlow Bridge</div>
+            <div class="status-pill warn" id="bridge-status">Not connected</div>
+          </div>
+          <p class="bridge-copy">Use a browser-safe handoff to move from the main VaultFlow app into Capital without sharing bank credentials, secrets, SSNs, or private keys.</p>
+          <button class="btn small primary" onclick="connectVaultFlow()">Connect Preview</button>
+          <button class="btn small" onclick="sendCapitalProfile()">Send Capital Snapshot</button>
+        </div>
+        <h2>Payment Snapshot</h2>
+        <p>Estimate a simple monthly payment. This is an educational calculator, not a credit offer.</p>
+        <div class="field"><label>Requested Amount</label><input id="amount" type="number" min="500" max="100000" step="500" value="10000"></div>
+        <div class="field"><label>Term</label><select id="term"><option value="12">12 months</option><option value="24" selected>24 months</option><option value="36">36 months</option><option value="60">60 months</option></select></div>
+        <div class="field"><label>Estimated APR</label><input id="apr" type="number" min="0" max="99" step="0.1" value="14.9"></div>
+        <button class="btn primary" onclick="calcPayment()">Calculate</button>
+        <div class="calc-result">
+          <div class="result-box"><span>Estimated Monthly</span><strong id="monthly">$0</strong></div>
+          <div class="result-box"><span>Total Paid</span><strong id="total">$0</strong></div>
+        </div>
+        <div class="fine">Actual terms depend on lender review, state rules, disclosures, underwriting, and borrower eligibility.</div>
+      </div>
+    </div>
+  </header>
+
+  <section id="bridge">
+    <div class="shell">
+      <div class="section-head">
+        <h2>Connected To The Wealth OS</h2>
+        <p>VF Capital works as a VaultFlow extension: it reads safe context, prepares a capital profile, and sends the user back to the main command center for tracking.</p>
+      </div>
+      <div class="metric-strip">
+        <div class="metric-card"><span>Bridge Status</span><strong id="bridge-metric">Ready</strong></div>
+        <div class="metric-card"><span>Backend</span><strong id="backend-metric">Checking</strong></div>
+        <div class="metric-card"><span>Data Policy</span><strong>No SSN</strong></div>
+        <div class="metric-card"><span>Launch Mode</span><strong>Waitlist</strong></div>
+      </div>
+      <div class="capital-os" style="margin-top:16px">
+        <div class="glass panel">
+          <h3>Capital Command Flow</h3>
+          <div class="timeline">
+            <div class="timeline-row"><div class="timeline-dot">1</div><div><b>Connect VaultFlow</b><span>Bring over safe profile context from this browser.</span></div><em>SAFE</em></div>
+            <div class="timeline-row"><div class="timeline-dot">2</div><div><b>Build Readiness</b><span>Review cash flow, debt, purpose, and document needs.</span></div><em>PREP</em></div>
+            <div class="timeline-row"><div class="timeline-dot">3</div><div><b>Route Capital Lane</b><span>Debt reset, emergency buffer, business build, auto, or property.</span></div><em>MATCH</em></div>
+            <div class="timeline-row"><div class="timeline-dot">4</div><div><b>Return To VaultFlow</b><span>Track next steps from the main dashboard.</span></div><em>SYNC</em></div>
+          </div>
+        </div>
+        <div class="glass panel">
+          <h3>Shared VaultFlow Routes</h3>
+          <p style="color:var(--muted);line-height:1.7;margin-top:0">This page connects to the same Railway backend and links back to the main VaultFlow app, while keeping the lending experience separate and compliance-friendly.</p>
+          <div class="route-grid">
+            <div class="route-card"><b>Main App</b><p>Open the full dashboard, Plaid, AI advisor, reports, and secure vault tools.</p></div>
+            <div class="route-card"><b>Capital Lead</b><p>Submit consent-based capital interest to the backend route when live.</p></div>
+            <div class="route-card"><b>Safe Handoff</b><p>Use local browser context only; never pass bank secrets or private API keys.</p></div>
+          </div>
+          <div class="hero-actions" style="margin-top:18px">
+            <button class="btn primary" onclick="openVaultFlow()">Open VaultFlow</button>
+            <button class="btn" onclick="checkCapitalBackend()">Check Backend</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="products">
+    <div class="shell">
+      <div class="section-head">
+        <h2>Capital Lanes</h2>
+        <p>Keep the product premium and useful before lending: route members into the right capital path, prepare documents, and hand off only through compliant partners.</p>
+      </div>
+      <div class="grid-3">
+        <div class="feature"><b>Debt Reset</b><p>Compare payoff paths, consolidation prep, refinance questions, and cash-flow impact before any application.</p></div>
+        <div class="feature"><b>Business Build</b><p>Prepare revenue, expense, runway, and funding-purpose snapshots for partner conversations.</p></div>
+        <div class="feature"><b>Property Capital</b><p>Organize real estate capital intent, rehab notes, rent math, and document readiness from the VaultFlow ecosystem.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="shell">
+      <div class="section-head">
+        <h2>Readiness OS</h2>
+        <p>This keeps the brand premium without accidentally acting like a licensed lender before the legal foundation exists.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="num">1</div><b>Intent</b><p>Collect basic capital need, timing, and preferred lane.</p></div>
+        <div class="step"><div class="num">2</div><b>Readiness</b><p>Show cash-flow and document preparation steps.</p></div>
+        <div class="step"><div class="num">3</div><b>Partner Match</b><p>Later connect compliant lending partners or brokers.</p></div>
+        <div class="step"><div class="num">4</div><b>Licensed Expansion</b><p>Only lend directly after legal, compliance, capital, and servicing are ready.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="compliance">
+    <div class="shell split">
+      <div class="glass panel">
+        <h3>Good First Features</h3>
+        <ul>
+          <li><span class="check">+</span><span>Loan readiness checklist</span></li>
+          <li><span class="check">+</span><span>Debt payoff and refinance comparison</span></li>
+          <li><span class="check">+</span><span>Partner waitlist and consent-based backend contact form</span></li>
+          <li><span class="check">+</span><span>Educational APR and payment calculators</span></li>
+          <li><span class="check">+</span><span>Document checklist without collecting SSN or bank credentials</span></li>
+        </ul>
+      </div>
+      <div class="glass panel warning">
+        <h3>Do Not Launch Yet</h3>
+        <ul>
+          <li><span class="check">!</span><span>No instant approval claims.</span></li>
+          <li><span class="check">!</span><span>No stated APR offers without required disclosures.</span></li>
+          <li><span class="check">!</span><span>No direct underwriting, adverse action, or credit decisions.</span></li>
+          <li><span class="check">!</span><span>No loan servicing or collections workflow until legal review.</span></li>
+          <li><span class="check">!</span><span>No credit pull until consent, compliance, and vendor setup are complete.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="waitlist">
+    <div class="shell">
+      <div class="glass panel">
+        <div class="section-head">
+          <h2>Join The Capital Room</h2>
+          <p>Submissions try the VaultFlow backend first, then keep a local backup if the backend is unavailable. This is capital-readiness interest, not a loan application.</p>
+        </div>
+        <form class="waitlist" onsubmit="saveLead(event)">
+          <div class="field"><label>Name</label><input id="lead_name" required placeholder="Full name"></div>
+          <div class="field"><label>Email</label><input id="lead_email" type="email" required placeholder="you@example.com"></div>
+          <div class="field"><label>Capital Type</label><select id="lead_type"><option>Debt consolidation</option><option>Emergency buffer</option><option>Business capital</option><option>Auto refinance</option><option>Real estate capital</option></select></div>
+          <div class="field"><label>Estimated Need</label><input id="lead_need" type="number" min="500" step="500" value="10000"></div>
+          <div class="field wide"><label>Goal</label><input id="lead_goal" placeholder="What do you want the capital to help you do?"></div>
+          <label class="consent"><input id="lead_consent" type="checkbox" required><span>I consent to VaultFlow Capital storing my basic waitlist information and contacting me about capital-readiness updates. I understand this is not a loan application, credit decision, approval, or offer.</span></label>
+          <button class="btn primary" type="submit">Save Waitlist Entry</button>
+          <button class="btn" type="button" onclick="openVaultFlow()">Back To VaultFlow</button>
+        </form>
+        <div class="notice">VaultFlow Capital is a concept site. It is not a lender, broker, bank, credit repair company, or loan offer. Any production launch needs legal review, lender partner agreements, state-by-state compliance, required disclosures, privacy controls, and consent tracking.</div>
+        <div class="toast" id="toast">Saved.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="shell">VaultFlow Capital connected concept. Educational prototype only. No credit decision, no loan offer, no application submitted.</div>
+  </footer>
+
+  <script>
+    var RAIL='https://vaultflow-production.up.railway.app';
+    var VAULTFLOW_LOCAL='../work/vaultflow-v88-test.html?from=capital';
+    var VAULTFLOW_PUBLIC='https://vaultflow-rust.vercel.app/?from=capital';
+
+    function money(n){
+      return '$'+Math.round(Number(n)||0).toLocaleString();
+    }
+    function updateCapitalCommand(amount,months,apr,payment){
+      var connected=localStorage.getItem('vaultflow_capital_connected')==='true';
+      var score=Math.max(520,Math.min(910,Math.round(790-(amount/1800)-(apr*3)+(months/3)+(connected?36:0))));
+      var lane='Prep';
+      if(amount>=50000)lane='Property';
+      else if(amount>=25000)lane='Business';
+      else if(apr>=18)lane='Debt';
+      else if(amount<=5000)lane='Buffer';
+      var scoreEl=document.getElementById('capital-score');
+      var laneEl=document.getElementById('capital-lane');
+      var guardEl=document.getElementById('capital-guard');
+      if(scoreEl)scoreEl.textContent=String(score);
+      if(laneEl)laneEl.textContent=lane;
+      if(guardEl)guardEl.textContent=payment>0?'On':'Ready';
+    }
+    function calcPayment(){
+      var amount=Number(document.getElementById('amount').value||0);
+      var months=Number(document.getElementById('term').value||24);
+      var apr=Number(document.getElementById('apr').value||0)/100/12;
+      var payment=apr ? amount*(apr*Math.pow(1+apr,months))/(Math.pow(1+apr,months)-1) : amount/months;
+      document.getElementById('monthly').textContent=money(payment);
+      document.getElementById('total').textContent=money(payment*months);
+      updateCapitalCommand(amount,months,Number(document.getElementById('apr').value||0),payment);
+    }
+
+    function safeStorageGet(key,fallback){
+      try{return JSON.parse(localStorage.getItem(key)||fallback);}catch(e){return JSON.parse(fallback);}
+    }
+
+    function showToast(text,isError){
+      var toast=document.getElementById('toast');
+      if(!toast)return;
+      toast.textContent=text;
+      toast.className='toast'+(isError?' error':'');
+      toast.style.display='block';
+    }
+
+    function setBridgeStatus(text,kind){
+      var pill=document.getElementById('bridge-status');
+      var metric=document.getElementById('bridge-metric');
+      var word=document.getElementById('vf-connect-word');
+      var copy=document.getElementById('vf-connect-copy');
+      if(pill){
+        pill.textContent=text;
+        pill.className='status-pill '+(kind||'warn');
+      }
+      if(metric)metric.textContent=kind==='good'?'Connected':'Ready';
+      if(word)word.textContent=kind==='good'?'Connected':'Ready';
+      if(copy)copy.textContent=kind==='good'?'Capital bridge active':'Connects with VaultFlow preview';
+    }
+
+    function getParam(name){
+      try{return new URLSearchParams(location.search).get(name)||'';}catch(e){return '';}
+    }
+
+    function openVaultFlow(){
+      var target=location.protocol==='file:'?VAULTFLOW_LOCAL:VAULTFLOW_PUBLIC;
+      try{
+        window.open(target,'_blank');
+      }catch(e){
+        location.href=target;
+      }
+    }
+
+    function connectVaultFlow(){
+      var profile={
+        connected:true,
+        source:'vaultflow-capital',
+        connectedAt:new Date().toISOString(),
+        launchMode:'waitlist',
+        note:'Browser-safe preview bridge. No bank credentials, SSN, API secrets, or loan application data included.'
+      };
+      localStorage.setItem('vaultflow_capital_connected','true');
+      localStorage.setItem('vaultflow_capital_bridge',JSON.stringify(profile));
+      setBridgeStatus('Connected','good');
+      showToast('VaultFlow Capital bridge connected in this browser. Open VaultFlow to continue.');
+    }
+
+    function sendCapitalProfile(){
+      var profile={
+        amount:Number(document.getElementById('amount').value||0),
+        term:Number(document.getElementById('term').value||24),
+        estimatedApr:Number(document.getElementById('apr').value||0),
+        monthly:document.getElementById('monthly').textContent,
+        total:document.getElementById('total').textContent,
+        sentAt:new Date().toISOString(),
+        source:'vaultflow-capital'
+      };
+      localStorage.setItem('vaultflow_capital_profile',JSON.stringify(profile));
+      setBridgeStatus('Snapshot saved','good');
+      showToast('Capital snapshot saved for VaultFlow. Use Open VaultFlow to return to the command center.');
+    }
+
+    async function checkCapitalBackend(){
+      var metric=document.getElementById('backend-metric');
+      if(metric)metric.textContent='Checking';
+      try{
+        var res=await fetch(RAIL+'/capital/health',{method:'GET'});
+        var data=await res.json();
+        if(data&&data.success){
+          if(metric)metric.textContent='Live';
+          showToast(data.detail||'Capital backend route is live.');
+          return data;
+        }
+        if(metric)metric.textContent='Review';
+        showToast((data&&data.detail)||'Capital backend returned a warning.',true);
+        return data;
+      }catch(e){
+        if(metric)metric.textContent='Local';
+        showToast('Capital backend is not reachable yet. Local fallback remains available.',true);
+        return {success:false,detail:String(e&&e.message||e)};
+      }
+    }
+
+    async function saveLead(event){
+      event.preventDefault();
+      var lead={
+        name:document.getElementById('lead_name').value.trim(),
+        email:document.getElementById('lead_email').value.trim(),
+        type:document.getElementById('lead_type').value,
+        need:document.getElementById('lead_need').value,
+        goal:document.getElementById('lead_goal').value.trim(),
+        consent:document.getElementById('lead_consent').checked,
+        bridgeConnected:localStorage.getItem('vaultflow_capital_connected')==='true',
+        source:'vaultflow-capital-page',
+        savedAt:new Date().toISOString()
+      };
+      var list=safeStorageGet('vaultflow_capital_waitlist','[]');
+      list.unshift(lead);
+      localStorage.setItem('vaultflow_capital_waitlist',JSON.stringify(list.slice(0,50)));
+      try{
+        var res=await fetch(RAIL+'/capital/waitlist',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(lead)
+        });
+        var data=await res.json();
+        if(!res.ok||!data.success)throw new Error((data&&data.detail)||'Backend waitlist save failed.');
+        showToast('Saved to the VaultFlow backend and backed up locally.');
+      }catch(e){
+        showToast('Saved locally. Backend waitlist route is not live yet or returned a warning.',true);
+      }
+      event.target.reset();
+      calcPayment();
+    }
+    ['amount','term','apr'].forEach(function(id){
+      document.addEventListener('input',function(event){
+        if(event.target&&event.target.id===id)calcPayment();
+      });
+    });
+    (function init(){
+      if(getParam('from')==='vaultflow'||localStorage.getItem('vaultflow_capital_connected')==='true'){
+        setBridgeStatus('Connected','good');
+      }else{
+        setBridgeStatus('Not connected','warn');
+      }
+      checkCapitalBackend();
+    })();
+    calcPayment();
+  </script>
+</body>
+</html>
