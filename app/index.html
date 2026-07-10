@@ -5977,7 +5977,7 @@ function runLiveReadinessAudit(){
     var sandboxBank=bankConnectionState();
     var sandboxSnapshot=financeSnapshot();
     sandboxRows.push(auditLine('Sandbox mode','pass','VaultFlow is intentionally off live mode. No production bank transfer, live trade, or paid checkout will run from this build.'));
-    sandboxRows.push(auditLine('Owner username login',isOwner()?'pass':'warn',isOwner()?'Owner console is open from username-only sandbox login.':'Type deion in the username field and leave password blank to open owner sandbox access.'));
+    sandboxRows.push(auditLine('Private workspace access',isOwner()?'pass':'warn',isOwner()?'Private command workspace is open.':'Open the private workspace before running owner checks.'));
     sandboxRows.push(auditLine('Bank account link','pass',sandboxBank.connected?sandboxBank.copy:'Sandbox demo bank data is available from Profile without touching real accounts.'));
     sandboxRows.push(auditLine('ADP / payroll income','pass','Sandbox payroll uses demo income events. Real ADP/Plaid Income waits until Railway is reactivated.'));
     sandboxRows.push(auditLine('AI assistant','hold','Local assistant fallback is active in sandbox. Real OpenAI answers require backend hosting and OPENAI_API_KEY.'));
