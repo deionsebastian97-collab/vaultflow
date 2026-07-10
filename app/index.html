@@ -218,6 +218,9 @@ footer{padding:32px 24px;border-top:1px solid rgba(201,168,76,0.07);display:flex
 .owner-pill{display:inline-block;padding:3px 7px;border-radius:999px;background:rgba(14,74,55,0.28);border:1px solid rgba(214,183,101,0.2);font-size:7px;letter-spacing:1px;color:var(--gold)}
 .owner-action{background:transparent;border:1px solid rgba(214,183,101,0.24);color:var(--gold);padding:6px 8px;font-size:7px;letter-spacing:1px;cursor:pointer;border-radius:4px;margin-right:4px}
 .owner-action:hover{border-color:var(--gold);background:rgba(214,183,101,0.08)}
+.owner-backend-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-top:10px}
+.owner-backend-row input{min-width:0;background:#101416;border:1px solid rgba(214,183,101,0.18);border-radius:7px;color:#F5F0E8;padding:11px 12px;font-size:10px;letter-spacing:.4px}
+.owner-backend-status{margin-top:8px;font-size:9px;color:#8A8070;line-height:1.6}
 .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .status-cell{background:#101416;border:1px solid rgba(214,183,101,0.1);border-radius:6px;padding:10px}
 .status-label{font-size:7px;letter-spacing:2px;color:var(--gold2);margin-bottom:5px}
@@ -1911,6 +1914,15 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
       <div class="card">
         <div class="tag" style="margin-bottom:8px">LAUNCH READINESS</div>
         <div class="profile-muted-box"><strong>Owner-only audit:</strong> Check backend build, Plaid approval, payment checkout, AI, Alpaca, transfers, secure vault, reports, and storage before sending public traffic.</div>
+        <div class="profile-muted-box">
+          <strong>Backend route:</strong> set this to the active Railway backend domain if Railway gives you a new URL.
+          <div class="owner-backend-row">
+            <input id="owner_backend_url" value="" placeholder="https://your-backend.up.railway.app">
+            <button class="btnout" onclick="ownerSetBackendBase()">SET</button>
+            <button class="btnout" onclick="ownerResetBackendBase()">RESET</button>
+          </div>
+          <div class="owner-backend-status" id="owner_backend_status"></div>
+        </div>
         <div class="profile-action-row">
           <button class="btngold" onclick="ownerRunAllChecks()">RUN OWNER SYSTEM CHECK</button>
           <button class="btnout" onclick="ownerRunReadinessAudit()">RUN READINESS AUDIT ONLY</button>
@@ -2096,7 +2108,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
 var SB_URL='https://sefxpcatuctgqwflmrdj.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhwY2F0dWN0Z3F3ZmxtcmRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjU5NjEsImV4cCI6MjA5NDI0MTk2MX0.64rTufpnz7YFn_WRP5es2zwpd5sQxP1I24U8Dj_QtgQ';
 var PK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
-var RAIL='https://vaultflow-production.up.railway.app';
+var DEFAULT_RAIL='https://vaultflow-production.up.railway.app';
+var RAIL=loadBackendBase();
 var APP_MODE='sandbox';
 var SANDBOX_BUILD=true;
 var OWNER_SANDBOX_USERNAME='deion';
@@ -2115,6 +2128,38 @@ var PLAID_ENDPOINTS={
   approval:'/plaid/approval-status',
   investmentHoldings:'/plaid/investments/holdings'
 };
+
+function normalizeBackendUrl(value){
+  var raw=String(value||'').trim().replace(/\/+$/,'');
+  if(!raw)return '';
+  if(!/^https?:\/\//i.test(raw))raw='https://'+raw;
+  try{
+    var url=new URL(raw);
+    return (url.origin+url.pathname).replace(/\/+$/,'');
+  }catch(e){
+    return '';
+  }
+}
+
+function loadBackendBase(){
+  var fromUrl='';
+  try{fromUrl=new URLSearchParams(location.search).get('backend')||'';}catch(e){}
+  var picked=normalizeBackendUrl(fromUrl);
+  if(picked){
+    try{localStorage.setItem('vaultflow_backend_url',picked);}catch(e){}
+    return picked;
+  }
+  try{
+    picked=normalizeBackendUrl(localStorage.getItem('vaultflow_backend_url')||'');
+    if(picked)return picked;
+  }catch(e){}
+  return DEFAULT_RAIL;
+}
+
+function backendUrl(path){
+  path=String(path||'');
+  return RAIL+(path.charAt(0)==='/'?path:'/'+path);
+}
 
 // ===== STATE =====
 var props=[];
@@ -2521,7 +2566,7 @@ function postBackend(path,payload){
   if(isSandboxMode()&&!options.allowSandboxProbe){
     return Promise.reject(new Error('sandbox backend disabled'));
   }
-  return withTimeout(fetch(RAIL+path,{
+  return withTimeout(fetch(backendUrl(path),{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload||{})
@@ -3463,6 +3508,55 @@ function ownerTransferRailHealth(){
   });
 }
 
+function syncOwnerBackendControls(){
+  var input=document.getElementById('owner_backend_url');
+  var status=document.getElementById('owner_backend_status');
+  if(input)input.value=RAIL;
+  if(status)status.innerHTML='Current backend: <strong>'+esc(RAIL)+'</strong>'+(RAIL===DEFAULT_RAIL?'':' · custom route saved');
+}
+
+function ownerSetBackendBase(){
+  if(!isOwner())return;
+  var input=document.getElementById('owner_backend_url');
+  var next=normalizeBackendUrl(input?input.value:'');
+  if(!next){
+    ownerLog('Backend route was not changed because the URL is invalid.');
+    return;
+  }
+  RAIL=next;
+  try{localStorage.setItem('vaultflow_backend_url',RAIL);}catch(e){}
+  syncOwnerBackendControls();
+  recordAdminAudit('BACKEND_ROUTE','Owner set backend route to '+RAIL+'.');
+  ownerLog('Backend route set. Testing /health now.');
+  ownerTestBackendBase();
+}
+
+function ownerResetBackendBase(){
+  if(!isOwner())return;
+  RAIL=DEFAULT_RAIL;
+  try{localStorage.removeItem('vaultflow_backend_url');}catch(e){}
+  syncOwnerBackendControls();
+  recordAdminAudit('BACKEND_ROUTE_RESET','Owner reset backend route to the default Railway URL.');
+  ownerLog('Backend route reset. Testing /health now.');
+  ownerTestBackendBase();
+}
+
+function ownerTestBackendBase(){
+  if(!isOwner())return Promise.resolve({success:false});
+  var status=document.getElementById('owner_backend_status');
+  if(status)status.innerHTML='Current backend: <strong>'+esc(RAIL)+'</strong> · testing /health...';
+  return withTimeout(fetch(backendUrl('/health'),{method:'GET'}),9000).then(function(r){return r.json();}).then(function(d){
+    var ok=!!(d&&d.success&&d.build===EXPECTED_BACKEND_BUILD);
+    if(status)status.innerHTML='Current backend: <strong>'+esc(RAIL)+'</strong> · '+(ok?'latest backend online':'backend responded, but build/env needs review');
+    ownerLog(ok?'Backend health confirmed latest build.':'Backend responded but did not confirm the latest build.');
+    return d;
+  }).catch(function(){
+    if(status)status.innerHTML='Current backend: <strong>'+esc(RAIL)+'</strong> · not reachable yet';
+    ownerLog('Backend /health is not reachable at '+RAIL+'.');
+    return {success:false};
+  });
+}
+
 function ownerLockConsole(){
   if(!isOwner())return;
   recordAdminAudit('LOCK_OWNER','Owner console locked and session signed out.');
@@ -3512,6 +3606,7 @@ function renderOwnerDashboard(){
   document.getElementById('own_audit').textContent=ownerAudit.length;
   renderOwnerAudit();
   renderOwnerAlerts();
+  syncOwnerBackendControls();
   if(!isOwner()){
     table.innerHTML='<tr><td colspan="5">Owner login required.</td></tr>';
     return;
@@ -3848,7 +3943,7 @@ function openVaultFlowCapital(){
 
 function checkCapitalReadiness(){
   setCapitalStatus('Checking...','Ready','#C9A84C');
-  return withTimeout(fetch(RAIL+'/capital/health',{method:'GET'}),9000).then(function(r){return r.json();}).then(function(d){
+  return withTimeout(fetch(backendUrl('/capital/health'),{method:'GET'}),9000).then(function(r){return r.json();}).then(function(d){
     var ok=d&&d.success;
     setCapitalStatus(ok?'Live':(d&&d.detail?d.detail:'Review'),'Connected',ok?'#00ff88':'#C9A84C');
     return d||{success:false};
@@ -6380,7 +6475,7 @@ function connectBank(){
     return;
   }
   
-  fetch(RAIL+PLAID_ENDPOINTS.linkToken,{
+  fetch(backendUrl(PLAID_ENDPOINTS.linkToken),{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({user_id: uid})
@@ -6394,7 +6489,7 @@ function connectBank(){
         msg('bank-msg','Bank connected! Loading data...','#C9A84C');
         plaidMeta=metadata||null;
         updatePlaidEvent('Link success: exchanging token','good');
-        fetch(RAIL+PLAID_ENDPOINTS.exchange,{
+        fetch(backendUrl(PLAID_ENDPOINTS.exchange),{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({public_token: public_token,user_id:uid})
@@ -6515,7 +6610,7 @@ function loadBankData(){
     refreshSystemStatus();
     return;
   }
-  fetch(RAIL+'/plaid/transactions',{
+  fetch(backendUrl('/plaid/transactions'),{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({access_token: plaidAccessToken})
@@ -6582,7 +6677,7 @@ function detectPaycheck(){
     refreshSystemStatus();
     return;
   }
-  fetch(RAIL+'/plaid/transactions',{
+  fetch(backendUrl('/plaid/transactions'),{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({access_token: plaidAccessToken})
@@ -7023,7 +7118,7 @@ function pay(){
   }
   stripe.createPaymentMethod({type:'card',card:cardEl,billing_details:{name:n,email:e}}).then(function(res){
     if(res.error){document.getElementById('cardErr').textContent=res.error.message;document.getElementById('paybtn').disabled=false;document.getElementById('paybtn').textContent='COMPLETE PURCHASE';return;}
-    fetch(RAIL+'/create-subscription',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,payment_method_id:res.paymentMethod.id,plan:selPlanVal})})
+    fetch(backendUrl('/create-subscription'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,payment_method_id:res.paymentMethod.id,plan:selPlanVal})})
     .then(function(r){return r.json();}).then(function(d){
       if(d.success){
         finishCheckout(e,false);
