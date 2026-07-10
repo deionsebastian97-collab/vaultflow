@@ -894,8 +894,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
   <section class="stats">
     <div class="si"><div class="sl">CORE MARKET</div><div class="sv">10<span>x</span></div></div>
     <div class="si"><div class="sl">MVP MODULES</div><div class="sv">8</div></div>
-    <div class="si"><div class="sl">FINTECH RAILS</div><div class="sv">Partner</div></div>
-    <div class="si"><div class="sl">LIVE GUARDRAILS</div><div class="sv">On</div></div>
+    <div class="si"><div class="sl">FINTECH RAILS</div><div class="sv">Sandbox</div></div>
+    <div class="si"><div class="sl">LIVE STATUS</div><div class="sv">Off</div></div>
   </section>
 
   <section class="integration-strip">
@@ -905,7 +905,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="integration-chip">PLAID LINK</div>
         <div class="integration-chip">ADP PAYROLL</div>
         <div class="integration-chip">STRIPE BILLING</div>
-        <div class="integration-chip">RAILWAY BACKEND</div>
+        <div class="integration-chip">SANDBOX BACKEND OPTIONAL</div>
         <div class="integration-chip">ALPACA PAPER TRADING</div>
         <div class="integration-chip">SECURE WEBHOOKS</div>
         <div class="integration-chip">VAULTFLOW CAPITAL</div>
@@ -1076,8 +1076,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <button class="ltab" id="lt2" onclick="ltab('up')">CREATE ACCOUNT</button>
       </div>
       <div id="lf1">
-        <label class="lbl">EMAIL</label><input class="inp" type="text" id="sie" placeholder="your@email.com" autocomplete="username">
-        <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sip" placeholder="Password" autocomplete="current-password">
+        <label class="lbl">USERNAME OR EMAIL</label><input class="inp" type="text" id="sie" placeholder="Type deion for owner sandbox access" autocomplete="username">
+        <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sip" placeholder="Leave blank for owner sandbox" autocomplete="current-password">
         <button class="btngold" onclick="signin()">SIGN IN</button>
         <button class="btnout demo-btn" onclick="demoLogin()">USE DEMO ACCOUNT</button>
       </div>
@@ -1088,7 +1088,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <button class="btngold" onclick="signup()">CREATE ACCOUNT</button>
       </div>
       <div id="lmsg" class="msgbox"></div>
-      <div class="login-helper">Local preview mode keeps demo progress in this browser.</div>
+      <div class="login-helper">Sandbox mode is on. Owner access: type <strong>deion</strong> in username and leave password blank.</div>
       <span class="backlink" onclick="go('home')">BACK TO VAULTFLOW</span>
     </div>
   </div>
@@ -1225,7 +1225,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <div class="trust-chip"><span>MODE</span><strong id="trust-mode">Preview guardrails on</strong></div>
       </div>
       <div class="chart-card" style="margin-bottom:14px">
-        <div class="chart-head"><div><div class="chart-title">VaultFlow Company Strategy</div><div class="chart-sub">Start as financial planning SaaS, become fintech through approved partners.</div></div><button class="mini-action" onclick="dtab('pf')">CHECK LIVE RAILS</button></div>
+        <div class="chart-head"><div><div class="chart-title">VaultFlow Company Strategy</div><div class="chart-sub">Sandbox build: plan as SaaS first, keep fintech rails guarded until the backend is reactivated.</div></div><button class="mini-action" onclick="dtab('pf')">CHECK SANDBOX RAILS</button></div>
         <div class="fos-grid">
           <div class="fos-item"><strong>Core niche</strong><span>Veterans, merchant mariners, contractors, overtime workers, travel nurses, and real estate investors.</span></div>
           <div class="fos-item"><strong>MVP promise</strong><span>Organize, plan, simulate, export, and coach. Do not claim to manage money or guarantee outcomes.</span></div>
@@ -2094,10 +2094,14 @@ var SB_URL='https://sefxpcatuctgqwflmrdj.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhwY2F0dWN0Z3F3ZmxtcmRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjU5NjEsImV4cCI6MjA5NDI0MTk2MX0.64rTufpnz7YFn_WRP5es2zwpd5sQxP1I24U8Dj_QtgQ';
 var PK='pk_test_51TWgZq6mG5RUDmz2rNGQMTqlY3gr6N3apiXp3qtc1eFmPezHLEEAZnoz8jcg9xArFxdIihjobs2gCgtRGyhihcXP00TDUkOO9P';
 var RAIL='https://vaultflow-production.up.railway.app';
+var APP_MODE='sandbox';
+var SANDBOX_BUILD=true;
+var OWNER_SANDBOX_USERNAME='deion';
+var SANDBOX_OWNER_USERNAME_LOGIN=true;
 var CAPITAL_LOCAL='../outputs/vaultflow-capital.html?from=vaultflow';
 var CAPITAL_PUBLIC='https://vaultflow-rust.vercel.app/vaultflow-capital.html?from=vaultflow';
-var FORCE_REAL_PLAID=true;
-var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-10-ai-storage-health';
+var FORCE_REAL_PLAID=false;
+var EXPECTED_BACKEND_BUILD='vaultflow-fastapi-2026-07-10-sandbox-owner-login';
 var PLAID_ENDPOINTS={
   linkToken:'/plaid/create-link-token',
   incomeLinkToken:'/plaid/create-income-link-token',
@@ -2141,7 +2145,7 @@ var STORE_KEY='vaultflow_preview_state_v2';
 var PLAN_LEVELS={essential:0,prime:1,vault:2};
 var PLAN_NAMES={essential:'Essential',prime:'Prime',vault:'Vault',owner:'Owner'};
 var TAB_REQUIREMENTS={tl:'prime',pr:'vault',own:'owner'};
-var uiSettings={animations:true,soundFx:true,dense:false,realPlaid:true,demoHelp:true,lightMode:false,haptics:true,theme:'royal'};
+var uiSettings={animations:true,soundFx:true,dense:false,realPlaid:false,demoHelp:true,lightMode:false,haptics:true,theme:'royal'};
 var ownerAudit=[];
 var tradingLiveMode=false;
 var tradingMode='preview';
@@ -2163,12 +2167,16 @@ function isLocalPreview(){
   return location.protocol==='file:'||location.hostname==='127.0.0.1'||location.hostname==='localhost';
 }
 
+function isSandboxMode(){
+  return !!SANDBOX_BUILD||APP_MODE==='sandbox'||isLocalPreview();
+}
+
 function usePlaidDemoFallback(){
-  return isLocalPreview()&&!FORCE_REAL_PLAID;
+  return isSandboxMode()||(!FORCE_REAL_PLAID&&isLocalPreview());
 }
 
 function plaidModeLabel(){
-  if(usePlaidDemoFallback())return 'Local sandbox demo';
+  if(usePlaidDemoFallback())return 'Sandbox demo';
   if(isLocalPreview())return 'Real backend from local preview';
   return 'Production Link';
 }
@@ -2182,7 +2190,8 @@ function tierLockedTheme(){
 }
 
 function applyUiSettings(){
-  FORCE_REAL_PLAID=!!uiSettings.realPlaid;
+  if(isSandboxMode())uiSettings.realPlaid=false;
+  FORCE_REAL_PLAID=!isSandboxMode()&&!!uiSettings.realPlaid;
   if(uiSettings.theme==='purple')uiSettings.theme='ruby';
   var lockedTheme=tierLockedTheme();
   document.body.classList.toggle('no-motion',!uiSettings.animations);
@@ -2203,6 +2212,7 @@ function applyUiSettings(){
   if(sound)sound.checked=!!uiSettings.soundFx;
   if(dense)dense.checked=!!uiSettings.dense;
   if(real)real.checked=!!uiSettings.realPlaid;
+  if(real)real.disabled=isSandboxMode();
   if(help)help.checked=!!uiSettings.demoHelp;
   if(light)light.checked=!!uiSettings.lightMode;
   if(haptics)haptics.checked=!!uiSettings.haptics;
@@ -2504,6 +2514,9 @@ function withTimeout(promise,ms){
 }
 
 function postBackend(path,payload){
+  if(isSandboxMode()){
+    return Promise.reject(new Error('sandbox backend disabled'));
+  }
   return withTimeout(fetch(RAIL+path,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -2533,7 +2546,7 @@ function sbHeaders(){
 }
 
 function sbSignIn(email,password){
-  if(isLocalPreview())return Promise.resolve(finishAuth(makeSession(email)));
+  if(isSandboxMode())return Promise.resolve(finishAuth(makeSession(email)));
   return withTimeout(fetch(SB_URL+'/auth/v1/token?grant_type=password',{
     method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},
     body:JSON.stringify({email:email,password:password})
@@ -2550,7 +2563,7 @@ function sbSignIn(email,password){
 }
 
 function sbSignUp(email,password){
-  if(isLocalPreview())return Promise.resolve(finishAuth(makeSession(email)));
+  if(isSandboxMode())return Promise.resolve(finishAuth(makeSession(email)));
   return withTimeout(fetch(SB_URL+'/auth/v1/signup',{
     method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},
     body:JSON.stringify({email:email,password:password})
@@ -2864,7 +2877,7 @@ function initStripe(){
   if(stripeOk)return;
   try{
     var cardMount=document.getElementById('cardEl');
-    if(isLocalPreview()){
+    if(isSandboxMode()){
       if(cardMount)cardMount.innerHTML='<div style="font-size:10px;color:#8A8070;line-height:1.6">Demo checkout is ready for this local preview.</div>';
       stripeOk='demo';
       return;
@@ -3132,11 +3145,11 @@ function demoLogin(){
 }
 
 function allowPreviewOwnerLogin(){
-  return location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  return SANDBOX_OWNER_USERNAME_LOGIN&&isSandboxMode();
 }
 
 function isOwnerUsername(value){
-  return String(value||'').trim().toLowerCase()==='deion';
+  return String(value||'').trim().toLowerCase()===OWNER_SANDBOX_USERNAME;
 }
 
 function finishOwnerAccess(username,data){
@@ -3148,7 +3161,7 @@ function finishOwnerAccess(username,data){
   session.ownerName=ownerName;
   session.user.id=data.owner_id||'owner-console';
   session.ownerSessionId=data.session_id||'';
-  msg('lmsg','Opening secure workspace.','#00ff88');
+  msg('lmsg','Opening owner sandbox workspace.','#00ff88');
   finishAuth(session);
   recordAdminAudit('OWNER_LOGIN','Owner console opened.');
   setTimeout(function(){openOwnerConsole();},500);
@@ -3161,7 +3174,7 @@ function ownerLoginFromUsername(username){
     return;
   }
   if(allowPreviewOwnerLogin()){
-    finishOwnerAccess(username,{email:'deion@vaultflow.owner',owner_name:'deion',owner_id:'owner-console'});
+    finishOwnerAccess(username,{email:'deion@vaultflow.owner',owner_name:OWNER_SANDBOX_USERNAME,owner_id:'owner-console',session_id:'sandbox-owner'});
     return;
   }
   var codeEl=document.getElementById('sip');
@@ -3197,7 +3210,7 @@ function signout(){
 function waitlist(inputId,msgId){
   var e=document.getElementById(inputId).value.trim();
   if(!isEmail(e)){msg(msgId,'Please enter a valid email.','#ff4444');return;}
-  if(isLocalPreview()){
+  if(isSandboxMode()){
     msg(msgId,'You are on the list. Welcome to VaultFlow.','#00ff88');
     document.getElementById(inputId).value='';
     return;
@@ -4023,14 +4036,14 @@ function cSig(){
     lastSignals=sigs.map(function(s){return normalizeSignal(s,settings);});
     renderSignals(lastSignals,label,settings);
   }
-  if(!isLocalPreview()||uiSettings.realPlaid){
+  if(!isSandboxMode()&&uiSettings.realPlaid){
     postBackend('/market/signals',{symbols:symbols,settings:settings}).then(function(d){
       var sigs=(d&&Array.isArray(d.signals)&&d.signals.length)?d.signals:buildSignals(symbols,settings);
       finishSignals(sigs,(d&&d.source==='alpaca-market-data')?'ALPACA MARKET DATA SIGNALS':((d&&d.source==='backend-local')?'BACKEND FALLBACK SIGNALS':'LIVE MARKET SIGNALS'));
     }).catch(function(){finishSignals(buildSignals(symbols,settings),'LOCAL ALGO FALLBACK');});
     return;
   }
-  setTimeout(function(){finishSignals(buildSignals(symbols,settings),'LOCAL PREVIEW ALGO');},180);
+  setTimeout(function(){finishSignals(buildSignals(symbols,settings),'SANDBOX ALGO');},180);
 }
 
 function seededPrices(symbol,count){
@@ -5780,7 +5793,7 @@ function appModeState(){
     return {badge:'SANDBOX DEMO',kind:'warn',title:'Demo bank data is active',copy:bank.copy};
   }
   if(usePlaidDemoFallback()){
-    return {badge:'LOCAL DEMO',kind:'warn',title:'Local sandbox preview',copy:'This preview is using local demo data instead of the Railway Plaid backend.'};
+    return {badge:'SANDBOX MODE',kind:'warn',title:'Sandbox preview is active',copy:'VaultFlow is off live mode. Demo data and local storage are used until the backend is reactivated.'};
   }
   if(isLocalPreview()){
     return {badge:'REAL BACKEND',kind:plaidBackendState.kind||'warn',title:'Local preview calling Railway',copy:'This page is local, but Plaid Link requests go to the Railway backend. Keep Plaid secrets only in Railway environment variables.'};
@@ -5822,10 +5835,10 @@ function refreshSystemStatus(){
   putText('system-transfer',hasTier('vault')?transferRailState.label:'Vault required');
   putText('system-payday',paydayDetected?'Detected'+(lastPaycheckAmount?' · '+fmt(lastPaycheckAmount):''):(bank.connected?'Ready to scan':'Waiting on bank'));
   putText('system-trading',tradingConnected?'Paper connected':'Paper mode ready');
-  putText('system-storage',isLocalPreview()?'Browser preview + backend scaffold':'Backend state route ready');
+  putText('system-storage',isSandboxMode()?'Browser sandbox storage':'Backend state route ready');
   putText('system-ai',aiBackendState.label||'Checking AI backend');
   putText('trust-plaid',plaidBackendState&&plaidBackendState.label?plaidBackendState.label:'Link status checking');
-  putText('trust-mode',usePlaidDemoFallback()?'Demo fallback mode':'Backend mode active');
+  putText('trust-mode',isSandboxMode()?'Sandbox mode active':(usePlaidDemoFallback()?'Demo fallback mode':'Backend mode active'));
   var trust=document.getElementById('system-trust-note');
   if(trust){
     trust.innerHTML='<strong>Preview guardrail:</strong> '+(bank.real?'Your visible bank state is a backend session.':'No real bank session is stored yet.')+' Plaid secrets belong only in Railway/backend environment variables, never in this HTML file.';
@@ -5959,6 +5972,28 @@ function auditPayrollBackend(){
 function runLiveReadinessAudit(){
   var el=document.getElementById('live-readiness-result');
   if(!el)return;
+  if(isSandboxMode()){
+    var sandboxRows=[];
+    var sandboxBank=bankConnectionState();
+    var sandboxSnapshot=financeSnapshot();
+    sandboxRows.push(auditLine('Sandbox mode','pass','VaultFlow is intentionally off live mode. No production bank transfer, live trade, or paid checkout will run from this build.'));
+    sandboxRows.push(auditLine('Owner username login',isOwner()?'pass':'warn',isOwner()?'Owner console is open from username-only sandbox login.':'Type deion in the username field and leave password blank to open owner sandbox access.'));
+    sandboxRows.push(auditLine('Bank account link','pass',sandboxBank.connected?sandboxBank.copy:'Sandbox demo bank data is available from Profile without touching real accounts.'));
+    sandboxRows.push(auditLine('ADP / payroll income','pass','Sandbox payroll uses demo income events. Real ADP/Plaid Income waits until Railway is reactivated.'));
+    sandboxRows.push(auditLine('AI assistant','hold','Local assistant fallback is active in sandbox. Real OpenAI answers require backend hosting and OPENAI_API_KEY.'));
+    sandboxRows.push(auditLine('Payment checkout','pass','Stripe is in demo/test mode only. No live charge is submitted from sandbox.'));
+    sandboxRows.push(auditLine('Trading integration','pass','Trading is guarded paper/demo mode. Live Alpaca orders are off while sandbox mode is active.'));
+    sandboxRows.push(auditLine('Auto bank transfer rail','hold','Real ACH/Plaid Transfer execution is off. Sandbox can only queue/review local transfer examples.'));
+    sandboxRows.push(auditLine('Secure document vault','pass','Uploads are client-encrypted/local in sandbox. Backend signed storage resumes when Railway storage is back online.'));
+    sandboxRows.push(auditLine('Report exports','pass',(vaultDocs.length?vaultDocs.length+' secure file(s) can be included in local report manifests.':'Local report export works without attachments.')));
+    sandboxRows.push(auditLine('Scalable storage','hold','Persistent backend storage is offline until Railway is upgraded/reactivated. Sandbox saves in this browser.'));
+    sandboxRows.push(auditLine('Live launch decision','hold','Live mode is disabled on purpose. Use sandbox for fixes; reactivate Railway only when you are ready for backend testing.'));
+    el.innerHTML=sandboxRows.join('');
+    el.style.display='block';
+    el.style.color='#8A8070';
+    refreshSystemStatus();
+    return;
+  }
   setBox('live-readiness-result','Running live-readiness audit...','#C9A84C');
   var s=financeSnapshot();
   var bank=bankConnectionState();
@@ -6604,9 +6639,9 @@ function connectTrading(){
   if(!requireTier('prime','Trading integration'))return;
   var el=document.getElementById('trade_result');
   el.style.display='block';
-  if(isLocalPreview()&&!uiSettings.realPlaid){
+  if(isSandboxMode()){
     tradingConnected=true;
-    el.innerHTML='Alpaca trading preview connected. Local preview will create guarded paper orders only.';
+    el.innerHTML='Alpaca trading sandbox connected. Sandbox creates guarded paper orders only.';
     el.style.color='#00ff88';
     addWebhookEvent({type:'TRADING_CONNECTED',msg:'Paper trading connection active',color:'#00ff88'});
     refreshSystemStatus();
@@ -6619,7 +6654,7 @@ function connectTrading(){
     setBox('trade_result',tradingConnected?'Trading account connected. Mode: '+esc((d&&d.mode)||'preview')+'. '+esc((d&&d.detail)||''):esc((d&&d.detail)||'Trading connection failed.'),tradingConnected?'#00ff88':'#ff4444');
     refreshSystemStatus();
   }).catch(function(){
-    if(isLocalPreview()){
+    if(isSandboxMode()){
       tradingConnected=true;
       setBox('trade_result','Backend trading route unavailable, so local paper preview is connected.','#C9A84C');
     }else setBox('trade_result','Trading endpoint unavailable.','#ff4444');
@@ -6632,7 +6667,7 @@ function executeTrade(){
   var symbol=(document.getElementById('trade_symbol').value||'SPY').trim().toUpperCase();
   var amount=gv('trade_amount');
   if(!amount||amount<=0){setBox('trade_result','Enter a dollar amount.','#ff4444');return;}
-  if(!tradingConnected&&isLocalPreview())tradingConnected=true;
+  if(!tradingConnected&&isSandboxMode())tradingConnected=true;
   if(!tradingConnected){setBox('trade_result','Connect trading first.','#ff4444');return;}
   var signal=(lastSignals||[]).find(function(s){return String(s.s||'').toUpperCase()===symbol;})||buildSignals([symbol],signalSettings())[0];
   if(signal.g==='SELL'){setBox('trade_result','Signal is SELL for '+esc(symbol)+'. Trade blocked by risk rules.','#ff4444');return;}
@@ -6642,7 +6677,7 @@ function executeTrade(){
     setBox('trade_result','Live Alpaca trading is enabled. Check the live-order authorization box before submitting this exact '+esc(symbol)+' order for '+fmt(amount)+'.','#ff4444');
     return;
   }
-  if(isLocalPreview()&&!uiSettings.realPlaid){
+  if(isSandboxMode()){
     setBox('trade_result','Guarded paper order submitted: <span class="rv">'+esc(symbol)+'</span> BUY '+fmt(amount)+' · confidence '+signal.confidence+'% · stop '+priceFmt(signal.stop)+' · target '+priceFmt(signal.target),'#00ff88');
     addWebhookEvent({type:'PAPER_TRADE',msg:'BUY '+symbol+' for '+fmt(amount),color:'#0088ff'});
     return;
@@ -6652,7 +6687,7 @@ function executeTrade(){
     if(d&&d.success)setBox('trade_result','Order submitted: <span class="rv">'+esc(d.order_id||'pending')+'</span> · Mode: '+esc(d.mode||'paper')+' · Status: '+esc(d.status||'submitted'),'#00ff88');
     else setBox('trade_result',esc((d&&d.detail)||'Order failed.'),'#ff4444');
   }).catch(function(){
-    if(isLocalPreview()){
+    if(isSandboxMode()){
       setBox('trade_result','Backend order route unavailable, so local paper order was recorded: <span class="rv">'+esc(symbol)+'</span> BUY '+fmt(amount),'#C9A84C');
       addWebhookEvent({type:'PAPER_TRADE',msg:'LOCAL BUY '+symbol+' for '+fmt(amount),color:'#0088ff'});
     }else setBox('trade_result','Trading endpoint unavailable.','#ff4444');
