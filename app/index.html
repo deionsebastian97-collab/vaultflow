@@ -1076,8 +1076,8 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <button class="ltab" id="lt2" onclick="ltab('up')">CREATE ACCOUNT</button>
       </div>
       <div id="lf1">
-        <label class="lbl">USERNAME OR EMAIL</label><input class="inp" type="text" id="sie" placeholder="Type deion for owner sandbox access" autocomplete="username">
-        <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sip" placeholder="Leave blank for owner sandbox" autocomplete="current-password">
+        <label class="lbl">USERNAME OR EMAIL</label><input class="inp" type="text" id="sie" placeholder="your@email.com" autocomplete="username">
+        <label class="lbl">PASSWORD</label><input class="inp" type="password" id="sip" placeholder="Password" autocomplete="current-password">
         <button class="btngold" onclick="signin()">SIGN IN</button>
         <button class="btnout demo-btn" onclick="demoLogin()">USE DEMO ACCOUNT</button>
       </div>
@@ -1088,7 +1088,7 @@ body.prime-mode nav,body.prime-mode .dnav,body.vault-mode nav,body.vault-mode .d
         <button class="btngold" onclick="signup()">CREATE ACCOUNT</button>
       </div>
       <div id="lmsg" class="msgbox"></div>
-      <div class="login-helper">Sandbox mode is on. Owner access: type <strong>deion</strong> in username and leave password blank.</div>
+      <div class="login-helper">Sandbox mode is on. Demo progress stays safely in this browser.</div>
       <span class="backlink" onclick="go('home')">BACK TO VAULTFLOW</span>
     </div>
   </div>
@@ -3161,7 +3161,7 @@ function finishOwnerAccess(username,data){
   session.ownerName=ownerName;
   session.user.id=data.owner_id||'owner-console';
   session.ownerSessionId=data.session_id||'';
-  msg('lmsg','Opening owner sandbox workspace.','#00ff88');
+  msg('lmsg','Opening private workspace.','#00ff88');
   finishAuth(session);
   recordAdminAudit('OWNER_LOGIN','Owner console opened.');
   setTimeout(function(){openOwnerConsole();},500);
@@ -3180,7 +3180,7 @@ function ownerLoginFromUsername(username){
   var codeEl=document.getElementById('sip');
   var code=codeEl?codeEl.value.trim():'';
   if(!code){
-    msg('lmsg','Enter your private owner code in the password field.','#C9A84C');
+    msg('lmsg','Enter your private access code in the password field.','#C9A84C');
     if(codeEl)codeEl.focus();
     return;
   }
@@ -3189,7 +3189,7 @@ function ownerLoginFromUsername(username){
     if(d&&d.success&&d.owner){
       finishOwnerAccess(username,d);
     }else{
-      msg('lmsg',(d&&d.detail)||'Owner access was not approved.','#ff4444');
+      msg('lmsg',(d&&d.detail)||'Private access was not approved.','#ff4444');
     }
   }).catch(function(){
     msg('lmsg','Owner authentication is not reachable yet.','#ff4444');
